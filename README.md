@@ -14,7 +14,7 @@ Chromeの場合、[Tampermonkey](https://chrome.google.com/webstore/detail/tampermon
 NGワードは全板共通と各板個別でそれぞれ設定できます。  
 
 ## インストール
-[GreasyFork](https://greasyfork.org/ja/scripts/36639-futaba-catalog-ng)　
+[GreasyFork](https://greasyfork.org/ja/scripts/37565-futaba-catalog-ng)　
 [GitHub](https://github.com/akoya-tomo/futaba_catalog_NG/raw/master/futaba_catalog_NG.user.js)
 
 ## 注意事項
