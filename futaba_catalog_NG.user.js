@@ -5,7 +5,7 @@
 // @author      akoya_tomo
 // @include     http://*.2chan.net/*/futaba.php?mode=cat*
 // @include     https://*.2chan.net/*/futaba.php?mode=cat*
-// @version     1.0.0
+// @version     1.0.1
 // @require     http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js
 // @grant       GM_registerMenuCommand
 // @grant       GM_getValue
@@ -115,8 +115,6 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 		var $menubar_area = $("<div>", {
 			id: "GM_fcn_menubar"
 		});
-		$("body > table[border]").before($menubar_area);
-
 		var $menubar_header = $("<div>", {
 			id: "GM_fcn_menubar_header",
 			text: "ＮＧワード",
@@ -125,7 +123,20 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 				fontWeight: "bolder"
 			}
 		});
-		$menubar_area.append($menubar_header);
+		if ($("#GM_fth_searchword").length) {
+			$menubar_header = $("<span>", {
+				id: "GM_fcn_menubar_header",
+				text: "　ＮＧワード",
+				css: {
+					"background-color": "#F0E0D6",
+					fontWeight: "bolder"
+				}
+			});
+			$("#GM_fth_searchword").after($menubar_header);
+		} else {
+			$("body > table[border]").before($menubar_area);
+			$menubar_area.append($menubar_header);
+		}
 		//設定ボタン
 		var $button = $("<span>", {
 			id: "GM_fcn_configNG",
