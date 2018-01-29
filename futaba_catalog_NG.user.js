@@ -5,7 +5,7 @@
 // @author      akoya_tomo
 // @include     http://*.2chan.net/*/futaba.*
 // @include     https://*.2chan.net/*/futaba.*
-// @version     1.0.1
+// @version     1.1.0
 // @require     http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js
 // @grant       GM_registerMenuCommand
 // @grant       GM_getValue
