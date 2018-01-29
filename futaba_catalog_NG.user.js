@@ -118,12 +118,6 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 	}
 
 	/*
-	 *NGリスト編集画面表示
-	 */
-	function editNgList(){
-	}
-
-	/*
 	 * NGワードを設定
 	 */
 	function setNgWords() {
@@ -174,34 +168,6 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 			$(this).css({ backgroundColor:"#F0E0D6" });
 		});
 		$ng_words_header.append($ng_words_button);
-		//NGリスト
-		var $ng_list_header = $("<span>", {
-			id: "GM_fcn_ng_list_header",
-			text: "ＮＧリスト",
-			css: {
-				"background-color": "#F0E0D6",
-				fontWeight: "bolder",
-				"padding-right": "16px"
-			}
-		});
-		$ng_words_header.after($ng_list_header);
-		//NGリスト編集ボタン
-		var $ng_list_button = $("<span>", {
-			id: "GM_fcn_edit_ng_list",
-			text: "[編集]",
-			css: {
-				cursor: "pointer",
-			},
-			click: function() {
-				editNgList();
-			}
-		});
-		$ng_list_button.hover(function () {
-			$(this).css({ backgroundColor:"#EEAA88" });
-		}, function () {
-			$(this).css({ backgroundColor:"#F0E0D6" });
-		});
-		$ng_list_header.append($ng_list_button);
 	}
 
 	/*
