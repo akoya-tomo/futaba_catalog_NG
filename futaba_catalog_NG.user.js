@@ -5,7 +5,7 @@
 // @author      akoya_tomo
 // @include     http://*.2chan.net/*/futaba.*
 // @include     https://*.2chan.net/*/futaba.*
-// @version     1.2.0
+// @version     1.2.1
 // @require     http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js
 // @require     https://cdn.jsdelivr.net/npm/js-md5@0.7.3/src/md5.min.js
 // @grant       GM_registerMenuCommand
@@ -523,6 +523,9 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 								$("#GM_fcn_catalog_space").remove();
 								$("html, body").css("overflow", "");
 								$ng_list_container.fadeOut(100);
+								$(".GM_fcn_ng_images").css("display","");
+								$(".GM_fcn_ng_images").removeClass("GM_fcn_ng_images");
+								hideNgThreads();
 							},
 						})
 					)
@@ -715,6 +718,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 			ng_number.click(function () {
 				setNgNumber(thread_number);
 				$td.addClass("GM_fcn_ng_numbers");
+				$td.css("display","none");
 			});
 
 			ng_word_common.hover(function () {
@@ -729,6 +733,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 				words = addNgWord(words, thread_comment);
 				GM_setValue("_futaba_catalog_NG_words", words);
 				$td.addClass("GM_fcn_ng_words");
+				$td.css("display","none");
 			});
 
 			ng_word_indiv.hover(function () {
@@ -743,6 +748,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 				words = addNgWord(words, thread_comment);
 				setIndivValue("NG_words_indiv", words);
 				$td.addClass("GM_fcn_ng_words");
+				$td.css("display","none");
 			});
 
 			ng_image.hover(function () {
@@ -808,6 +814,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 			setNgListObj("_futaba_catalog_NG_comment", comment);
 			setNgListObj("_futaba_catalog_NG_date", getDate());
 			$td.addClass("GM_fcn_ng_images");
+			$td.css("display","none");
 			// 非NG画像リストからNG画像を削除
 			var ok_images = getCurrentIndivValue("OK_images_indiv", []);
 			var img_num = parseInt($td.find("img").attr("src").match(/(\d+)s\.jpg$/)[1]);
@@ -891,6 +898,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 			return;
 		}
 		if (isWordsChanged) {
+			$(".GM_fcn_ng_words").css("display","");
 			$(".GM_fcn_ng_words").removeClass("GM_fcn_ng_words");
 		}
 		if (words !== "") {
@@ -898,35 +906,46 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 				if (re.test($(this).text())) {
 					if ($(this).parent("a").length) {		//文字スレ
 						$(this).parent().parent("td").addClass("GM_fcn_ng_words");
+						$(this).parent().parent("td").css("display","none");
 					} else {
 						$(this).parent("td").addClass("GM_fcn_ng_words");
+						$(this).parent().parent("td").css("display","none");
 					}
 				}
 			});
 		}
-		if (numbers.length && !isWordsChanged) {
+		if (isWordsChanged) {
+			console.log('futaba_catalog_NG - Parsing@' + serverFullPath + ': '+((new Date()).getTime()-Start) +'msec');//log parsing time
+			return;
+		}
+		if (numbers.length) {
 			$("body > table[border] td a").each(function(){
 				var href_num = $(this).attr("href").slice(4,-4);
 				if (numbers.indexOf(href_num) > -1){
 					$(this).parent("td").addClass("GM_fcn_ng_numbers");
+					$(this).parent("td").css("display","none");
 				}
 			});
 		}
-		if (images.length && !isWordsChanged) {
-			$("body > table[border] td img").each(function(){
-				var img_num = parseInt($(this).attr("src").match(/(\d+)s\.jpg$/)[1]);
-				if (ok_images.indexOf(img_num) == -1) {
-					var img_obj = $(this)[0];
-					var data = getBase64(img_obj);
-					var hexHash = md5(data);
-					var images_index = images.indexOf(hexHash);
-					if (images_index > -1){
-						$(this).parent().parent("td").addClass("GM_fcn_ng_images");
-						ng_date[images_index] = getDate();
-					} else if (hexHash.length == 32) {
-						ok_images.unshift(img_num);
-					} else {
-						console.log("futaba_catalog_NG hexHash abnormal: " + hexHash);
+		if (images.length) {
+			$("body > table[border] td a img").each(function(){
+				var img_src = $(this).attr("src").match(/(\d+)s\.jpg$/);
+				if (img_src) {
+					var img_num = parseInt(img_src[1]);
+					if (ok_images.indexOf(img_num) == -1) {
+						var img_obj = $(this)[0];
+						var data = getBase64(img_obj);
+						var hexHash = md5(data);
+						var images_index = images.indexOf(hexHash);
+						if (images_index > -1){
+							$(this).parent().parent("td").addClass("GM_fcn_ng_images");
+							$(this).parent().parent("td").css("display","none");
+							ng_date[images_index] = getDate();
+						} else if (hexHash.length == 32) {
+							ok_images.unshift(img_num);
+						} else {
+							console.log("futaba_catalog_NG hexHash abnormal: " + hexHash);
+						}
 					}
 				}
 			});
@@ -936,10 +955,13 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 			}
 			setIndivValue("OK_images_indiv", ok_images);
 		} else if (USE_NG_IMAGES) {
-			$("body > table[border] td img").each(function(){
-				var img_num = parseInt($(this).attr("src").match(/(\d+)s\.jpg$/)[1]);
-				if (ok_images.indexOf(img_num) == -1) {
-					ok_images.unshift(img_num);
+			$("body > table[border] td a img").each(function(){
+				var img_src = $(this).attr("src").match(/(\d+)s\.jpg$/);
+				if (img_src) {
+					var img_num = parseInt(img_src[1]);
+					if (ok_images.indexOf(img_num) == -1) {
+						ok_images.unshift(img_num);
+					}
 				}
 			});
 			if (ok_images.length > MAX_OK_IMAGES) {
