@@ -805,11 +805,14 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 		 *スレ画像NG
 		 */
 		function hideNgImageThread(img_obj, comment, $td) {
-			if (!img_obj) return;
 			var data = getBase64(img_obj);
-			//console.log("futaba_catalog_NG data = " + data);
+			//console.log("futaba_catalog_NG: data = " + data);
+			if (!data) {
+				alert("スレ画像の取得に失敗しました");
+				return;
+			}
 			var hexHash = md5(data);
-			//console.log("futaba_catalog_NG hexHash = " + hexHash);
+			//console.log("futaba_catalog_NG: hexHash = " + hexHash);
 			setNgListObj("_futaba_catalog_NG_images", hexHash);
 			setNgListObj("_futaba_catalog_NG_comment", comment);
 			setNgListObj("_futaba_catalog_NG_date", getDate());
@@ -842,14 +845,17 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 	 *Base64取得
 	 */
 	function getBase64(img_obj){
+		if (!img_obj) return "";
 		// canvasを生成してimg要素を反映
 		var cvs = document.createElement("canvas");
 		cvs.width  = img_obj.width;
 		cvs.height = img_obj.height;
+		if (cvs.width <= 0 || cvs.height <= 0) return "";
 		var ctx = cvs.getContext("2d");
 		ctx.drawImage(img_obj, 0, 0);
 		// canvasをBase64化
 		var data = cvs.toDataURL("image/jpeg");
+		if (data.substr(0,23) !== "data:image/jpeg;base64,") return "";
 		return data;
 	}
 
@@ -935,16 +941,18 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 					if (ok_images.indexOf(img_num) == -1) {
 						var img_obj = $(this)[0];
 						var data = getBase64(img_obj);
-						var hexHash = md5(data);
-						var images_index = images.indexOf(hexHash);
-						if (images_index > -1){
-							$(this).parent().parent("td").addClass("GM_fcn_ng_images");
-							$(this).parent().parent("td").css("display","none");
-							ng_date[images_index] = getDate();
-						} else if (hexHash.length == 32) {
-							ok_images.unshift(img_num);
-						} else {
-							console.log("futaba_catalog_NG hexHash abnormal: " + hexHash);
+						if (data) {
+							var hexHash = md5(data);
+							var images_index = images.indexOf(hexHash);
+							if (images_index > -1){
+								$(this).parent().parent("td").addClass("GM_fcn_ng_images");
+								$(this).parent().parent("td").css("display","none");
+								ng_date[images_index] = getDate();
+							} else if (hexHash.length == 32) {
+								ok_images.unshift(img_num);
+							} else {
+								console.log("futaba_catalog_NG hexHash abnormal: " + hexHash);
+							}
 						}
 					}
 				}
