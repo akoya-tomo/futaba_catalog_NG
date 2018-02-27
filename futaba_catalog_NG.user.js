@@ -854,8 +854,13 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 		var ctx = cvs.getContext("2d");
 		ctx.drawImage(img_obj, 0, 0);
 		// canvasをBase64化
-		var data = cvs.toDataURL("image/jpeg");
-		if (data.substr(0,23) !== "data:image/jpeg;base64,") return "";
+		var data;
+		try {
+			data = cvs.toDataURL("image/jpeg");
+		} catch (e) {
+			return "";
+		}
+    	if (data.substr(0,23) !== "data:image/jpeg;base64,") return "";
 		return data;
 	}
 
