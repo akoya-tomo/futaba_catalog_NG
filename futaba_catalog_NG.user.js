@@ -612,7 +612,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 			css: {
 				"background-color": "rgba(240, 192, 214, 0.95)",
 				display: "none",
-				"z-index": "1",
+				"z-index": "100",
 				position: "absolute",
 				top: "16px",
 				left: "0px",
