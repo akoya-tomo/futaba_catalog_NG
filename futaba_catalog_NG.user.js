@@ -5,7 +5,7 @@
 // @author      akoya_tomo
 // @include     http://*.2chan.net/*/futaba.*
 // @include     https://*.2chan.net/*/futaba.*
-// @version     1.2.2
+// @version     1.2.3
 // @require     http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js
 // @require     https://cdn.jsdelivr.net/npm/js-md5@0.7.3/src/md5.min.js
 // @grant       GM_registerMenuCommand
@@ -612,7 +612,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 			css: {
 				"background-color": "rgba(240, 192, 214, 0.95)",
 				display: "none",
-				"z-index": "1",
+				"z-index": "100",
 				position: "absolute",
 				top: "16px",
 				left: "0px",
@@ -854,8 +854,13 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 		var ctx = cvs.getContext("2d");
 		ctx.drawImage(img_obj, 0, 0);
 		// canvasをBase64化
-		var data = cvs.toDataURL("image/jpeg");
-		if (data.substr(0,23) !== "data:image/jpeg;base64,") return "";
+		var data;
+		try {
+			data = cvs.toDataURL("image/jpeg");
+		} catch (e) {
+			return "";
+		}
+    	if (data.substr(0,23) !== "data:image/jpeg;base64,") return "";
 		return data;
 	}
 
