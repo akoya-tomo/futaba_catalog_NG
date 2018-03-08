@@ -5,7 +5,7 @@
 // @author      akoya_tomo
 // @include     http://*.2chan.net/*/futaba.*
 // @include     https://*.2chan.net/*/futaba.*
-// @version     1.2.3
+// @version     1.2.4
 // @require     http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js
 // @require     https://cdn.jsdelivr.net/npm/js-md5@0.7.3/src/md5.min.js
 // @grant       GM_registerMenuCommand
@@ -29,7 +29,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 	var pathName = location.pathname.match(/[^/]+/);
 	var serverFullPath = serverName + "_" + pathName;
 	var select_index = -1;
-	var imageList,commentList,dateList;
+	var imageList,commentList,dateList,images,ng_date,ok_images;
 
 	init();
 
@@ -845,12 +845,12 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 	 *Base64取得
 	 */
 	function getBase64(img_obj){
-		if (!img_obj) return "";
+		if (!img_obj) return;
+		if (!img_obj.complete || !img_obj.width || !img_obj.height) return;
 		// canvasを生成してimg要素を反映
 		var cvs = document.createElement("canvas");
 		cvs.width  = img_obj.width;
 		cvs.height = img_obj.height;
-		if (cvs.width <= 0 || cvs.height <= 0) return "";
 		var ctx = cvs.getContext("2d");
 		ctx.drawImage(img_obj, 0, 0);
 		// canvasをBase64化
@@ -858,9 +858,13 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 		try {
 			data = cvs.toDataURL("image/jpeg");
 		} catch (e) {
-			return "";
+			console.log("futaba_catalog_NG toDataURL error: " + img_obj.src);
+			return;
 		}
-    	if (data.substr(0,23) !== "data:image/jpeg;base64,") return "";
+    	if (data.substr(0,23) !== "data:image/jpeg;base64,"){
+			console.log("futaba_catalog_NG toDataURL abnormal: " + img_obj.src + ", " + data);
+			return;
+		}
 		return data;
 	}
 
@@ -884,9 +888,9 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 		var words_common = GM_getValue("_futaba_catalog_NG_words", "");
 		var words_indiv = getCurrentIndivValue("NG_words_indiv", "");
 		var numbers = getCurrentIndivValue("NG_numbers_indiv", []);
-		var images = GM_getValue("_futaba_catalog_NG_images", "");
-		var ng_date = GM_getValue("_futaba_catalog_NG_date", "");
-		var ok_images = getCurrentIndivValue("OK_images_indiv", []);
+		images = GM_getValue("_futaba_catalog_NG_images", "");
+		ng_date = GM_getValue("_futaba_catalog_NG_date", "");
+		ok_images = getCurrentIndivValue("OK_images_indiv", []);
 
 		if( words_common !== "" ) {
 			words += words_common;
@@ -956,8 +960,31 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 							} else if (hexHash.length == 32) {
 								ok_images.unshift(img_num);
 							} else {
-								console.log("futaba_catalog_NG hexHash abnormal: " + hexHash);
+								console.log("futaba_catalog_NG hexHash abnormal: " + img_num + ", " + hexHash);
 							}
+						} else {
+							// 画像読込完了確認
+							var img = new Image();
+							img.onload = function() {
+								var img_num = parseInt($(this).attr("src").match(/(\d+)s\.jpg$/)[1]);
+								var data = getBase64($(this)[0]);
+								if (data) {
+									var hexHash = md5(data);
+									var images_index = images.indexOf(hexHash);
+									if (images_index > -1){
+										$(img_obj).parent().parent("td").addClass("GM_fcn_ng_images");
+										$(img_obj).parent().parent("td").css("display","none");
+										ng_date[images_index] = getDate();
+									} else if (hexHash.length == 32) {
+										ok_images.unshift(img_num);
+									} else {
+										console.log("futaba_catalog_NG hexHash abnormal: " + img_num + ", " + hexHash);
+									}
+								} else {
+									console.log("futaba_catalog_NG img.onload data abnormal: " + img_num);
+								}
+							};
+							img.src = $(this)[0].src;
 						}
 					}
 				}
