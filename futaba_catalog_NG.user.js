@@ -5,7 +5,7 @@
 // @author      akoya_tomo
 // @include     http://*.2chan.net/*/futaba.*
 // @include     https://*.2chan.net/*/futaba.*
-// @version     1.2.4
+// @version     1.2.5
 // @require     http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js
 // @require     https://cdn.jsdelivr.net/npm/js-md5@0.7.3/src/md5.min.js
 // @grant       GM_registerMenuCommand
@@ -582,6 +582,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 						var status = $("#akahuku_catalog_reload_status").text();
 						if (status === "" || status == "完了しました") {
 							clearInterval(timer);
+							makeNgButton();
 							hideNgThreads();
 						}
 					}, 10);
@@ -595,6 +596,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 	 *カタログのスレにNGボタン設置
 	 */
 	function makeNgButton() {
+		if (location.search.match(/mode=catset/)) return;
 		//NGボタン
 		var $ng_button = $("<span>", {
 			class: "GM_fcn_ng_button",
@@ -625,26 +627,28 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 		});
 
 		$("body > table[border] td").each(function(){
-			var $clone_ng_button = $ng_button.clone();
-			var $clone_ng_button_menu = $ng_button_menu.clone();
+			if (!$(this).children(".GM_fcn_ng_button").length) {
+				var $clone_ng_button = $ng_button.clone();
+				var $clone_ng_button_menu = $ng_button_menu.clone();
 
-			$clone_ng_button.hover(function () {
-				$(this).css("color", "red");
-			}, function () {
-				$(this).css("color", "blue");
-			});
-			$clone_ng_button.on('click',function(){
-				makeNgButtonMenu($clone_ng_button);
-			});
-			$(this).hover(function () {
-				$clone_ng_button.css("opacity", "1");
-			}, function () {
-				$clone_ng_button.css("opacity", "0");
-				$clone_ng_button_menu.css("display", "none");
-			});
+				$clone_ng_button.hover(function () {
+					$(this).css("color", "red");
+				}, function () {
+					$(this).css("color", "blue");
+				});
+				$clone_ng_button.on('click',function(){
+					makeNgButtonMenu($clone_ng_button);
+				});
+				$(this).hover(function () {
+					$clone_ng_button.css("opacity", "1");
+				}, function () {
+					$clone_ng_button.css("opacity", "0");
+					$clone_ng_button_menu.css("display", "none");
+				});
 
-			$clone_ng_button.append($clone_ng_button_menu);
-			$(this).append($clone_ng_button);
+				$clone_ng_button.append($clone_ng_button_menu);
+				$(this).append($clone_ng_button);
+			}
 		});
 	}
 
@@ -653,7 +657,6 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 	 */
 	function makeNgButtonMenu($button) {
 		if (!$button.find(".GM_fcn_ng_menu_item").length) {
-			var thread_comment = "";
 			//スレNG
 			var $ng_number = $("<div>", {
 				class: "GM_fcn_ng_menu_item",
@@ -691,18 +694,10 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 			});
 
 			var $td = $button.parent("td");
-			var thread_number = $td.children("a:first").attr("href").slice(4,-4);
-			var thread_image = $td.find("img:first");
-			var thread_img_obj = "";
-			if (thread_image.length) {
-				thread_img_obj = thread_image[0];
-			}
-			var thread_small = $td.find("small:first");
-			if (thread_small.length) {
-				thread_comment = thread_small.text();
-			} else {
-				thread_comment = "";
-			}
+			var thread_number = $td.children("a:first").length ? $td.children("a:first").attr("href").slice(4,-4) : "";
+			var thread_img_obj = $td.find("img:first").length ? $td.find("img:first")[0] : "";
+			var thread_comment = $td.find("small:first").length ? $td.find("small:first").text() : "";
+
 			var ng_number = $ng_number.clone();
 			var ng_word_common = $ng_word_common.clone();
 			var ng_word_indiv = $ng_word_indiv.clone();
@@ -762,7 +757,9 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 				hideNgImageThread(thread_img_obj, thread_comment, $td);
 			});
 
-			$button.children(".GM_fcn_ng_menu").append(ng_number);
+			if (thread_number) {
+				$button.children(".GM_fcn_ng_menu").append(ng_number);
+			}
 			if (thread_comment) {
 				$button.children(".GM_fcn_ng_menu").append(ng_word_common);
 				$button.children(".GM_fcn_ng_menu").append(ng_word_indiv);
