@@ -131,7 +131,6 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 		$("<div>", {
 			id: "GM_fcn_catalog_space"
 		}).appendTo("body");
-		var position = $(window).scrollTop();
 		if ($(window).scrollTop() < 1) {
 			$("html, body").scrollTop(1);
 		}
@@ -636,7 +635,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 				}, function () {
 					$(this).css("color", "blue");
 				});
-				$clone_ng_button.on('click',function(){
+				$clone_ng_button.on("click",function(){
 					makeNgButtonMenu($clone_ng_button);
 				});
 				$(this).hover(function () {
@@ -769,7 +768,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 			}
 		}
 		$button.children(".GM_fcn_ng_menu").css("display", "block");
-		 /*
+		/*
 		 *NG番号セット
 		 */
 		function setNgNumber(number) {
@@ -838,7 +837,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 		}
 	}
 
-	 /*
+	/*
 	 *Base64取得
 	 */
 	function getBase64(img_obj){
@@ -858,14 +857,14 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 			console.log("futaba_catalog_NG toDataURL error: " + img_obj.src);
 			return;
 		}
-    	if (data.substr(0,23) !== "data:image/jpeg;base64,"){
+		if (data.substr(0,23) !== "data:image/jpeg;base64,"){
 			console.log("futaba_catalog_NG toDataURL abnormal: " + img_obj.src + ", " + data);
 			return;
 		}
 		return data;
 	}
 
-	 /*
+	/*
 	 *日付取得
 	 */
 	function getDate() {
@@ -927,7 +926,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 			});
 		}
 		if (isWordsChanged) {
-			console.log('futaba_catalog_NG - Parsing@' + serverFullPath + ': '+((new Date()).getTime()-Start) +'msec');//log parsing time
+			console.log("futaba_catalog_NG - Parsing@" + serverFullPath + ": "+((new Date()).getTime()-Start) +"msec");//log parsing time
 			return;
 		}
 		if (numbers.length) {
@@ -1007,10 +1006,10 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 			setIndivValue("OK_images_indiv", ok_images);
 		}
 		console.log("futaba_catalog_NG: ok_images.length = " + ok_images.length);
-		console.log('futaba_catalog_NG - Parsing@' + serverFullPath + ': '+((new Date()).getTime()-Start) +'msec');//log parsing time
+		console.log("futaba_catalog_NG - Parsing@" + serverFullPath + ": "+((new Date()).getTime()-Start) +"msec");//log parsing time
 	}
 
-	 /*
+	/*
 	 *スタイル設定
 	 */
 	function setStyle() {
