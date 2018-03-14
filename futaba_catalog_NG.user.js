@@ -930,7 +930,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 			return;
 		}
 		if (numbers.length) {
-			$("body > table[border] td a").each(function(){
+			$("body > table[border] td > a:first-of-type").each(function(){
 				var href_num = $(this).attr("href").slice(4,-4);
 				if (numbers.indexOf(href_num) > -1){
 					$(this).parent("td").addClass("GM_fcn_ng_numbers");
@@ -939,7 +939,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 			});
 		}
 		if (images.length) {
-			$("body > table[border] td a img").each(function(){
+			$("body > table[border] td > a:first-of-type > img").each(function(){
 				var img_src = $(this).attr("src").match(/(\d+)s\.jpg$/);
 				if (img_src) {
 					var img_num = parseInt(img_src[1]);
