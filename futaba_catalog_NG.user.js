@@ -3,9 +3,11 @@
 // @namespace   https://github.com/akoya-tomo
 // @description カタログのスレをＮＧで非表示
 // @author      akoya_tomo
-// @include     http://*.2chan.net/*/futaba.*
-// @include     https://*.2chan.net/*/futaba.*
-// @version     1.2.6
+// @include     http://*.2chan.net/*/futaba.php?mode=cat*
+// @include     https://*.2chan.net/*/futaba.php?mode=cat*
+// @include     http://*.2chan.net/*/futaba.htm
+// @include     https://*.2chan.net/*/futaba.htm
+// @version     1.2.7
 // @require     http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js
 // @require     https://cdn.jsdelivr.net/npm/js-md5@0.7.3/src/md5.min.js
 // @grant       GM_registerMenuCommand
@@ -519,6 +521,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 								$(".GM_fcn_ng_list_row").css("background-color", "#ffffff");
 								$("#GM_fcn_md5").val("");
 								$("#GM_fcn_comment").val("");
+								$("#GM_fcn_ng_list_content").scrollTop(0);
 								$("#GM_fcn_catalog_space").remove();
 								$("html, body").css("overflow", "");
 								$ng_list_container.fadeOut(100);
