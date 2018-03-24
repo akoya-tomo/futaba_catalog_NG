@@ -521,6 +521,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 								$(".GM_fcn_ng_list_row").css("background-color", "#ffffff");
 								$("#GM_fcn_md5").val("");
 								$("#GM_fcn_comment").val("");
+								$("#GM_fcn_ng_list_content").scrollTop(0);
 								$("#GM_fcn_catalog_space").remove();
 								$("html, body").css("overflow", "");
 								$ng_list_container.fadeOut(100);
