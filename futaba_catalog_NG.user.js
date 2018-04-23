@@ -51,6 +51,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 		makeNgButton();
 		hideNgThreads();
 		check_akahuku_reload();
+		check_koshian_del();
 	}
 
 	/*
@@ -772,24 +773,6 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 		}
 		$button.children(".GM_fcn_ng_menu").css("display", "block");
 		/*
-		 *NG番号セット
-		 */
-		function setNgNumber(number) {
-			var obj_ng_number = getIndivObj("NG_numbers_indiv");
-			if (obj_ng_number === ""){
-				obj_ng_number = {};
-			}
-			if (!obj_ng_number[serverFullPath]) {
-				obj_ng_number[serverFullPath] = [];
-			}
-			obj_ng_number[serverFullPath].push(number);
-			if (obj_ng_number[serverFullPath].length > MAX_NG_THREADS) {
-				obj_ng_number[serverFullPath].shift();
-			}
-			var jsonstring = JSON.stringify(obj_ng_number);
-			GM_setValue("NG_numbers_indiv", jsonstring);
-		}
-		/*
 		 *NGワード追加
 		 */
 		function addNgWord(ng_words, new_ng_word) {
@@ -838,6 +821,25 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 				GM_setValue(target, obj_ng);
 			}
 		}
+	}
+
+	/*
+	 *NG番号セット
+	 */
+	function setNgNumber(number) {
+		var obj_ng_number = getIndivObj("NG_numbers_indiv");
+		if (obj_ng_number === ""){
+			obj_ng_number = {};
+		}
+		if (!obj_ng_number[serverFullPath]) {
+			obj_ng_number[serverFullPath] = [];
+		}
+		obj_ng_number[serverFullPath].push(number);
+		if (obj_ng_number[serverFullPath].length > MAX_NG_THREADS) {
+			obj_ng_number[serverFullPath].shift();
+		}
+		var jsonstring = JSON.stringify(obj_ng_number);
+		GM_setValue("NG_numbers_indiv", jsonstring);
 	}
 
 	/*
@@ -1010,6 +1012,30 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 		}
 		console.log("futaba_catalog_NG: ok_images.length = " + ok_images.length);
 		console.log("futaba_catalog_NG - Parsing@" + serverFullPath + ": "+((new Date()).getTime()-Start) +"msec");//log parsing time
+	}
+
+	/*
+	 *koshian del確認
+	 */
+	function check_koshian_del() {
+		document.addEventListener("KOSHIAN_del", (e) => {
+			hide_koshian_del();
+		});
+	}
+
+	/*
+	 *koshian del非表示
+	 */
+	function hide_koshian_del() {
+		$(".KOSHIAN_del").each(function(){
+			var thread_number = $(this).children("a:first").length ? $(this).children("a:first").attr("href").slice(4,-4) : "";
+			if (thread_number) {
+				setNgNumber(thread_number);
+				$(this).addClass("GM_fcn_ng_numbers");
+				$(this).css("display","none");
+			}
+			$(this).removeClass("KOSHIAN_del");
+		});
 	}
 
 	/*
