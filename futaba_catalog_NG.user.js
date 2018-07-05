@@ -52,6 +52,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 		hideNgThreads();
 		check_akahuku_reload();
 		check_koshian_del();
+		checkFthPickup();
 	}
 
 	/*
@@ -696,10 +697,10 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 				}
 			});
 
-			var $td = $button.parent("td");
+			var $td = $button.parent();
 			var thread_number = $td.children("a:first").length ? $td.children("a:first").attr("href").slice(4,-4) : "";
 			var thread_img_obj = $td.find("img:first").length ? $td.find("img:first")[0] : "";
-			var thread_comment = $td.find("small:first").length ? $td.find("small:first").text() : "";
+			var thread_comment = $td.find("small:first, .GM_fth_pickuped_caption, .GM_fth_opened_caption").length ? $td.find("small:first, .GM_fth_pickuped_caption, .GM_fth_opened_caption").text() : "";
 
 			var ng_number = $ng_number.clone();
 			var ng_word_common = $ng_word_common.clone();
@@ -717,6 +718,9 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 				setNgNumber(thread_number);
 				$td.addClass("GM_fcn_ng_numbers");
 				$td.css("display","none");
+				if ($td.hasClass("GM_fth_pickuped") || $td.hasClass("GM_fth_opened")) {
+					hideNgThreads();
+				}
 			});
 
 			ng_word_common.hover(function () {
@@ -732,6 +736,9 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 				GM_setValue("_futaba_catalog_NG_words", words);
 				$td.addClass("GM_fcn_ng_words");
 				$td.css("display","none");
+				if ($td.hasClass("GM_fth_pickuped") || $td.hasClass("GM_fth_opened")) {
+					hideNgThreads();
+				}
 			});
 
 			ng_word_indiv.hover(function () {
@@ -747,6 +754,9 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 				setIndivValue("NG_words_indiv", words);
 				$td.addClass("GM_fcn_ng_words");
 				$td.css("display","none");
+				if ($td.hasClass("GM_fth_pickuped") || $td.hasClass("GM_fth_opened")) {
+					hideNgThreads();
+				}
 			});
 
 			ng_image.hover(function () {
@@ -758,6 +768,9 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 			});
 			ng_image.click(function () {
 				hideNgImageThread(thread_img_obj, thread_comment, $td);
+				if ($td.hasClass("GM_fth_pickuped") || $td.hasClass("GM_fth_opened")) {
+					hideNgThreads();
+				}
 			});
 
 			if (thread_number) {
@@ -1035,6 +1048,34 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 				$(this).css("display","none");
 			}
 			$(this).removeClass("KOSHIAN_del");
+		});
+	}
+
+	/*
+	 *futaba thread highlighter K pickup確認
+	 */
+	function checkFthPickup() {
+		document.addEventListener("FutabaTH_pickup", (e) => {
+			$(".GM_fth_pickuped, .GM_fth_opened").each(function(){
+				var $ng_button = $(this).children(".GM_fcn_ng_button");
+				if ($ng_button.length) {
+					var $ng_button_menu = $ng_button.children(".GM_fcn_ng_menu");
+					$ng_button.hover(function () {
+						$(this).css("color", "red");
+					}, function () {
+						$(this).css("color", "blue");
+					});
+					$ng_button.on("click",function(){
+						makeNgButtonMenu($ng_button);
+					});
+					$(this).hover(function () {
+						$ng_button.css("opacity", "1");
+					}, function () {
+						$ng_button.css("opacity", "0");
+						$ng_button_menu.css("display", "none");
+					});
+				}
+			});
 		});
 	}
 
