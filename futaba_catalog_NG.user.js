@@ -51,7 +51,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 		makeNgButton();
 		hideNgThreads();
 		check_akahuku_reload();
-		check_koshian_del();
+		checkKoshianDel();
 		checkFthPickup();
 	}
 
@@ -1030,16 +1030,16 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 	/*
 	 *koshian del確認
 	 */
-	function check_koshian_del() {
+	function checkKoshianDel() {
 		document.addEventListener("KOSHIAN_del", (e) => {
-			hide_koshian_del();
+			hideKoshianDel();
 		});
 	}
 
 	/*
 	 *koshian del非表示
 	 */
-	function hide_koshian_del() {
+	function hideKoshianDel() {
 		$(".KOSHIAN_del").each(function(){
 			var thread_number = $(this).children("a:first").length ? $(this).children("a:first").attr("href").slice(4,-4) : "";
 			if (thread_number) {
