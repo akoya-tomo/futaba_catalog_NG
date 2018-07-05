@@ -6,8 +6,8 @@ Firefoxの場合、[Tampermonkey](https://addons.mozilla.org/ja/firefox/addon/tamper
 (GreasemonkeyやViolentmonkeyでの動作は未確認です)  
 Chromeの場合、[Tampermonkey](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo/)を先にインスールしてからスクリプトをインストールして下さい。  
 
-※このUserscriptは単体で利用可能ですが、Firefoxアドオン[こしあん](https://addons.mozilla.org/ja/firefox/user/anonymous-a0bba9187b568f98732d22d51c5955a6/)（改変版含む）や[赤福Firefox SP](http://toshiakisp.github.io/akahuku-firefox-sp/)との併用も可能です。[ふたクロ](http://futakuro.com/)や[五平餅](https://toshiaki-gohei.github.io/gohei-mochi/)との併用では正常に動作しません。  
-※その他のUserscriptとFirefoxアドオンこしあんの改変版は[こちら](https://github.com/akoya-tomo/futaba_auto_reloader_K/wiki/)の一覧からどうぞ。
+※このUserscriptは単体で利用可能ですが、Firefoxアドオン[KOSHIAN](https://addons.mozilla.org/ja/firefox/user/anonymous-a0bba9187b568f98732d22d51c5955a6/)（[改変版](https://github.com/akoya-tomo/futaba_auto_reloader_K/wiki/)含む）や[赤福Firefox SP](http://toshiakisp.github.io/akahuku-firefox-sp/)との併用も可能です。[ふたクロ](http://futakuro.com/)や[五平餅](https://toshiaki-gohei.github.io/gohei-mochi/)との併用では正常に動作しません。  
+※その他のふたば閲覧支援ツールは[こちら](https://github.com/akoya-tomo/futaba_auto_reloader_K/wiki/)。
 
 ## 使い方
 * NGワード使用時はふたばのカタログモードの設定で「文字数」を適当な大きさ(4以上推奨)に設定してください。(板毎に設定が必要です)
@@ -36,17 +36,27 @@ NGワードは全板共通と各板個別でそれぞれ設定できます。
   - 記憶可能な非NG画像名の板毎の最大数です。画像NGの負荷を軽減するために、NGリストにマッチしなかったスレ画像名を記憶しています。この画像名の記憶数が設定値を超えると古い順に破棄されます。  
 
 ## 注意事項
-* [futaba thread highlighter K](https://greasyfork.org/ja/scripts/36639-futaba-thread-highlighter-k/)と併用する場合はrev6以上をインストールして、Tampermonkeyのダッシュボードからfutaba catalog NGの優先順序が先になるように設定してください。
+* [futaba thread highlighter K](https://greasyfork.org/ja/scripts/36639-futaba-thread-highlighter-k/)と併用する場合はfutaba thread highlighter K **rev6以上**をインストールして、Tampermonkeyのダッシュボードからfutaba catalog NGの**優先順序が先**になるように設定してください。  
+  ピックアップしたスレのNGボタンを動作させたいときはfutaba thread highlighter K **rev13以上**をインストールしてください。
 * 画像NGの判定負荷が重いため、環境によってはリロード後のカタログ表示完了が非常に遅くなる可能性があります。その場合はUSE\_NG\_IMAGESをfalseに設定して画像NG機能を無効にしてください。
 
 ## 既知の問題
 * Tampermonkeyで優先順序を先に設定していても他のUserscriptの後で実行されることがある。
   - md5変換の外部ライブラリをブラウザ起動後やスクリプト更新後に最初に読み込むときに発生することがあるようです。一度ライブラリを読み込めば次回のリロードからは優先順序に沿ってUserscriptが実行されます。
 
+## おまけ
+スレ本文の文字数を増やしたらカタログが見づらくて生きるのが辛い場合  
+himuro\_majika氏作のユーザースタイルシートも使ってみてください。  
+[futaba\_catalog\_mod(モダンバージョン)](https://userstyles.org/styles/114129/futaba-catalog-mod-modern)  
+または  
+[futaba\_catalog\_mod(クラシックバージョン)※ねないこユーザー向け](https://userstyles.org/styles/114130/futaba-catalog-mod-classic)
+
 ## ライセンス
 このUserscriptにはmd5変換に[js-md5](https://github.com/emn178/js-md5/)を使用しています。
 
 ## 更新履歴
+* v1.4.0 2018-07-06
+  - [futaba thread highlighter K](https://greasyfork.org/ja/scripts/36639-futaba-thread-highlighter-k/)がピックアップしたスレのNGボタンが動作するように修正
 * v1.3.0 2018-04-23
   - [KOSHIAN delフォームをポップアップで開く 改](https://github.com/akoya-tomo/koshian_del_kai/)への対応
 * v1.2.7 2018-03-24
