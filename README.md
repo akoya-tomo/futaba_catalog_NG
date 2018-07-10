@@ -13,13 +13,17 @@ Chromeの場合、[Tampermonkey](https://chrome.google.com/webstore/detail/tampermon
 * NGワード使用時はふたばのカタログモードの設定で「文字数」を適当な大きさ(4以上推奨)に設定してください。(板毎に設定が必要です)
 * NGワードの[設定]ボタンをクリックして監視したいNGワードを入力してください。
 |で区切ると複数の語句を指定できます。(正規表現使用可。特殊な記号　\\*?+.^$|()[]{}　は全て正規表現のメタキャラクタとして認識されます。)  
+  ![スクリーンショット](images/screenshot01.png)  
 NGワードは全板共通と各板個別でそれぞれ設定できます。  
-* カタログのスレにマウスオーバーすると[NG]ボタンが表示されます。このボタンをクリックするとメニューが表示されます。
+* カタログのスレにマウスオーバーすると[NG]ボタンが表示されます。このボタンをクリックするとメニューが表示されます。  
+  ![スクリーンショット](images/screenshot02.png)  
   - 「スレNG」をクリックするとそのスレが非表示となります。  
     「スレNG」にするとカタログのタブを閉じるか、カタログ左上の[掲示板に戻る]でスレ一覧に移動するまではそのスレが非表示になります。（リロードでは解除されません）  
   - 「本文NG」をクリックするとカタログに表示されているスレ本文がNGワードの先頭に登録されます。
   - 「画像NG」をクリックするとスレ画像がNGリストの先頭に登録されます。
-* NGリストの[編集]ボタンをクリックするとNG画像のリストが表示されます。コメントは自由に修正することができます。最終検出日はそのNG画像がカタログで最後に検出された日付です。
+* NGリストの[編集]ボタンをクリックするとNG画像のリストが表示されます。コメントは自由に修正することができます。最終検出日はそのNG画像がカタログで最後に検出された日付です。  
+  ![スクリーンショット](images/screenshot03.png)  
+
 
 ## インストール
 [GreasyFork](https://greasyfork.org/ja/scripts/37565-futaba-catalog-ng)　
@@ -37,6 +41,7 @@ NGワードは全板共通と各板個別でそれぞれ設定できます。
 
 ## 注意事項
 * [futaba thread highlighter K](https://greasyfork.org/ja/scripts/36639-futaba-thread-highlighter-k/)と併用する場合はfutaba thread highlighter K **rev6以上**をインストールして、Tampermonkeyのダッシュボードからfutaba catalog NGの**優先順序が先**になるように設定してください。  
+  ![スクリーンショット](images/screenshot04.png)  
   ピックアップしたスレのNGボタンを動作させたいときはfutaba thread highlighter K **rev13以上**をインストールしてください。
 * 画像NGの判定負荷が重いため、環境によってはリロード後のカタログ表示完了が非常に遅くなる可能性があります。その場合はUSE\_NG\_IMAGESをfalseに設定して画像NG機能を無効にしてください。
 
@@ -44,7 +49,7 @@ NGワードは全板共通と各板個別でそれぞれ設定できます。
 * Tampermonkeyで優先順序を先に設定していても他のUserscriptの後で実行されることがある。
   - md5変換の外部ライブラリをブラウザ起動後やスクリプト更新後に最初に読み込むときに発生することがあるようです。一度ライブラリを読み込めば次回のリロードからは優先順序に沿ってUserscriptが実行されます。
 
-## おまけ
+## Tips
 スレ本文の文字数を増やしたらカタログが見づらくて生きるのが辛い場合  
 himuro\_majika氏作のユーザースタイルシートも使ってみてください。  
 [futaba\_catalog\_mod(モダンバージョン)](https://userstyles.org/styles/114129/futaba-catalog-mod-modern)  
@@ -55,6 +60,8 @@ himuro\_majika氏作のユーザースタイルシートも使ってみてください。
 このUserscriptにはmd5変換に[js-md5](https://github.com/emn178/js-md5/)を使用しています。
 
 ## 更新履歴
+* v1.4.1 2018-07-10
+  - NGボタンを[KOSHIAN カタログマーカー](https://addons.mozilla.org/ja/firefox/addon/koshian-catalog-marker/)（[改](https://github.com/akoya-tomo/koshian_catalog_marker_kai/)）のレス増加数と排他的に表示するように変更
 * v1.4.0 2018-07-06
   - [futaba thread highlighter K](https://greasyfork.org/ja/scripts/36639-futaba-thread-highlighter-k/)がピックアップしたスレのNGボタンが動作するように修正
 * v1.3.0 2018-04-23
