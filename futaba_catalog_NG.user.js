@@ -608,7 +608,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 			css: {
 				color: "blue",
 				cursor: "pointer",
-				opacity: "0",
+				display: "none",
 				position: "relative",
 			},
 		});
@@ -644,10 +644,12 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 					makeNgButtonMenu($clone_ng_button);
 				});
 				$(this).hover(function () {
-					$clone_ng_button.css("opacity", "1");
+					$clone_ng_button.css("display", "inline");
+					$clone_ng_button.siblings(".KOSHIAN_response_increase").css("display", "none");
 				}, function () {
-					$clone_ng_button.css("opacity", "0");
+					$clone_ng_button.css("display", "none");
 					$clone_ng_button_menu.css("display", "none");
+					$clone_ng_button.siblings(".KOSHIAN_response_increase").css("display", "inline");
 				});
 
 				$clone_ng_button.append($clone_ng_button_menu);
@@ -1069,10 +1071,12 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 						makeNgButtonMenu($ng_button);
 					});
 					$(this).hover(function () {
-						$ng_button.css("opacity", "1");
+						$ng_button.css("display", "inline");
+						$ng_button.siblings(".KOSHIAN_response_increase").css("display", "none");
 					}, function () {
-						$ng_button.css("opacity", "0");
+						$ng_button.css("display", "none");
 						$ng_button_menu.css("display", "none");
+						$ng_button.siblings(".KOSHIAN_response_increase").css("display", "inline");
 					});
 				}
 			});
