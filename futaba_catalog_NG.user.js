@@ -1051,6 +1051,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 			}
 			$(this).removeClass("KOSHIAN_del");
 		});
+		hideNgThreads();
 	}
 
 	/*
