@@ -1042,6 +1042,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 										$(this).parent().parent("td").addClass("GM_fcn_ng_images");
 										$(this).parent().parent("td").css("display","none");
 										ngDate[imagesIndex] = getDate();
+										GM_setValue("_futaba_catalog_NG_date", ngDate);
 									} else if (hexHash.length == 32) {
 										okImages.unshift(imgNumber);
 									} else {
