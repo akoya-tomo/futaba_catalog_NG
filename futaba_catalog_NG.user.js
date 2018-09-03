@@ -15,6 +15,7 @@
 // @grant       GM_setValue
 // @grant       GM_addStyle
 // @license     MIT
+// @run-at      document-start
 // @icon        data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAAEnQAABJ0Ad5mH3gAAAAZdEVYdFNvZnR3YXJlAHBhaW50Lm5ldCA0LjAuMjHxIGmVAAABXElEQVQ4T8VSTUvDQBRcEcGL0H+QQ3c3KSVtmhRMe5aC4rX+Fb15F/PVUqFSqwcV8SxSPYknUcSDKCqICNZ/YBEv62xcS0CQ5iBOeMm+92beDrsh/w8WMIuFrEdD2kdc8ZAvacvapGoPIWs84IsxJ+J96I6yftYmKLywiInCekFUdirCbJsCzfNiUMwoLdECLQPe2TfH6lhCarDxK8HrKU5UlLfKwu7agvnsUOkJDehBaaMknE1nyIsjYM8ExBkMGSQbkiid0FU6D9uzcv1DHLEB9Wkt3kH3dBNDTpIEd9uVFvdA2o3XiR4cnfIVXojFScDSNAghnnu9qUuLD1jf5Vo5gTN4RETUo66i/w7msTmI3yH64D5fQGnsq5MCcHCNa71VaXpgwAXiUqXpgd1vEOkH5Fv5mt7Qj+WJG01jTZVHh9Ewuvhd3+S32qlOqfLoqO/Xx522M6HSvwQhn8ChorvE+0t7AAAAAElFTkSuQmCC
 // ==/UserScript==
 
@@ -25,9 +26,10 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 	/**
 	 *	設定
 	 */
-	var USE_NG_IMAGES = true;	// スレ画像のNGを有効にする
-	var MAX_NG_THREADS = 500;	// NGスレの最大保持数（板毎）
-	var MAX_OK_IMAGES = 500;	// 非NG画像名の最大保持数（板毎）
+	var USE_NG_IMAGES = true;				// スレ画像のNGを有効にする
+	var MAX_NG_THREADS = 500;				// NGスレの最大保持数（板毎）
+	var MAX_OK_IMAGES = 500;				// 非NG画像名の最大保持数（板毎）
+	var HIDE_CATALOG_BEFORE_LOAD = false;	// ページの読み込みが完了するまでカタログを隠す
 
 	var serverName = document.domain.match(/^[^.]+/);
 	var pathName = location.pathname.match(/[^/]+/);
@@ -35,7 +37,11 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 	var selectIndex = -1;
 	var imageList, commentList, dateList, images, ngDate, okImages;
 
-	init();
+	if (HIDE_CATALOG_BEFORE_LOAD) {
+		hideCatalog();
+	} else {
+		$(init);
+	}
 
 	function init(){
 		clearNgNumber();
@@ -596,12 +602,20 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 			mutations.forEach(function(mutation) {
 				var nodes = $(mutation.addedNodes);
 				if (nodes.attr("border") == "1") {
+					if (HIDE_CATALOG_BEFORE_LOAD) {
+						$("body").attr("__fcn_catalog_visibility", "hidden");
+						$("body > table[border] > tbody").css("opacity", "0");
+						$("#GM_fth_highlighted_threads").css("visibility", "hidden");
+					}
 					var timer = setInterval(function() {
 						var status = $("#akahuku_catalog_reload_status").text();
 						if (status === "" || status == "完了しました") {
 							clearInterval(timer);
 							makeNgButton();
 							hideNgThreads();
+							$("body").attr("__fcn_catalog_visibility", "visible");
+							$("body > table[border] > tbody").css("opacity", "1");
+							$("#GM_fth_highlighted_threads").css("visibility", "visible");
 						}
 					}, 10);
 				}
@@ -1116,6 +1130,45 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 				}
 			});
 		});
+	}
+
+	/**
+	 * カタログ非表示
+	 */
+	function hideCatalog() {
+		setCatalogHiddenStyle();
+		$(function() {
+			$("body").attr("__fcn_catalog_visibility", "hidden");
+			$("#GM_fth_highlighted_threads").css("visibility", "hidden");
+			init();
+		});
+		$(window).on("load", function() {
+			$("body").attr("__fcn_catalog_visibility", "visible");
+			setCatalogShownStyle();
+			$("#GM_fth_highlighted_threads").css("visibility", "visible");
+		});
+	}
+
+	/**
+	 * カタログ非表示スタイル設定
+	 */
+	function setCatalogHiddenStyle() {
+		var css =
+			"body > table[border] {" +
+			"  opacity: 0;" +
+			"}";
+		GM_addStyle(css);
+	}
+
+	/**
+	 * カタログ表示スタイル設定
+	 */
+	function setCatalogShownStyle() {
+		var css =
+			"body > table[border] {" +
+			"  opacity: 1;" +
+			"}";
+		GM_addStyle(css);
 	}
 
 	/**
