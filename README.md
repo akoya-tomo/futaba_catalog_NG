@@ -32,18 +32,22 @@ NGワードは全板共通と各板個別でそれぞれ設定できます。
 ## 設定
 機能の動作はスクリプト冒頭の大文字変数をエディタで編集すれば変更することができます。  
 
-* USE\_NG\_IMAGES :スレ画像のNG機能を有効化する（デフォルト：true）  
-  - NGリストに登録されたスレ画像を非表示にする機能を有効化します。この設定値をfalseにすると画像NG機能が無効化されます。  
-* MAX\_NG\_THREADS :NGスレの最大保持数（デフォルト：500）  
+* USE\_NG\_IMAGES : スレ画像のNG機能を有効にする（デフォルト：true）  
+  - NGリストに登録されたスレ画像を非表示にする機能を有効にします。この設定値を`false`にすると画像NG機能が無効となります。  
+* MAX\_NG\_THREADS : NGスレの最大保持数（デフォルト：500）  
   - 記憶可能なNGスレの最大数です。NGスレの記憶数が設定値を超えると古い順に破棄されます。  
-* MAX\_OK\_IMAGES :非NG画像名の最大保持数（板毎）（デフォルト：500）  
+* MAX\_OK\_IMAGES : 非NG画像名の最大保持数（板毎）（デフォルト：500）  
   - 記憶可能な非NG画像名の板毎の最大数です。画像NGの負荷を軽減するために、NGリストにマッチしなかったスレ画像名を記憶しています。この画像名の記憶数が設定値を超えると古い順に破棄されます。  
+* HIDE\_CATALOG\_BEFORE\_LOAD : ページ読み込みが完了するまでカタログを隠す（デフォルト：false）  
+  - ページの読込が完了するまでカタログを非表示にします。リロードしたときにNGにしたスレが一瞬表示されるのを避けたいときは`true`に設定して、Tampermonkeyのダッシュボードからfutaba catalog NGの**優先順序を1**に設定してください。  
+  ![スクリーンショット](images/screenshot05.png)  
+  画像も含めたページの読み込みが全て完了するまではカタログが表示されませんので、スレ表示数を増やしている場合は特にご注意ください。  
 
 ## 注意事項
-* [futaba thread highlighter K](https://greasyfork.org/ja/scripts/36639-futaba-thread-highlighter-k/)と併用する場合はfutaba thread highlighter K **rev6以上**をインストールして、Tampermonkeyのダッシュボードからfutaba catalog NGの**優先順序が先**になるように設定してください。  
+* [futaba thread highlighter K](https://greasyfork.org/ja/scripts/36639-futaba-thread-highlighter-k/)と併用する場合はfutaba thread highlighter K **rev16以上**をインストールして、Tampermonkeyのダッシュボードからfutaba catalog NGの**優先順序が先**になるように設定してください。  
   ![スクリーンショット](images/screenshot04.png)  
-  ピックアップしたスレのNGボタンを動作させたいときはfutaba thread highlighter K **rev13以上**をインストールしてください。
-* 画像NGの判定負荷が重いため、環境によってはリロード後のカタログ表示完了が非常に遅くなる可能性があります。その場合はUSE\_NG\_IMAGESをfalseに設定して画像NG機能を無効にしてください。
+* 画像NGの判定負荷が重いため、環境によってはリロード後のカタログ表示完了が非常に遅くなる可能性があります。その場合はUSE\_NG\_IMAGESを`false`に設定して画像NG機能を無効にしてください。
+* 環境によっては「ページ読み込みが完了するまでカタログを隠す」を有効にしてもリロード時にカタログが一瞬表示されることがあります。
 
 ## 既知の問題
 * Tampermonkeyで優先順序を先に設定していても他のUserscriptの後で実行されることがある。
@@ -54,12 +58,16 @@ NGワードは全板共通と各板個別でそれぞれ設定できます。
 himuro\_majika氏作のユーザースタイルシートも使ってみてください。  
 [futaba\_catalog\_mod(モダンバージョン)](https://userstyles.org/styles/114129/futaba-catalog-mod-modern)  
 または  
-[futaba\_catalog\_mod(クラシックバージョン)※ねないこユーザー向け](https://userstyles.org/styles/114130/futaba-catalog-mod-classic)
+[futaba\_catalog\_mod(クラシックバージョン)](https://userstyles.org/styles/114130/futaba-catalog-mod-classic)
 
 ## ライセンス
 このUserscriptにはmd5変換に[js-md5](https://github.com/emn178/js-md5/)を使用しています。
 
 ## 更新履歴
+* v1.5.0 2018-09-04
+  - ページのロードが完了するまでカタログを隠すオプションを追加
+  - NG画像の最終検出日が更新されないことがある不具合を修正
+  - コード整理
 * v1.4.1 2018-07-10
   - NGボタンを[KOSHIAN カタログマーカー](https://addons.mozilla.org/ja/firefox/addon/koshian-catalog-marker/)（[改](https://github.com/akoya-tomo/koshian_catalog_marker_kai/)）のレス増加数と排他的に表示するように変更
 * v1.4.0 2018-07-06
