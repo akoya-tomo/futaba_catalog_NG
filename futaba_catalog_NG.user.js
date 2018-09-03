@@ -7,7 +7,7 @@
 // @include     https://*.2chan.net/*/futaba.php?mode=cat*
 // @include     http://*.2chan.net/*/futaba.htm
 // @include     https://*.2chan.net/*/futaba.htm
-// @version     1.4.1
+// @version     1.5.0
 // @require     http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js
 // @require     https://cdn.jsdelivr.net/npm/js-md5@0.7.3/src/md5.min.js
 // @grant       GM_registerMenuCommand
