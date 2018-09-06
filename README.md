@@ -39,12 +39,12 @@ NGワードは全板共通と各板個別でそれぞれ設定できます。
 * MAX\_OK\_IMAGES : 非NG画像名の最大保持数（板毎）（デフォルト：500）  
   - 記憶可能な非NG画像名の板毎の最大数です。画像NGの負荷を軽減するために、NGリストにマッチしなかったスレ画像名を記憶しています。この画像名の記憶数が設定値を超えると古い順に破棄されます。  
 * HIDE\_CATALOG\_BEFORE\_LOAD : ページ読み込みが完了するまでカタログを隠す（デフォルト：false）  
-  - ページの読込が完了するまでカタログを非表示にします。リロードしたときにNGにしたスレが一瞬表示されるのを避けたいときは`true`に設定して、Tampermonkeyのダッシュボードからfutaba catalog NGの**優先順序を1**に設定してください。  
+  - ページの読込が完了するまでカタログを非表示にします。リロードしたときにNGにしたスレが一瞬表示されるのを避けたいときは`true`に設定して、Tampermonkeyのダッシュボードからfutaba catalog NGの**実行順を1**に設定してください。  
   ![スクリーンショット](images/screenshot05.png)  
   画像も含めたページの読み込みが全て完了するまではカタログが表示されませんので、スレ表示数を増やしている場合は特にご注意ください。  
 
 ## 注意事項
-* [futaba thread highlighter K](https://greasyfork.org/ja/scripts/36639-futaba-thread-highlighter-k/)と併用する場合はfutaba thread highlighter K **rev16以上**をインストールして、Tampermonkeyのダッシュボードからfutaba catalog NGの**優先順序が先**になるように設定してください。  
+* [futaba thread highlighter K](https://greasyfork.org/ja/scripts/36639-futaba-thread-highlighter-k/)と併用する場合はfutaba thread highlighter K **rev17以上**をインストールして、Tampermonkeyのダッシュボードからfutaba catalog NGの**実行順が先**になるように設定してください。  
   ![スクリーンショット](images/screenshot04.png)  
 * 画像NGの判定負荷が重いため、環境によってはリロード後のカタログ表示完了が非常に遅くなる可能性があります。その場合はUSE\_NG\_IMAGESを`false`に設定して画像NG機能を無効にしてください。
 * 環境によっては「ページ読み込みが完了するまでカタログを隠す」を有効にしてもリロード時にカタログが一瞬表示されることがあります。
