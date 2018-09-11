@@ -7,7 +7,7 @@
 // @include     https://*.2chan.net/*/futaba.php?mode=cat*
 // @include     http://*.2chan.net/*/futaba.htm
 // @include     https://*.2chan.net/*/futaba.htm
-// @version     1.5.0
+// @version     1.5.1
 // @require     http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js
 // @require     https://cdn.jsdelivr.net/npm/js-md5@0.7.3/src/md5.min.js
 // @grant       GM_registerMenuCommand
@@ -596,32 +596,38 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 	 * 赤福の動的リロードの状態を取得
 	 */
 	function checkAkahukuReload() {
-		var target = $("html > body").get(0);
-		var config = { childList: true };
-		var observer = new MutationObserver(function(mutations) {
-			mutations.forEach(function(mutation) {
-				var nodes = $(mutation.addedNodes);
-				if (nodes.attr("border") == "1") {
-					if (HIDE_CATALOG_BEFORE_LOAD) {
+		var target = $("#akahuku_catalog_reload_status").get(0);
+		if (target) {
+			checkAkahukuReloadStatus();
+		} else {
+			document.addEventListener("AkahukuContentApplied", () => {
+				target = $("#akahuku_catalog_reload_status").get(0);
+				if (target) checkAkahukuReloadStatus();
+			});
+		}
+
+		var status = "";
+		function checkAkahukuReloadStatus() {
+			var config = { childList: true };
+			var observer = new MutationObserver(function(mutations) {
+				mutations.forEach(function(mutation) {	// eslint-disable-line no-unused-vars
+					if (target.textContent == status) return;
+					status = target.textContent;
+					if (status == "完了しました" || status == "アンドゥしました" || status == "リドゥしました") {
+						makeNgButton();
+						hideNgThreads();
+						$("body").attr("__fcn_catalog_visibility", "visible");
+						$("body > table[border] > tbody").css("opacity", "1");
+						$("#GM_fth_highlighted_threads").css("visibility", "visible");
+					} else if (HIDE_CATALOG_BEFORE_LOAD && status !== "") {
 						$("body").attr("__fcn_catalog_visibility", "hidden");
 						$("body > table[border] > tbody").css("opacity", "0");
 						$("#GM_fth_highlighted_threads").css("visibility", "hidden");
 					}
-					var timer = setInterval(function() {
-						var status = $("#akahuku_catalog_reload_status").text();
-						if (status === "" || status == "完了しました") {
-							clearInterval(timer);
-							makeNgButton();
-							hideNgThreads();
-							$("body").attr("__fcn_catalog_visibility", "visible");
-							$("body > table[border] > tbody").css("opacity", "1");
-							$("#GM_fth_highlighted_threads").css("visibility", "visible");
-						}
-					}, 10);
-				}
+				});
 			});
-		});
-		observer.observe(target, config);
+			observer.observe(target, config);
+		}
 	}
 
 	/**
