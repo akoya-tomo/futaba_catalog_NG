@@ -7,7 +7,7 @@
 // @include     https://*.2chan.net/*/futaba.php?mode=cat*
 // @include     http://*.2chan.net/*/futaba.htm
 // @include     https://*.2chan.net/*/futaba.htm
-// @version     1.5.1
+// @version     1.5.2
 // @require     http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js
 // @require     https://cdn.jsdelivr.net/npm/js-md5@0.7.3/src/md5.min.js
 // @grant       GM_registerMenuCommand
@@ -831,6 +831,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 		 * @return {string} 追加後のNGワード
 		 */
 		function addNgWord(ngWords, newNgWord) {
+			newNgWord = newNgWord.replace(/[\\^$.*+?()[\]{}|]/g, "\\$&");
 			if (newNgWord && ngWords) {
 				ngWords = newNgWord + "|" + ngWords;
 			} else {
