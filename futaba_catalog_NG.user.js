@@ -831,6 +831,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 		 * @return {string} 追加後のNGワード
 		 */
 		function addNgWord(ngWords, newNgWord) {
+			newNgWord = newNgWord.replace(/[\\^$.*+?()[\]{}|]/g, "\\$&");
 			if (newNgWord && ngWords) {
 				ngWords = newNgWord + "|" + ngWords;
 			} else {
