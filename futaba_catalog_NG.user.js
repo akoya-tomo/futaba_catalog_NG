@@ -5,9 +5,7 @@
 // @author      akoya_tomo
 // @include     http://*.2chan.net/*/futaba.php?mode=cat*
 // @include     https://*.2chan.net/*/futaba.php?mode=cat*
-// @include     http://*.2chan.net/*/futaba.htm
-// @include     https://*.2chan.net/*/futaba.htm
-// @version     1.5.2
+// @version     1.6.0
 // @require     http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js
 // @require     https://cdn.jsdelivr.net/npm/js-md5@0.7.3/src/md5.min.js
 // @grant       GM_registerMenuCommand
@@ -30,12 +28,16 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 	var MAX_NG_THREADS = 500;				// NGスレの最大保持数（板毎）
 	var MAX_OK_IMAGES = 500;				// 非NG画像名の最大保持数（板毎）
 	var HIDE_CATALOG_BEFORE_LOAD = false;	// ページの読み込みが完了するまでカタログを隠す
+	var USE_NG_THREAD_CLEAR_BUTTON = false;	// スレNGのクリアボタンを使用する
 
 	var serverName = document.domain.match(/^[^.]+/);
 	var pathName = location.pathname.match(/[^/]+/);
 	var serverFullPath = serverName + "_" + pathName;
 	var selectIndex = -1;
 	var imageList, commentList, dateList, images, ngDate, okImages;
+	var item_md5_text = "　md5";
+	var item_comment_text = "　コメント";
+	var item_date_text = "　最終検出日";
 
 	if (HIDE_CATALOG_BEFORE_LOAD) {
 		hideCatalog();
@@ -45,13 +47,13 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 
 	function init(){
 		clearNgNumber();
-		if (!isCatalog()) return;
 		console.log("futaba_catalog_NG commmon: " +	// eslint-disable-line no-console
 			GM_getValue("_futaba_catalog_NG_words", ""));
 		console.log("futaba_catalog_NG indivisual: " +	// eslint-disable-line no-console
 			getCurrentIndivValue("NG_words_indiv", ""));
 		GM_registerMenuCommand("ＮＧワード編集", editNgWords);
 		if (USE_NG_IMAGES) GM_registerMenuCommand("ＮＧリスト編集", editNgList);
+		GM_registerMenuCommand("スレＮＧクリア", confirmClearNgNumber);
 		setStyle();
 		makeNgMenubar();
 		makeConfigUI();
@@ -65,19 +67,19 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 
 	/**
 	 * NG番号クリア
+	 * @param {boolean} forced 強制的にクリアするか
 	 */
-	function clearNgNumber(){
-		if (window.name && isCatalog()) return;
+	function clearNgNumber(forced) {
+		if (!forced && window.name) return;
 		window.name = location.href;
-		setIndivValue("NG_numbers_indiv", []);
-	}
 
-	/**
-	 * カタログ確認
-	 * @return {boolean} 開いているページがカタログか 
-	 */
-	function isCatalog(){
-		return location.search.match(/mode=cat/) !== null;
+		var ngNumberObj = getIndivObj("NG_numbers_indiv");
+		if (ngNumberObj === ""){
+			ngNumberObj = {};
+		}
+		ngNumberObj[serverFullPath] = [];
+		var jsonString = JSON.stringify(ngNumberObj);
+		GM_setValue("NG_numbers_indiv", jsonString);
 	}
 
 	/**
@@ -153,18 +155,44 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 		}
 		$("html, body").css("overflow", "hidden");
 
-		refreshNgList();
+		refreshNgList(true);
+		resetNgListItemText();
 		var $ngListContainer = $("#GM_fcn_ng_list_container");
 		$ngListContainer.fadeIn(100);
 	}
 
 	/**
-	 * NGリスト更新
+	 * NGリスト項目名リセット
 	 */
-	function refreshNgList() {
-		imageList = GM_getValue("_futaba_catalog_NG_images", []);
-		commentList = GM_getValue("_futaba_catalog_NG_comment", []);
-		dateList = GM_getValue("_futaba_catalog_NG_date", []);
+	function resetNgListItemText() {
+		$("#GM_fcn_ng_list_item_md5").text(item_md5_text + "　");
+		$("#GM_fcn_ng_list_item_comment").text(item_comment_text + "　");
+		$("#GM_fcn_ng_list_item_date").text(item_date_text + "　");
+	}
+
+	/**
+	 * スレNGクリア確認
+	 */
+	function confirmClearNgNumber() {
+		if (confirm("この板のスレNGを全てクリアします。\nよろしいですか？")) {
+			$(".GM_fcn_ng_numbers").each(function(){
+				$(this).removeClass("GM_fcn_ng_numbers");
+				$(this).css("display","");
+			});
+			clearNgNumber(true);
+		}
+	}
+
+	/**
+	 * NGリスト表示更新
+	 * @param {boolean} loadNgList NGリストデータを読み込みするか
+	 */
+	function refreshNgList(loadNgList) {
+		if (loadNgList) {
+			imageList = GM_getValue("_futaba_catalog_NG_images", []);
+			commentList = GM_getValue("_futaba_catalog_NG_comment", []);
+			dateList = GM_getValue("_futaba_catalog_NG_date", []);
+		}
 		var listCount = imageList.length;
 		$(".GM_fcn_ng_list_row").remove();
 
@@ -245,6 +273,38 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 			$(this).css({ backgroundColor:"#F0E0D6" });
 		});
 		$ngWordsHeader.append($ngWordsButton);
+
+		if (USE_NG_THREAD_CLEAR_BUTTON) {
+			// スレNG
+			var $ngThreadHeader = $("<span>", {
+				id: "GM_fcn_ng_thread_header",
+				text: "スレＮＧ",
+				css: {
+					"background-color": "#F0E0D6",
+					fontWeight: "bolder",
+					"padding-right": "16px"
+				}
+			});
+			$ngWordsHeader.after($ngThreadHeader);
+			// スレNGクリアボタン
+			var $ngThreadClearButton = $("<span>", {
+				id: "GM_fcn_ng_thread_clear_button",
+				text: "[クリア]",
+				css: {
+					cursor: "pointer",
+				},
+				click: function() {
+					confirmClearNgNumber();
+				}
+			});
+			$ngThreadClearButton.hover(function () {
+				$(this).css({ backgroundColor:"#EEAA88" });
+			}, function () {
+				$(this).css({ backgroundColor:"#F0E0D6" });
+			});
+			$ngThreadHeader.append($ngThreadClearButton);
+		}
+
 		if (USE_NG_IMAGES) {
 			// NGリスト
 			var $ngListHeader = $("<span>", {
@@ -419,8 +479,9 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 			GM_setValue("OK_images_indiv", "");
 			return;
 		}
-		imageList = GM_getValue("_futaba_catalog_NG_images", "");
-		commentList = GM_getValue("_futaba_catalog_NG_comment", "");
+		imageList = GM_getValue("_futaba_catalog_NG_images", []);
+		commentList = GM_getValue("_futaba_catalog_NG_comment", []);
+		dateList = GM_getValue("_futaba_catalog_NG_date", []);
 
 		var $ngListContainer = $("<div>", {
 			id: "GM_fcn_ng_list_container",
@@ -467,7 +528,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 					)
 				),
 				$("<div>").css("margin-top", "1em").append(
-					$("<div>").append(
+					$("<div>").css("margin-left", "475px").append(
 						$("<span>").append(
 							$("<input>", {
 								class: "GM_fcn_ng_list_button",
@@ -489,6 +550,26 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 									deleteSelectedRow();
 								},
 							})
+						),
+						$("<span>").css("margin", "0 0 0 1em").append(
+							$("<input>", {
+								class: "GM_fcn_ng_list_button",
+								type: "button",
+								val: "上",
+								click: function(){
+									swapRow(selectIndex - 1);
+								},
+							})
+						),
+						$("<span>").append(
+							$("<input>", {
+								class: "GM_fcn_ng_list_button",
+								type: "button",
+								val: "下",
+								click: function(){
+									swapRow(selectIndex);
+								},
+							})
 						)
 					)
 				)
@@ -498,27 +579,59 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 					id: "GM_fcn_ng_list_pane",
 				}).append(
 					$("<div>", {
-						id: "GM_fcn_ng_list_item"
+						id: "GM_fcn_ng_list_item_row"
 					}).append(
 						$("<div>", {
+							id: "GM_fcn_ng_list_item_md5",
 							class: "GM_fcn_ng_list_item",
-							text: "md5",
-							width: "358px",
+							text: item_md5_text + "　",
+							click: function(){
+								if ($(this).text() == item_md5_text + "▲") {
+									resetNgListItemText();
+									$(this).text(item_md5_text + "▼");
+									sortNgList(0, -1);
+								} else {
+									resetNgListItemText();
+									$(this).text(item_md5_text + "▲");
+									sortNgList(0);
+								}
+							},
 						}),
 						$("<div>", {
+							id: "GM_fcn_ng_list_item_comment",
 							class: "GM_fcn_ng_list_item",
-							text: "コメント",
-							width: "258px",
+							text: item_comment_text + "　",
+							click: function(){
+								if ($(this).text() == item_comment_text + "▲") {
+									resetNgListItemText();
+									$(this).text(item_comment_text + "▼");
+									sortNgList(1, -1);
+								} else {
+									resetNgListItemText();
+									$(this).text(item_comment_text + "▲");
+									sortNgList(1);
+								}
+							},
 						}),
 						$("<div>", {
+							id: "GM_fcn_ng_list_item_date",
 							class: "GM_fcn_ng_list_item",
-							text: "最終検出日",
-							width: "98px",
+							text: item_date_text + "　",
+							click: function(){
+								if ($(this).text() == item_date_text + "▲") {
+									resetNgListItemText();
+									$(this).text(item_date_text + "▼");
+									sortNgList(2, -1);
+								} else {
+									resetNgListItemText();
+									$(this).text(item_date_text + "▲");
+									sortNgList(2);
+								}
+							},
 						}),
 						$("<div>", {
+							id: "GM_fcn_ng_list_item_scrl",
 							class: "GM_fcn_ng_list_item",
-							text: "　",
-							width: "16px",
 						})
 					),
 					$("<div>", {
@@ -530,9 +643,31 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 				}).append(
 					$("<span>").css("margin", "0 1em").append(
 						$("<input>", {
-							class: "GM_fcn_close_button",
+							class: "GM_fcn_config_button",
 							type: "button",
-							val: "閉じる",
+							val: "更新",
+							click: function(){
+								GM_setValue("_futaba_catalog_NG_images", imageList);
+								GM_setValue("_futaba_catalog_NG_comment", commentList);
+								GM_setValue("_futaba_catalog_NG_date", dateList);
+								$(".GM_fcn_ng_list_row").css("background-color", "#ffffff");
+								$("#GM_fcn_md5").val("");
+								$("#GM_fcn_comment").val("");
+								$("#GM_fcn_ng_list_content").scrollTop(0);
+								$("#GM_fcn_catalog_space").remove();
+								$("html, body").css("overflow", "");
+								$ngListContainer.fadeOut(100);
+								$(".GM_fcn_ng_images").css("display", "");
+								$(".GM_fcn_ng_images").removeClass("GM_fcn_ng_images");
+								hideNgThreads();
+							},
+						})
+					),
+					$("<span>").css("margin", "0 1em").append(
+						$("<input>", {
+							class: "GM_fcn_config_button",
+							type: "button",
+							val: "キャンセル",
 							click: function(){
 								$(".GM_fcn_ng_list_row").css("background-color", "#ffffff");
 								$("#GM_fcn_md5").val("");
@@ -541,9 +676,6 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 								$("#GM_fcn_catalog_space").remove();
 								$("html, body").css("overflow", "");
 								$ngListContainer.fadeOut(100);
-								$(".GM_fcn_ng_images").css("display","");
-								$(".GM_fcn_ng_images").removeClass("GM_fcn_ng_images");
-								hideNgThreads();
 							},
 						})
 					)
@@ -567,7 +699,6 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 		function editSelectedRow() {
 			if (selectIndex > -1) {
 				commentList[selectIndex] = $("#GM_fcn_comment").val();
-				GM_setValue("_futaba_catalog_NG_comment", commentList);
 				$(".GM_fcn_ng_list_comment").eq(selectIndex).text(commentList[selectIndex]);
 			}
 		}
@@ -585,9 +716,54 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 			$("#GM_fcn_md5").val("");
 			$("#GM_fcn_comment").val("");
 			selectIndex = -1;
-			GM_setValue("_futaba_catalog_NG_images", imageList);
-			GM_setValue("_futaba_catalog_NG_comment", commentList);
-			GM_setValue("_futaba_catalog_NG_date", dateList);
+			refreshNgList();
+		}
+
+		/**
+		 * NGリスト行入替
+		 * indexの行と一つ後の行を入れ替える。
+		 * @param {number} index 入替する行番号（先頭行が0）
+		 */
+		function swapRow(index) {
+			if (index <= -1 || index + 1 >= imageList.length) return;
+
+			imageList.splice(index, 2, imageList[index + 1], imageList[index]);
+			commentList.splice(index, 2, commentList[index + 1], commentList[index]);
+			dateList.splice(index, 2, dateList[index + 1], dateList[index]);
+			selectIndex = selectIndex == index ? index + 1 : index;
+			refreshNgList();
+			selectNgList();
+			resetNgListItemText();
+		}
+
+		/**
+		 * NGリストソート
+		 * @param {number} index ソート対象の項目（md5:0, コメント:1, 最終検出日:2）
+		 * @param {number} order ソート方向（昇順:1, 降順:-1）未指定は昇順
+		 */
+		function sortNgList(index, order = 1) {
+			var array = new Array();
+			for (var i = 0; i < imageList.length; i++) {
+				array[i] = new Array();
+				array[i][0] = imageList[i];
+				array[i][1] = commentList[i];
+				array[i][2] = dateList[i];
+			}
+			array.sort(function(a, b){
+				if (a[index] > b[index]) return order;
+				if (a[index] < b[index]) return -order;
+				return 0;
+			});
+			for (var j = 0; j < imageList.length; j++) {
+				imageList[j] = array[j][0];
+				commentList[j] = array[j][1];
+				dateList[j] = array[j][2];
+			}
+
+			$(".GM_fcn_ng_list_row").css("background-color", "#ffffff");
+			$("#GM_fcn_md5").val("");
+			$("#GM_fcn_comment").val("");
+			selectIndex = -1;
 			refreshNgList();
 		}
 	}
@@ -1225,40 +1401,71 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 			"}" +
 			// NGリスト枠
 			"#GM_fcn_ng_list_pane {" +
-			"  width: 738px;" +
+			"  width: 788px;" +
 			"  height: 308px;" +
-			"  margin-left: 105px;" +
+			"  margin-left: 81px;" +
 			"  border-width: 1px;" +
 			"  border-style: solid;" +
 			"  background-color: #eee;" +
 			"}" +
+			// NGリスト項目行
+			"#GM_fcn_ng_list_item_row {" +
+			"  display: inline-block;" +
+			"  height: 22px;" +
+			"  overflow: hidden;" +
+			"  white-space: nowrap;" +
+			"}" +
+			// NGリスト項目md5
+			"#GM_fcn_ng_list_item_md5 {" +
+			"  width: 360px;" +
+			"}" +
+			// NGリスト項目コメント
+			"#GM_fcn_ng_list_item_comment {" +
+			"  width: 260px;" +
+			"}" +
+			// NGリスト項目最終検出日
+			"#GM_fcn_ng_list_item_date {" +
+			"  width: 150px;" +
+			"}" +
+			// NGリスト項目スクロールバースペース
+			"#GM_fcn_ng_list_item_scrl {" +
+			"  width: 18px;" +
+			"}" +
 			// NGリスト項目
 			".GM_fcn_ng_list_item {" +
 			"  display: inline-block;" +
-			"  height: 20px;" +
+			"  height: 22px;" +
 			"  border-width: 1px;" +
 			"  border-style: solid;" +
+			"  box-sizing: border-box;" +
+			"  overflow: hidden;" +
+			"  white-space: nowrap;" +
+			"  text-overflow: clip;" +
+			"  cursor: pointer;" +
 			"}" +
 			// NGリストコンテンツ
 			"#GM_fcn_ng_list_content {" +
-			"  width: 738px;" +
+			"  width: 788px;" +
 			"  height: 286px;" +
 			"  overflow-x: hidden;" +
 			"  overflow-y: auto;" +
 			"}" +
 			// NGリスト行
 			".GM_fcn_ng_list_row {" +
-			"  width: 738px;" +
+			"  width: 788px;" +
 			"  height: 22px;" +
 			"  cursor: pointer;" +
+			"  overflow: hidden;" +
+			"  white-space: nowrap;" +
 			"}" +
 			// NGリスト画像
 			".GM_fcn_ng_list_image {" +
 			"  display: inline-block;" +
-			"  width: 358px;" +
-			"  height: 20px;" +
+			"  width: 360px;" +
+			"  height: 22px;" +
 			"  border-width: 1px;" +
 			"  border-style: solid;" +
+			"  box-sizing: border-box;" +
 			"  overflow: hidden;" +
 			"  white-space: nowrap;" +
 			"  text-overflow: ellipsis;" +
@@ -1266,11 +1473,12 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 			// NGリストコメント
 			".GM_fcn_ng_list_comment {" +
 			"  display: inline-block;" +
-			"  width: 253px;" +
-			"  height: 20px;" +
+			"  width: 260px;" +
+			"  height: 22px;" +
 			"  padding-left: 5px;" +
 			"  border-width: 1px;" +
 			"  border-style: solid;" +
+			"  box-sizing: border-box;" +
 			"  overflow: hidden;" +
 			"  white-space: nowrap;" +
 			"  text-overflow: ellipsis;" +
@@ -1278,10 +1486,11 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 			// NGリスト日時
 			".GM_fcn_ng_list_date {" +
 			"  display: inline-block;" +
-			"  width: 98px;" +
-			"  height: 20px;" +
+			"  width: 150px;" +
+			"  height: 22px;" +
 			"  border-width: 1px;" +
 			"  border-style: solid;" +
+			"  box-sizing: border-box;" +
 			"  overflow: hidden;" +
 			"  white-space: nowrap;" +
 			"  text-overflow: ellipsis;" +
@@ -1289,10 +1498,13 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 			// NGリストスクロールバー
 			".GM_fcn_ng_list_scrl {" +
 			"  display: inline-block;" +
-			"  min-width: 16px;" +
-			"  min-height: 22px;" +
+			"  width: 18px;" +
+			"  height: 22px;" +
 			"  border-width: 0px 1px;" +
 			"  border-style: solid;" +
+			"  box-sizing: border-box;" +
+			"  overflow: hidden;" +
+			"  white-space: nowrap;" +
 			"}" +
 			// カタログ下スペース
 			"#GM_fcn_catalog_space {" +
