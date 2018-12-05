@@ -35,6 +35,9 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 	var serverFullPath = serverName + "_" + pathName;
 	var selectIndex = -1;
 	var imageList, commentList, dateList, images, ngDate, okImages;
+	var item_md5_text = "　md5";
+	var item_comment_text = "　コメント";
+	var item_date_text = "　最終検出日";
 
 	if (HIDE_CATALOG_BEFORE_LOAD) {
 		hideCatalog();
@@ -153,9 +156,18 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 		$("html, body").css("overflow", "hidden");
 
 		refreshNgList(true);
-
+		resetNgListItemText();
 		var $ngListContainer = $("#GM_fcn_ng_list_container");
 		$ngListContainer.fadeIn(100);
+	}
+
+	/**
+	 * NGリスト項目名リセット
+	 */
+	function resetNgListItemText() {
+		$("#GM_fcn_ng_list_item_md5").text(item_md5_text + "　");
+		$("#GM_fcn_ng_list_item_comment").text(item_comment_text + "　");
+		$("#GM_fcn_ng_list_item_date").text(item_date_text + "　");
 	}
 
 	/**
@@ -572,17 +584,50 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 						$("<div>", {
 							id: "GM_fcn_ng_list_item_md5",
 							class: "GM_fcn_ng_list_item",
-							text: "md5",
+							text: item_md5_text + "　",
+							click: function(){
+								if ($(this).text() == item_md5_text + "▲") {
+									resetNgListItemText();
+									$(this).text(item_md5_text + "▼");
+									sortNgList(0, -1);
+								} else {
+									resetNgListItemText();
+									$(this).text(item_md5_text + "▲");
+									sortNgList(0);
+								}
+							},
 						}),
 						$("<div>", {
 							id: "GM_fcn_ng_list_item_comment",
 							class: "GM_fcn_ng_list_item",
-							text: "コメント",
+							text: item_comment_text + "　",
+							click: function(){
+								if ($(this).text() == item_comment_text + "▲") {
+									resetNgListItemText();
+									$(this).text(item_comment_text + "▼");
+									sortNgList(1, -1);
+								} else {
+									resetNgListItemText();
+									$(this).text(item_comment_text + "▲");
+									sortNgList(1);
+								}
+							},
 						}),
 						$("<div>", {
 							id: "GM_fcn_ng_list_item_date",
 							class: "GM_fcn_ng_list_item",
-							text: "最終検出日",
+							text: item_date_text + "　",
+							click: function(){
+								if ($(this).text() == item_date_text + "▲") {
+									resetNgListItemText();
+									$(this).text(item_date_text + "▼");
+									sortNgList(2, -1);
+								} else {
+									resetNgListItemText();
+									$(this).text(item_date_text + "▲");
+									sortNgList(2);
+								}
+							},
 						}),
 						$("<div>", {
 							id: "GM_fcn_ng_list_item_scrl",
@@ -691,6 +736,36 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 			resetNgListItemText();
 		}
 
+		/**
+		 * NGリストソート
+		 * @param {number} index ソート対象の項目（md5:0, コメント:1, 最終検出日:2）
+		 * @param {number} order ソート方向（昇順:1, 降順:-1）未指定は昇順
+		 */
+		function sortNgList(index, order = 1) {
+			var array = new Array();
+			for (var i = 0; i < imageList.length; i++) {
+				array[i] = new Array();
+				array[i][0] = imageList[i];
+				array[i][1] = commentList[i];
+				array[i][2] = dateList[i];
+			}
+			array.sort(function(a, b){
+				if (a[index] > b[index]) return order;
+				if (a[index] < b[index]) return -order;
+				return 0;
+			});
+			for (var j = 0; j < imageList.length; j++) {
+				imageList[j] = array[j][0];
+				commentList[j] = array[j][1];
+				dateList[j] = array[j][2];
+			}
+
+			$(".GM_fcn_ng_list_row").css("background-color", "#ffffff");
+			$("#GM_fcn_md5").val("");
+			$("#GM_fcn_comment").val("");
+			selectIndex = -1;
+			refreshNgList();
+		}
 	}
 
 	/**
@@ -1366,6 +1441,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 			"  overflow: hidden;" +
 			"  white-space: nowrap;" +
 			"  text-overflow: clip;" +
+			"  cursor: pointer;" +
 			"}" +
 			// NGリストコンテンツ
 			"#GM_fcn_ng_list_content {" +
