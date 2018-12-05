@@ -5,7 +5,7 @@
 // @author      akoya_tomo
 // @include     http://*.2chan.net/*/futaba.php?mode=cat*
 // @include     https://*.2chan.net/*/futaba.php?mode=cat*
-// @version     1.6.0
+// @version     1.6.1
 // @require     http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js
 // @require     https://cdn.jsdelivr.net/npm/js-md5@0.7.3/src/md5.min.js
 // @grant       GM_registerMenuCommand
@@ -731,6 +731,15 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 			commentList.splice(index, 2, commentList[index + 1], commentList[index]);
 			dateList.splice(index, 2, dateList[index + 1], dateList[index]);
 			selectIndex = selectIndex == index ? index + 1 : index;
+
+			var rowHeight = 22;	// NGリストの1行当たりの高さ(px)
+			var listLines = 13;	// NGリストの表示行数
+			var selectPos = selectIndex * rowHeight;
+			var scrollTop = $("#GM_fcn_ng_list_content").scrollTop();
+			var scrollBottom = scrollTop + (rowHeight * (listLines - 1));
+			if (selectPos < scrollTop) $("#GM_fcn_ng_list_content").scrollTop(selectPos);
+			if (selectPos > scrollBottom) $("#GM_fcn_ng_list_content").scrollTop(selectPos - (rowHeight * (listLines - 1)));
+
 			refreshNgList();
 			selectNgList();
 			resetNgListItemText();
