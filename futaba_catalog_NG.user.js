@@ -28,6 +28,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 	var MAX_NG_THREADS = 500;				// NGスレの最大保持数（板毎）
 	var MAX_OK_IMAGES = 500;				// 非NG画像名の最大保持数（板毎）
 	var HIDE_CATALOG_BEFORE_LOAD = false;	// ページの読み込みが完了するまでカタログを隠す
+	var USE_NG_THREAD_CLEAR_BUTTON = false;	// スレNGのクリアボタンを使用する
 
 	var serverName = document.domain.match(/^[^.]+/);
 	var pathName = location.pathname.match(/[^/]+/);
@@ -49,6 +50,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 			getCurrentIndivValue("NG_words_indiv", ""));
 		GM_registerMenuCommand("ＮＧワード編集", editNgWords);
 		if (USE_NG_IMAGES) GM_registerMenuCommand("ＮＧリスト編集", editNgList);
+		GM_registerMenuCommand("スレＮＧクリア", confirmClearNgNumber);
 		setStyle();
 		makeNgMenubar();
 		makeConfigUI();
@@ -62,9 +64,10 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 
 	/**
 	 * NG番号クリア
+	 * @param {boolern} forced 強制的にクリアするか
 	 */
-	function clearNgNumber(){
-		if (window.name) return;
+	function clearNgNumber(forced) {
+		if (!forced && window.name) return;
 		window.name = location.href;
 		setIndivValue("NG_numbers_indiv", []);
 	}
@@ -145,6 +148,19 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 		refreshNgList();
 		var $ngListContainer = $("#GM_fcn_ng_list_container");
 		$ngListContainer.fadeIn(100);
+	}
+
+	/**
+	 * スレNGクリア確認
+	 */
+	function confirmClearNgNumber() {
+		if (confirm("この板のスレNGを全てクリアします。\nよろしいですか？")) {
+			$(".GM_fcn_ng_numbers").each(function(){
+				$(this).removeClass("GM_fcn_ng_numbers");
+				$(this).css("display","");
+			});
+			clearNgNumber(true);
+		}
 	}
 
 	/**
@@ -234,6 +250,38 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 			$(this).css({ backgroundColor:"#F0E0D6" });
 		});
 		$ngWordsHeader.append($ngWordsButton);
+
+		if (USE_NG_THREAD_CLEAR_BUTTON) {
+			// スレNG
+			var $ngThreadHeader = $("<span>", {
+				id: "GM_fcn_ng_thread_header",
+				text: "スレＮＧ",
+				css: {
+					"background-color": "#F0E0D6",
+					fontWeight: "bolder",
+					"padding-right": "16px"
+				}
+			});
+			$ngWordsHeader.after($ngThreadHeader);
+			// スレNGクリアボタン
+			var $ngThreadClearButton = $("<span>", {
+				id: "GM_fcn_ng_thread_clear_button",
+				text: "[クリア]",
+				css: {
+					cursor: "pointer",
+				},
+				click: function() {
+					confirmClearNgNumber();
+				}
+			});
+			$ngThreadClearButton.hover(function () {
+				$(this).css({ backgroundColor:"#EEAA88" });
+			}, function () {
+				$(this).css({ backgroundColor:"#F0E0D6" });
+			});
+			$ngThreadHeader.append($ngThreadClearButton);
+		}
+
 		if (USE_NG_IMAGES) {
 			// NGリスト
 			var $ngListHeader = $("<span>", {
