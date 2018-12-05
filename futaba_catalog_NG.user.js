@@ -152,7 +152,8 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 		}
 		$("html, body").css("overflow", "hidden");
 
-		refreshNgList();
+		refreshNgList(true);
+
 		var $ngListContainer = $("#GM_fcn_ng_list_container");
 		$ngListContainer.fadeIn(100);
 	}
@@ -171,12 +172,15 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 	}
 
 	/**
-	 * NGリスト更新
+	 * NGリスト表示更新
+	 * @param {boolern} loadNgList NGリストデータを読み込みするか
 	 */
-	function refreshNgList() {
-		imageList = GM_getValue("_futaba_catalog_NG_images", []);
-		commentList = GM_getValue("_futaba_catalog_NG_comment", []);
-		dateList = GM_getValue("_futaba_catalog_NG_date", []);
+	function refreshNgList(loadNgList) {
+		if (loadNgList) {
+			imageList = GM_getValue("_futaba_catalog_NG_images", []);
+			commentList = GM_getValue("_futaba_catalog_NG_comment", []);
+			dateList = GM_getValue("_futaba_catalog_NG_date", []);
+		}
 		var listCount = imageList.length;
 		$(".GM_fcn_ng_list_row").remove();
 
@@ -463,8 +467,9 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 			GM_setValue("OK_images_indiv", "");
 			return;
 		}
-		imageList = GM_getValue("_futaba_catalog_NG_images", "");
-		commentList = GM_getValue("_futaba_catalog_NG_comment", "");
+		imageList = GM_getValue("_futaba_catalog_NG_images", []);
+		commentList = GM_getValue("_futaba_catalog_NG_comment", []);
+		dateList = GM_getValue("_futaba_catalog_NG_date", []);
 
 		var $ngListContainer = $("<div>", {
 			id: "GM_fcn_ng_list_container",
@@ -573,9 +578,31 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 				}).append(
 					$("<span>").css("margin", "0 1em").append(
 						$("<input>", {
-							class: "GM_fcn_close_button",
+							class: "GM_fcn_config_button",
 							type: "button",
-							val: "閉じる",
+							val: "更新",
+							click: function(){
+								GM_setValue("_futaba_catalog_NG_images", imageList);
+								GM_setValue("_futaba_catalog_NG_comment", commentList);
+								GM_setValue("_futaba_catalog_NG_date", dateList);
+								$(".GM_fcn_ng_list_row").css("background-color", "#ffffff");
+								$("#GM_fcn_md5").val("");
+								$("#GM_fcn_comment").val("");
+								$("#GM_fcn_ng_list_content").scrollTop(0);
+								$("#GM_fcn_catalog_space").remove();
+								$("html, body").css("overflow", "");
+								$ngListContainer.fadeOut(100);
+								$(".GM_fcn_ng_images").css("display", "");
+								$(".GM_fcn_ng_images").removeClass("GM_fcn_ng_images");
+								hideNgThreads();
+							},
+						})
+					),
+					$("<span>").css("margin", "0 1em").append(
+						$("<input>", {
+							class: "GM_fcn_config_button",
+							type: "button",
+							val: "キャンセル",
 							click: function(){
 								$(".GM_fcn_ng_list_row").css("background-color", "#ffffff");
 								$("#GM_fcn_md5").val("");
@@ -584,9 +611,6 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 								$("#GM_fcn_catalog_space").remove();
 								$("html, body").css("overflow", "");
 								$ngListContainer.fadeOut(100);
-								$(".GM_fcn_ng_images").css("display","");
-								$(".GM_fcn_ng_images").removeClass("GM_fcn_ng_images");
-								hideNgThreads();
 							},
 						})
 					)
@@ -610,7 +634,6 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 		function editSelectedRow() {
 			if (selectIndex > -1) {
 				commentList[selectIndex] = $("#GM_fcn_comment").val();
-				GM_setValue("_futaba_catalog_NG_comment", commentList);
 				$(".GM_fcn_ng_list_comment").eq(selectIndex).text(commentList[selectIndex]);
 			}
 		}
@@ -628,9 +651,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 			$("#GM_fcn_md5").val("");
 			$("#GM_fcn_comment").val("");
 			selectIndex = -1;
-			GM_setValue("_futaba_catalog_NG_images", imageList);
-			GM_setValue("_futaba_catalog_NG_comment", commentList);
-			GM_setValue("_futaba_catalog_NG_date", dateList);
+
 			refreshNgList();
 		}
 	}
