@@ -67,7 +67,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 
 	/**
 	 * NG番号クリア
-	 * @param {boolern} forced 強制的にクリアするか
+	 * @param {boolean} forced 強制的にクリアするか
 	 */
 	function clearNgNumber(forced) {
 		if (!forced && window.name) return;
@@ -185,7 +185,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 
 	/**
 	 * NGリスト表示更新
-	 * @param {boolern} loadNgList NGリストデータを読み込みするか
+	 * @param {boolean} loadNgList NGリストデータを読み込みするか
 	 */
 	function refreshNgList(loadNgList) {
 		if (loadNgList) {
