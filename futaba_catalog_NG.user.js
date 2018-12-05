@@ -69,7 +69,14 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 	function clearNgNumber(forced) {
 		if (!forced && window.name) return;
 		window.name = location.href;
-		setIndivValue("NG_numbers_indiv", []);
+
+		var ngNumberObj = getIndivObj("NG_numbers_indiv");
+		if (ngNumberObj === ""){
+			ngNumberObj = {};
+		}
+		ngNumberObj[serverFullPath] = [];
+		var jsonString = JSON.stringify(ngNumberObj);
+		GM_setValue("NG_numbers_indiv", jsonString);
 	}
 
 	/**
