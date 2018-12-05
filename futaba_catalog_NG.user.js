@@ -5,8 +5,6 @@
 // @author      akoya_tomo
 // @include     http://*.2chan.net/*/futaba.php?mode=cat*
 // @include     https://*.2chan.net/*/futaba.php?mode=cat*
-// @include     http://*.2chan.net/*/futaba.htm
-// @include     https://*.2chan.net/*/futaba.htm
 // @version     1.5.2
 // @require     http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js
 // @require     https://cdn.jsdelivr.net/npm/js-md5@0.7.3/src/md5.min.js
@@ -45,7 +43,6 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 
 	function init(){
 		clearNgNumber();
-		if (!isCatalog()) return;
 		console.log("futaba_catalog_NG commmon: " +	// eslint-disable-line no-console
 			GM_getValue("_futaba_catalog_NG_words", ""));
 		console.log("futaba_catalog_NG indivisual: " +	// eslint-disable-line no-console
@@ -67,17 +64,9 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 	 * NG番号クリア
 	 */
 	function clearNgNumber(){
-		if (window.name && isCatalog()) return;
+		if (window.name) return;
 		window.name = location.href;
 		setIndivValue("NG_numbers_indiv", []);
-	}
-
-	/**
-	 * カタログ確認
-	 * @return {boolean} 開いているページがカタログか 
-	 */
-	function isCatalog(){
-		return location.search.match(/mode=cat/) !== null;
 	}
 
 	/**
