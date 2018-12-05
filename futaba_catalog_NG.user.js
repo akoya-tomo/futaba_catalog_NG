@@ -516,7 +516,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 					)
 				),
 				$("<div>").css("margin-top", "1em").append(
-					$("<div>").append(
+					$("<div>").css("margin-left", "475px").append(
 						$("<span>").append(
 							$("<input>", {
 								class: "GM_fcn_ng_list_button",
@@ -536,6 +536,26 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 								width: "70px",
 								click: function(){
 									deleteSelectedRow();
+								},
+							})
+						),
+						$("<span>").css("margin", "0 0 0 1em").append(
+							$("<input>", {
+								class: "GM_fcn_ng_list_button",
+								type: "button",
+								val: "上",
+								click: function(){
+									swapRow(selectIndex - 1);
+								},
+							})
+						),
+						$("<span>").append(
+							$("<input>", {
+								class: "GM_fcn_ng_list_button",
+								type: "button",
+								val: "下",
+								click: function(){
+									swapRow(selectIndex);
 								},
 							})
 						)
@@ -651,9 +671,26 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 			$("#GM_fcn_md5").val("");
 			$("#GM_fcn_comment").val("");
 			selectIndex = -1;
-
 			refreshNgList();
 		}
+
+		/**
+		 * NGリスト行入替
+		 * indexの行と一つ後の行を入れ替える。
+		 * @param {number} index 入替する行番号（先頭行が0）
+		 */
+		function swapRow(index) {
+			if (index <= -1 || index + 1 >= imageList.length) return;
+
+			imageList.splice(index, 2, imageList[index + 1], imageList[index]);
+			commentList.splice(index, 2, commentList[index + 1], commentList[index]);
+			dateList.splice(index, 2, dateList[index + 1], dateList[index]);
+			selectIndex = selectIndex == index ? index + 1 : index;
+			refreshNgList();
+			selectNgList();
+			resetNgListItemText();
+		}
+
 	}
 
 	/**
