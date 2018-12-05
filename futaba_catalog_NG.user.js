@@ -542,27 +542,26 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 					id: "GM_fcn_ng_list_pane",
 				}).append(
 					$("<div>", {
-						id: "GM_fcn_ng_list_item"
+						id: "GM_fcn_ng_list_item_row"
 					}).append(
 						$("<div>", {
+							id: "GM_fcn_ng_list_item_md5",
 							class: "GM_fcn_ng_list_item",
 							text: "md5",
-							width: "358px",
 						}),
 						$("<div>", {
+							id: "GM_fcn_ng_list_item_comment",
 							class: "GM_fcn_ng_list_item",
 							text: "コメント",
-							width: "258px",
 						}),
 						$("<div>", {
+							id: "GM_fcn_ng_list_item_date",
 							class: "GM_fcn_ng_list_item",
 							text: "最終検出日",
-							width: "98px",
 						}),
 						$("<div>", {
+							id: "GM_fcn_ng_list_item_scrl",
 							class: "GM_fcn_ng_list_item",
-							text: "　",
-							width: "16px",
 						})
 					),
 					$("<div>", {
@@ -1269,40 +1268,70 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 			"}" +
 			// NGリスト枠
 			"#GM_fcn_ng_list_pane {" +
-			"  width: 738px;" +
+			"  width: 788px;" +
 			"  height: 308px;" +
-			"  margin-left: 105px;" +
+			"  margin-left: 81px;" +
 			"  border-width: 1px;" +
 			"  border-style: solid;" +
 			"  background-color: #eee;" +
 			"}" +
+			// NGリスト項目行
+			"#GM_fcn_ng_list_item_row {" +
+			"  display: inline-block;" +
+			"  height: 22px;" +
+			"  overflow: hidden;" +
+			"  white-space: nowrap;" +
+			"}" +
+			// NGリスト項目md5
+			"#GM_fcn_ng_list_item_md5 {" +
+			"  width: 360px;" +
+			"}" +
+			// NGリスト項目コメント
+			"#GM_fcn_ng_list_item_comment {" +
+			"  width: 260px;" +
+			"}" +
+			// NGリスト項目最終検出日
+			"#GM_fcn_ng_list_item_date {" +
+			"  width: 150px;" +
+			"}" +
+			// NGリスト項目スクロールバースペース
+			"#GM_fcn_ng_list_item_scrl {" +
+			"  width: 18px;" +
+			"}" +
 			// NGリスト項目
 			".GM_fcn_ng_list_item {" +
 			"  display: inline-block;" +
-			"  height: 20px;" +
+			"  height: 22px;" +
 			"  border-width: 1px;" +
 			"  border-style: solid;" +
+			"  box-sizing: border-box;" +
+			"  overflow: hidden;" +
+			"  white-space: nowrap;" +
+			"  text-overflow: clip;" +
 			"}" +
 			// NGリストコンテンツ
 			"#GM_fcn_ng_list_content {" +
-			"  width: 738px;" +
+			"  width: 788px;" +
 			"  height: 286px;" +
 			"  overflow-x: hidden;" +
 			"  overflow-y: auto;" +
 			"}" +
 			// NGリスト行
 			".GM_fcn_ng_list_row {" +
-			"  width: 738px;" +
+			"  width: 788px;" +
 			"  height: 22px;" +
 			"  cursor: pointer;" +
+			"  overflow: hidden;" +
+			"  white-space: nowrap;" +
 			"}" +
 			// NGリスト画像
 			".GM_fcn_ng_list_image {" +
 			"  display: inline-block;" +
-			"  width: 358px;" +
-			"  height: 20px;" +
+			"  width: 360px;" +
+			"  height: 22px;" +
 			"  border-width: 1px;" +
 			"  border-style: solid;" +
+			"  box-sizing: border-box;" +
 			"  overflow: hidden;" +
 			"  white-space: nowrap;" +
 			"  text-overflow: ellipsis;" +
@@ -1310,11 +1339,12 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 			// NGリストコメント
 			".GM_fcn_ng_list_comment {" +
 			"  display: inline-block;" +
-			"  width: 253px;" +
-			"  height: 20px;" +
+			"  width: 260px;" +
+			"  height: 22px;" +
 			"  padding-left: 5px;" +
 			"  border-width: 1px;" +
 			"  border-style: solid;" +
+			"  box-sizing: border-box;" +
 			"  overflow: hidden;" +
 			"  white-space: nowrap;" +
 			"  text-overflow: ellipsis;" +
@@ -1322,10 +1352,11 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 			// NGリスト日時
 			".GM_fcn_ng_list_date {" +
 			"  display: inline-block;" +
-			"  width: 98px;" +
-			"  height: 20px;" +
+			"  width: 150px;" +
+			"  height: 22px;" +
 			"  border-width: 1px;" +
 			"  border-style: solid;" +
+			"  box-sizing: border-box;" +
 			"  overflow: hidden;" +
 			"  white-space: nowrap;" +
 			"  text-overflow: ellipsis;" +
@@ -1333,10 +1364,13 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 			// NGリストスクロールバー
 			".GM_fcn_ng_list_scrl {" +
 			"  display: inline-block;" +
-			"  min-width: 16px;" +
-			"  min-height: 22px;" +
+			"  width: 18px;" +
+			"  height: 22px;" +
 			"  border-width: 0px 1px;" +
 			"  border-style: solid;" +
+			"  box-sizing: border-box;" +
+			"  overflow: hidden;" +
+			"  white-space: nowrap;" +
 			"}" +
 			// カタログ下スペース
 			"#GM_fcn_catalog_space {" +
