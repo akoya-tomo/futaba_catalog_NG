@@ -65,12 +65,18 @@ NGワードは全板共通と各板個別でそれぞれ設定できます。
   - 赤福Firefox spの「レス一般→デフォルトのスタイルを無視する」のチェックを外してください。
 
 ## Tips
-スレ本文の文字数を増やしたらカタログが見づらくて生きるのが辛い場合、  
-スレ本文のサイズを制限してマウスオーバーでポップアップ表示ができる  
-himuro\_majika氏作のユーザースタイルシートも使ってみてください。  
-[futaba\_catalog\_mod(モダンバージョン)](https://userstyles.org/styles/114129/futaba-catalog-mod-modern)  
-または  
-[futaba\_catalog\_mod(クラシックバージョン)](https://userstyles.org/styles/114130/futaba-catalog-mod-classic)
+* スレ本文の文字数を増やしたらカタログが見づらくて生きるのが辛い  
+  スレ本文のサイズを制限してマウスオーバーでポップアップ表示ができるhimuro\_majika氏作のユーザースタイルシートを試してみてください。  
+  - [futaba\_catalog\_mod(モダンバージョン)](https://userstyles.org/styles/114129/futaba-catalog-mod-modern)  
+    または  
+  - [futaba\_catalog\_mod(クラシックバージョン)](https://userstyles.org/styles/114130/futaba-catalog-mod-classic)  
+* NGリストをバックアップしたい  
+  Tampermonkeyのダッシュボードを開いて
+  - 「ユーティリティ」タブから「スクリプトのストレージを含める」にチェックしてエクスポートする。  
+    （インストールしている全てのスクリプトとデータを一括保存）  
+    または
+  - 「インストール済みUserScript」タブからfutaba catalog NGを選択して「ストレージ」タブのテキストエリア内の文字を全選択してコピーし、テキストエディタに貼り付けて保存する。  
+    （NGデータだけを保存）  
 
 ## ライセンス
 このUserscriptにはmd5変換に[js-md5](https://github.com/emn178/js-md5/)を使用しています。
