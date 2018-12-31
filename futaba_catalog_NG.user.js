@@ -5,7 +5,7 @@
 // @author      akoya_tomo
 // @include     http://*.2chan.net/*/futaba.php?mode=cat*
 // @include     https://*.2chan.net/*/futaba.php?mode=cat*
-// @version     1.6.1
+// @version     1.6.2
 // @require     http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js
 // @require     https://cdn.jsdelivr.net/npm/js-md5@0.7.3/src/md5.min.js
 // @grant       GM_registerMenuCommand
@@ -840,7 +840,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 				display: "none",
 				"z-index": "100",
 				position: "absolute",
-				top: "16px",
+				top: "15px",
 				left: "0px",
 				"min-width": "140px",
 				width: "100%",
@@ -1096,16 +1096,23 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 	/**
 	 * dataURI変換
 	 * @param {HTMLImageElement} imgObj dataURIに変換する画像のimg要素
+	 * @param {number} width 変換する画像の幅 未指定時は画像の本来の幅
+	 * @param {number} height 変換する画像の高さ 未指定時は画像の本来の高さ
 	 * @return {string} 変換したdataURI文字列
 	 */
-	function convertDataURI(imgObj){
-		if (!imgObj || !imgObj.complete || !imgObj.width || !imgObj.height) return;
+	function convertDataURI(imgObj, width = imgObj.naturalWidth, height = imgObj.naturalHeight){
+		if (!imgObj || !imgObj.complete || !width || !height) return;
 		// canvasを生成してimg要素を反映
 		var cvs = document.createElement("canvas");
-		cvs.width = imgObj.width;
-		cvs.height = imgObj.height;
+		cvs.width = width;
+		cvs.height = height;
 		var ctx = cvs.getContext("2d");
-		ctx.drawImage(imgObj, 0, 0);
+		try {
+			ctx.drawImage(imgObj, 0, 0);
+		} catch (e) {
+			console.error("futaba_catalog_NG - drawImage error: src=" + imgObj.src + ", error=" + e);	// eslint-disable-line no-console
+			return;
+		}
 		// canvasをdataURI化
 		var data;
 		try {
@@ -1217,7 +1224,25 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 								$(this).parent().parent("td").css("display","none");
 								ngDate[imagesIndex] = getDate();
 							} else if (hexHash.length == 32) {
-								okImages.unshift(imgNumber);
+								if (this.width != this.naturalWidth || this.height != this.naturalHeight) {
+									// スレ画像の表示サイズでNG判定（v1.6.1以前の判定方法）
+									data = convertDataURI(this, this.width, this.height);
+									if (data) {
+										hexHash = md5(data);
+										imagesIndex = images.indexOf(hexHash);
+										if (imagesIndex > -1) {
+											$(this).parent().parent("td").addClass("GM_fcn_ng_images");
+											$(this).parent().parent("td").css("display","none");
+											ngDate[imagesIndex] = getDate();
+										} else if (hexHash.length == 32) {
+											okImages.unshift(imgNumber);
+										} else {
+											console.error("futaba_catalog_NG - hexHash abnormal: image No." + imgNumber + ", hexHash: " + hexHash);	// eslint-disable-line no-console
+										}
+									}
+								} else {
+									okImages.unshift(imgNumber);
+								}
 							} else {
 								console.error("futaba_catalog_NG - hexHash abnormal: image No." + imgNumber + ", hexHash: " + hexHash);	// eslint-disable-line no-console
 							}
@@ -1236,7 +1261,25 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 										ngDate[imagesIndex] = getDate();
 										GM_setValue("_futaba_catalog_NG_date", ngDate);
 									} else if (hexHash.length == 32) {
-										okImages.unshift(imgNumber);
+										if (this.width != this.naturalWidth || this.height != this.naturalHeight) {
+											// スレ画像の表示サイズでNG判定（v1.6.1以前の判定方法）
+											data = convertDataURI(this, this.width, this.height);
+											if (data) {
+												hexHash = md5(data);
+												imagesIndex = images.indexOf(hexHash);
+												if (imagesIndex > -1) {
+													$(this).parent().parent("td").addClass("GM_fcn_ng_images");
+													$(this).parent().parent("td").css("display","none");
+													ngDate[imagesIndex] = getDate();
+												} else if (hexHash.length == 32) {
+													okImages.unshift(imgNumber);
+												} else {
+													console.error("futaba_catalog_NG - hexHash abnormal: image No." + imgNumber + ", hexHash: " + hexHash);	// eslint-disable-line no-console
+												}
+											}
+										} else {
+											okImages.unshift(imgNumber);
+										}
 									} else {
 										console.error("futaba_catalog_NG - hexHash abnormal: image No." + imgNumber + ", hexHash: " + hexHash);	// eslint-disable-line no-console
 									}
@@ -1383,7 +1426,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 			"}" +
 			// NGボタン
 			".GM_fcn_ng_button {" +
-			"  font-size: small;" +
+			"  font-size: 13px;" +
 			"}" +
 			// NGメニュー
 			".GM_fcn_ng_menu {" +
