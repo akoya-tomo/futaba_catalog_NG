@@ -840,7 +840,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 				display: "none",
 				"z-index": "100",
 				position: "absolute",
-				top: "16px",
+				top: "15px",
 				left: "0px",
 				"min-width": "140px",
 				width: "100%",
@@ -1426,7 +1426,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 			"}" +
 			// NGボタン
 			".GM_fcn_ng_button {" +
-			"  font-size: small;" +
+			"  font-size: 13px;" +
 			"}" +
 			// NGメニュー
 			".GM_fcn_ng_menu {" +
