@@ -1107,7 +1107,12 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 		cvs.width = width;
 		cvs.height = height;
 		var ctx = cvs.getContext("2d");
-		ctx.drawImage(imgObj, 0, 0);
+		try {
+			ctx.drawImage(imgObj, 0, 0);
+		} catch (e) {
+			console.error("futaba_catalog_NG - drawImage error: src=" + imgObj.src + ", error=" + e);	// eslint-disable-line no-console
+			return;
+		}
 		// canvasをdataURI化
 		var data;
 		try {
