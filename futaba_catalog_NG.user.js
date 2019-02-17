@@ -5,7 +5,7 @@
 // @author      akoya_tomo
 // @include     http://*.2chan.net/*/futaba.php?mode=cat*
 // @include     https://*.2chan.net/*/futaba.php?mode=cat*
-// @version     1.6.2
+// @version     1.6.3
 // @require     http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js
 // @require     https://cdn.jsdelivr.net/npm/js-md5@0.7.3/src/md5.min.js
 // @grant       GM_registerMenuCommand
@@ -521,10 +521,14 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 							"readonly": "readonly"
 						}).css("width", "360px"),
 						$("<label>").text("コメント：").attr("for", "GM_fcn_comment"),
-						$("<input>").attr({
-							"id": "GM_fcn_comment",
-							"class": "GM_fcn_ng_list_input"
-						}).css("width", "360px")
+						$("<input>", {
+							id: "GM_fcn_comment",
+							class: "GM_fcn_ng_list_input",
+							width: "360px",
+							keypress: function(e){
+								if (e.key == "Enter") editSelectedRow();
+							}
+						})
 					)
 				),
 				$("<div>").css("margin-top", "1em").append(
