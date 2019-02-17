@@ -521,10 +521,14 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 							"readonly": "readonly"
 						}).css("width", "360px"),
 						$("<label>").text("コメント：").attr("for", "GM_fcn_comment"),
-						$("<input>").attr({
-							"id": "GM_fcn_comment",
-							"class": "GM_fcn_ng_list_input"
-						}).css("width", "360px")
+						$("<input>", {
+							id: "GM_fcn_comment",
+							class: "GM_fcn_ng_list_input",
+							width: "360px",
+							keypress: function(e){
+								if (e.key == "Enter") editSelectedRow();
+							}
+						})
 					)
 				),
 				$("<div>").css("margin-top", "1em").append(
