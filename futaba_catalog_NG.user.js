@@ -782,9 +782,10 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 	}
 
 	/**
-	 * 赤福の動的リロードの状態を取得
+	 * 動的リロードの状態を取得
 	 */
 	function checkAkahukuReload() {
+		// 赤福
 		var target = $("#akahuku_catalog_reload_status").get(0);
 		if (target) {
 			checkAkahukuReloadStatus();
@@ -817,6 +818,20 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 			});
 			observer.observe(target, config);
 		}
+
+		// KOSHIAN
+		document.addEventListener("KOSHIAN_cat_reload", () => {
+			if (HIDE_CATALOG_BEFORE_LOAD) {
+				$("body").attr("__fcn_catalog_visibility", "hidden");
+				$("body > table[border] > tbody").css("opacity", "0");
+				$("#GM_fth_highlighted_threads").css("visibility", "hidden");
+			}
+			makeNgButton();
+			hideNgThreads();
+			$("body").attr("__fcn_catalog_visibility", "visible");
+			$("body > table[border] > tbody").css("opacity", "1");
+			$("#GM_fth_highlighted_threads").css("visibility", "visible");
+		});
 	}
 
 	/**
