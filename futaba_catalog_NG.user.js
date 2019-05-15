@@ -5,7 +5,7 @@
 // @author      akoya_tomo
 // @include     http://*.2chan.net/*/futaba.php?mode=cat*
 // @include     https://*.2chan.net/*/futaba.php?mode=cat*
-// @version     1.6.4
+// @version     1.6.5
 // @require     http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js
 // @require     https://cdn.jsdelivr.net/npm/js-md5@0.7.3/src/md5.min.js
 // @grant       GM_registerMenuCommand
@@ -782,9 +782,10 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 	}
 
 	/**
-	 * 赤福の動的リロードの状態を取得
+	 * 動的リロードの状態を取得
 	 */
 	function checkAkahukuReload() {
+		// 赤福
 		var target = $("#akahuku_catalog_reload_status").get(0);
 		if (target) {
 			checkAkahukuReloadStatus();
@@ -817,6 +818,20 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 			});
 			observer.observe(target, config);
 		}
+
+		// KOSHIAN
+		document.addEventListener("KOSHIAN_cat_reload", () => {
+			if (HIDE_CATALOG_BEFORE_LOAD) {
+				$("body").attr("__fcn_catalog_visibility", "hidden");
+				$("body > table[border] > tbody").css("opacity", "0");
+				$("#GM_fth_highlighted_threads").css("visibility", "hidden");
+			}
+			makeNgButton();
+			hideNgThreads();
+			$("body").attr("__fcn_catalog_visibility", "visible");
+			$("body > table[border] > tbody").css("opacity", "1");
+			$("#GM_fth_highlighted_threads").css("visibility", "visible");
+		});
 	}
 
 	/**
