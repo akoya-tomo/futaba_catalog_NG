@@ -5,7 +5,7 @@
 // @author      akoya_tomo
 // @include     http://*.2chan.net/*/futaba.php?mode=cat*
 // @include     https://*.2chan.net/*/futaba.php?mode=cat*
-// @version     1.6.5
+// @version     1.6.6
 // @require     http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js
 // @require     https://cdn.jsdelivr.net/npm/js-md5@0.7.3/src/md5.min.js
 // @grant       GM_registerMenuCommand
@@ -870,30 +870,35 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 		});
 
 		$("body > table[border] td").each(function(){
-			if (!$(this).children(".GM_fcn_ng_button").length) {
-				var $cloneNgButton = $ngButton.clone();
-				var $cloneNgButtonMenu = $ngButtonMenu.clone();
-
-				$cloneNgButton.hover(function () {
-					$(this).css("color", "red");
-				}, function () {
-					$(this).css("color", "blue");
-				});
-				$cloneNgButton.on("click",function(){
-					makeNgButtonMenu($(this));
-				});
-				$(this).hover(function () {
-					$cloneNgButton.css("display", "inline");
-					$cloneNgButton.siblings(".KOSHIAN_response_increase").css("display", "none");
-				}, function () {
-					$cloneNgButton.css("display", "none");
-					$cloneNgButtonMenu.css("display", "none");
-					$cloneNgButton.siblings(".KOSHIAN_response_increase").css("display", "inline");
-				});
-
-				$cloneNgButton.append($cloneNgButtonMenu);
-				$(this).append($cloneNgButton);
+			var $oldNgButtons = $(this).children(".GM_fcn_ng_button");
+			if ($oldNgButtons.length) {
+				$oldNgButtons.remove();
 			}
+
+			var $cloneNgButton = $ngButton.clone();
+			var $cloneNgButtonMenu = $ngButtonMenu.clone();
+
+			$cloneNgButton.hover(function () {
+				$(this).css("color", "red");
+			}, function () {
+				$(this).css("color", "blue");
+			});
+			$cloneNgButton.on("click",function(){
+				makeNgButtonMenu($(this));
+			});
+			$(this).hover(function () {
+				$cloneNgButton.css({
+					"display": "inline"
+				});
+				$cloneNgButton.siblings(".KOSHIAN_response_increase").css("display", "none");
+			}, function () {
+				$cloneNgButton.css("display", "none");
+				$cloneNgButtonMenu.css("display", "none");
+				$cloneNgButton.siblings(".KOSHIAN_response_increase").css("display", "inline");
+			});
+
+			$cloneNgButton.append($cloneNgButtonMenu);
+			$(this).append($cloneNgButton);
 		});
 	}
 
@@ -1445,7 +1450,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 			"}" +
 			// NGボタン
 			".GM_fcn_ng_button {" +
-			"  font-size: 13px;" +
+			"  font-size: 12px;" +
 			"}" +
 			// NGメニュー
 			".GM_fcn_ng_menu {" +

@@ -83,6 +83,9 @@ NGワードは全板共通と各板個別でそれぞれ設定できます。
 このUserscriptにはmd5変換に[js-md5](https://github.com/emn178/js-md5/)を使用しています。
 
 ## 更新履歴
+* v1.6.6 2019-05-20
+  - カタログでUNDOしたときに\[NG\]ボタンが表示されなくなる不具合を修正
+  - \[NG\]ボタンのサイズを調整
 * v1.6.5 2019-05-15
   - [KOSHIAN リロード拡張 改](https://github.com/akoya-tomo/koshian_reload_futaba_kai/)のカタログリロードに対応
 * v1.6.4 2019-04-29
