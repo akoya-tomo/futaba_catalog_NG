@@ -870,30 +870,35 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 		});
 
 		$("body > table[border] td").each(function(){
-			if (!$(this).children(".GM_fcn_ng_button").length) {
-				var $cloneNgButton = $ngButton.clone();
-				var $cloneNgButtonMenu = $ngButtonMenu.clone();
-
-				$cloneNgButton.hover(function () {
-					$(this).css("color", "red");
-				}, function () {
-					$(this).css("color", "blue");
-				});
-				$cloneNgButton.on("click",function(){
-					makeNgButtonMenu($(this));
-				});
-				$(this).hover(function () {
-					$cloneNgButton.css("display", "inline");
-					$cloneNgButton.siblings(".KOSHIAN_response_increase").css("display", "none");
-				}, function () {
-					$cloneNgButton.css("display", "none");
-					$cloneNgButtonMenu.css("display", "none");
-					$cloneNgButton.siblings(".KOSHIAN_response_increase").css("display", "inline");
-				});
-
-				$cloneNgButton.append($cloneNgButtonMenu);
-				$(this).append($cloneNgButton);
+			var $oldNgButtons = $(this).children(".GM_fcn_ng_button");
+			if ($oldNgButtons.length) {
+				$oldNgButtons.remove();
 			}
+
+			var $cloneNgButton = $ngButton.clone();
+			var $cloneNgButtonMenu = $ngButtonMenu.clone();
+
+			$cloneNgButton.hover(function () {
+				$(this).css("color", "red");
+			}, function () {
+				$(this).css("color", "blue");
+			});
+			$cloneNgButton.on("click",function(){
+				makeNgButtonMenu($(this));
+			});
+			$(this).hover(function () {
+				$cloneNgButton.css({
+					"display": "inline"
+				});
+				$cloneNgButton.siblings(".KOSHIAN_response_increase").css("display", "none");
+			}, function () {
+				$cloneNgButton.css("display", "none");
+				$cloneNgButtonMenu.css("display", "none");
+				$cloneNgButton.siblings(".KOSHIAN_response_increase").css("display", "inline");
+			});
+
+			$cloneNgButton.append($cloneNgButtonMenu);
+			$(this).append($cloneNgButton);
 		});
 	}
 
