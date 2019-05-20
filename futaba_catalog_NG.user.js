@@ -1450,7 +1450,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 			"}" +
 			// NGボタン
 			".GM_fcn_ng_button {" +
-			"  font-size: 13px;" +
+			"  font-size: 12px;" +
 			"}" +
 			// NGメニュー
 			".GM_fcn_ng_menu {" +
