@@ -656,15 +656,15 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 							id: "GM_fcn_ng_list_item_date",
 							class: "GM_fcn_ng_list_item",
 							text: item_date_text + "　",
-							click: function(){
-								if ($(this).text() == item_date_text + "▲") {
-									resetNgListItemText();
-									$(this).text(item_date_text + "▼");
-									sortNgList(2, -1);
-								} else {
+							click: function() {
+								if ($(this).text() == item_date_text + "▼") {
 									resetNgListItemText();
 									$(this).text(item_date_text + "▲");
 									sortNgList(2);
+								} else {
+									resetNgListItemText();
+									$(this).text(item_date_text + "▼");
+									sortNgList(2, -1);
 								}
 							},
 						}),
