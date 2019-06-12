@@ -29,15 +29,27 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 	var MAX_OK_IMAGES = 500;				// 非NG画像名の最大保持数（板毎）
 	var HIDE_CATALOG_BEFORE_LOAD = false;	// ページの読み込みが完了するまでカタログを隠す
 	var USE_NG_THREAD_CLEAR_BUTTON = false;	// スレNGのクリアボタンを使用する
+	var USE_DHASH = false;					// 近似画像NGを使用する
+	var DISTANCE_THRESHOLD = 7;				// 近似画像判定閾値(デフォルト：7)
+	var ENABLE_DHASH_TEST = false;			// 近似画像NGのテストモードを有効にする
 
 	var serverName = document.domain.match(/^[^.]+/);
 	var pathName = location.pathname.match(/[^/]+/);
 	var serverFullPath = serverName + "_" + pathName;
 	var selectIndex = -1;
-	var imageList, commentList, dateList, images, ngDate, okImages;
+	var imageList, commentList, dateList, dHashList, images, ngDate, okImages, dHashes;
 	var item_md5_text = "　md5";
 	var item_comment_text = "　コメント";
 	var item_date_text = "　最終検出日";
+	var item_dHash_text = "　dHash";
+
+	// dHashリスト初期化
+	dHashList = GM_getValue("_futaba_catalog_NG_dHashes", []);
+	imageList = GM_getValue("_futaba_catalog_NG_images", []);
+	if (dHashList.length == 0 && imageList.length > 0) {
+		dHashList = new Array(imageList.length).fill(null);
+		GM_setValue("_futaba_catalog_NG_dHashes", dHashList);
+	}
 
 	if (HIDE_CATALOG_BEFORE_LOAD) {
 		hideCatalog();
@@ -168,6 +180,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 		$("#GM_fcn_ng_list_item_md5").text(item_md5_text + "　");
 		$("#GM_fcn_ng_list_item_comment").text(item_comment_text + "　");
 		$("#GM_fcn_ng_list_item_date").text(item_date_text + "　");
+		$("#GM_fcn_ng_list_item_dHash").text(item_dHash_text + "　");
 	}
 
 	/**
@@ -192,6 +205,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 			imageList = GM_getValue("_futaba_catalog_NG_images", []);
 			commentList = GM_getValue("_futaba_catalog_NG_comment", []);
 			dateList = GM_getValue("_futaba_catalog_NG_date", []);
+			dHashList = GM_getValue("_futaba_catalog_NG_dHashes", []);
 		}
 		var listCount = imageList.length;
 		$(".GM_fcn_ng_list_row").remove();
@@ -208,6 +222,10 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 				$("<div>", {
 					class: "GM_fcn_ng_list_image",
 					text: imageList[i],
+				}),
+				$("<div>", {
+					class: "GM_fcn_ng_list_dHash",
+					text: dHashList[i] ? ("000000000000" + dHashList[i].toString(16)).slice(-13) : "－",
 				}),
 				$("<div>", {
 					class: "GM_fcn_ng_list_comment",
@@ -482,6 +500,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 		imageList = GM_getValue("_futaba_catalog_NG_images", []);
 		commentList = GM_getValue("_futaba_catalog_NG_comment", []);
 		dateList = GM_getValue("_futaba_catalog_NG_date", []);
+		dHashList = GM_getValue("_futaba_catalog_NG_dHashes", []);
 
 		var $ngListContainer = $("<div>", {
 			id: "GM_fcn_ng_list_container",
@@ -602,6 +621,22 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 							},
 						}),
 						$("<div>", {
+							id: "GM_fcn_ng_list_item_dHash",
+							class: "GM_fcn_ng_list_item",
+							text: item_dHash_text + "　",
+							click: function() {
+								if ($(this).text() == item_dHash_text + "▲") {
+									resetNgListItemText();
+									$(this).text(item_dHash_text + "▼");
+									sortNgList(3, -1);
+								} else {
+									resetNgListItemText();
+									$(this).text(item_dHash_text + "▲");
+									sortNgList(3);
+								}
+							},
+						}),
+						$("<div>", {
 							id: "GM_fcn_ng_list_item_comment",
 							class: "GM_fcn_ng_list_item",
 							text: item_comment_text + "　",
@@ -654,6 +689,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 								GM_setValue("_futaba_catalog_NG_images", imageList);
 								GM_setValue("_futaba_catalog_NG_comment", commentList);
 								GM_setValue("_futaba_catalog_NG_date", dateList);
+								GM_setValue("_futaba_catalog_NG_dHashes", dHashList);
 								$(".GM_fcn_ng_list_row").css("background-color", "#ffffff");
 								$("#GM_fcn_md5").val("");
 								$("#GM_fcn_comment").val("");
@@ -715,6 +751,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 				imageList.splice(selectIndex, 1);
 				commentList.splice(selectIndex, 1);
 				dateList.splice(selectIndex, 1);
+				dHashList.splice(selectIndex, 1);
 			}
 			$(".GM_fcn_ng_list_row").css("background-color", "#ffffff");
 			$("#GM_fcn_md5").val("");
@@ -734,6 +771,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 			imageList.splice(index, 2, imageList[index + 1], imageList[index]);
 			commentList.splice(index, 2, commentList[index + 1], commentList[index]);
 			dateList.splice(index, 2, dateList[index + 1], dateList[index]);
+			dHashList.splice(index, 2, dHashList[index + 1], dHashList[index]);
 			selectIndex = selectIndex == index ? index + 1 : index;
 
 			var rowHeight = 22;	// NGリストの1行当たりの高さ(px)
@@ -751,7 +789,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 
 		/**
 		 * NGリストソート
-		 * @param {number} index ソート対象の項目（md5:0, コメント:1, 最終検出日:2）
+		 * @param {number} index ソート対象の項目（md5:0, コメント:1, 最終検出日:2, dHash:3）
 		 * @param {number} order ソート方向（昇順:1, 降順:-1）未指定は昇順
 		 */
 		function sortNgList(index, order = 1) {
@@ -761,6 +799,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 				array[i][0] = imageList[i];
 				array[i][1] = commentList[i];
 				array[i][2] = dateList[i];
+				array[i][3] = dHashList[i];
 			}
 			array.sort(function(a, b){
 				if (a[index] > b[index]) return order;
@@ -771,6 +810,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 				imageList[j] = array[j][0];
 				commentList[j] = array[j][1];
 				dateList[j] = array[j][2];
+				dHashList[j] = array[j][3];
 			}
 
 			$(".GM_fcn_ng_list_row").css("background-color", "#ffffff");
@@ -1015,7 +1055,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 			});
 			$cloneNgImage.click(function () {
 				hideNgImageThread(threadImgObj, threadComment, $td);
-				if ($td.hasClass("GM_fth_pickuped") || $td.hasClass("GM_fth_opened")) {
+				if ($td.hasClass("GM_fth_pickuped") || $td.hasClass("GM_fth_opened") || USE_DHASH) {
 					hideNgThreads();
 				}
 			});
@@ -1063,19 +1103,27 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 				return;
 			}
 			var hexHash = md5(data);
+			var dHash = convertDHash(imgObj);
 			//console.log("futaba_catalog_NG - hexHash: " + hexHash);
+			//console.log("futaba_catalog_NG - dHash: " + dHash.toString(16));
 			addNgListObj("_futaba_catalog_NG_images", hexHash);
 			addNgListObj("_futaba_catalog_NG_comment", comment);
 			addNgListObj("_futaba_catalog_NG_date", getDate());
+			addNgListObj("_futaba_catalog_NG_dHashes", dHash);
 			$td.addClass("GM_fcn_ng_images");
 			$td.css("display","none");
 			// 非NG画像リストからNG画像を削除
 			var okImages = getCurrentIndivValue("OK_images_indiv", []);
-			var imgNumber = parseInt($td.find("img").attr("src").match(/(\d+)s\.jpg$/)[1]);
-			var index = okImages.indexOf(imgNumber);
-			if (index > -1) {
-				okImages.splice(index, 1);
-				setIndivValue("OK_images_indiv", okImages);
+			var imgNumber = parseInt($td.find("img").attr("src").match(/(\d+)s\.jpg$/)[1], 10);
+			if (USE_DHASH) {
+				// 近似画像NG使用時は非NG画像リストを全削除
+				GM_setValue("OK_images_indiv", "{}");
+			} else {
+				var index = okImages.indexOf(imgNumber);
+				if (index > -1) {
+					okImages.splice(index, 1);
+					setIndivValue("OK_images_indiv", okImages);
+				}
 			}
 
 			/**
@@ -1153,6 +1201,52 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 	}
 
 	/**
+	 * dHash変換
+	 * @param {HTMLImageElement} imgObj dHashに変換する画像のimg要素
+	 * @return {number} 変換したdHash
+	 *     オリジナルは64bitのHash値だがJSの最大整数値2^53に収める為49bitのHash値を返す
+	 */
+	function convertDHash(imgObj) {
+		if (!USE_DHASH || !imgObj || !imgObj.complete || !imgObj.naturalWidth || !imgObj.naturalHeight) {
+			return;
+		}
+		// 8x7のcanvasを生成してimg要素を反映
+		var cvs = document.createElement("canvas");
+		cvs.width = 8;
+		cvs.height = 7;
+		var ctx = cvs.getContext("2d", {
+			alpha: false	// 背景不透明で高速化
+		});
+		try {
+			ctx.drawImage(imgObj, 0, 0, imgObj.naturalWidth, imgObj.naturalHeight, 0, 0, cvs.width, cvs.height);
+		} catch (e) {
+			console.error("futaba_catalog_NG - drawImage error: src= " + imgObj.src + ", " + e.name + ": " + e.message);
+			console.dir(e);
+			return;
+		}
+		var pixels = ctx.getImageData(0, 0, cvs.width, cvs.height);
+		var grayScale = [];
+		for (var y = 0; y < pixels.height; ++y) {
+			for (var x = 0; x < pixels.width; ++x) {
+				var i = (y * 4) * pixels.width + x * 4;
+				var rgb = parseInt((pixels.data[i] + pixels.data[i + 1] + pixels.data[i + 2]) / 3, 10);	// 画素をグレイスケール化
+				grayScale.push(rgb);
+			}
+		}
+		var dHash = 0;
+		var exponent = 0;	// べき指数
+		grayScale.forEach((v, i) => {
+			if ((i + 1) % cvs.width !== 0) {	// 右端のピクセルは右隣が無いのでスキップ
+				// 右隣の輝度と比較した結果を1bitとしてセット
+				dHash += (v < grayScale[i + 1] ? 1 : 0) * 2 ** exponent;
+				++exponent;
+			}
+		});
+		//console.log("futaba_catalog_NG - imgObj.src: " + imgObj.src + ", dHash: 0x" + dHash.toString(16).toUpperCase());
+		return dHash;
+	}
+
+	/**
 	 * 日付取得
 	 * @return {string} 現在の日付の文字列 yy/mm/dd
 	 */
@@ -1177,6 +1271,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 		images = GM_getValue("_futaba_catalog_NG_images", "");
 		ngDate = GM_getValue("_futaba_catalog_NG_date", "");
 		okImages = getCurrentIndivValue("OK_images_indiv", []);
+		dHashes = GM_getValue("_futaba_catalog_NG_dHashes", "");
 
 		// NGワード
 		if( wordsCommon !== "" ) {
@@ -1234,6 +1329,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 
 		// NG画像
 		if (images.length) {
+			var dHash, dHashesNum, i;
 			$("body > table[border] td > a:first-of-type > img").each(function(){
 				var imgSrc = this.src.match(/(\d+)s\.jpg$/);
 				if (imgSrc) {
@@ -1242,30 +1338,74 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 						var data = convertDataURI(this);
 						if (data) {
 							var hexHash = md5(data);
-							var imagesIndex = images.indexOf(hexHash);
-							if (imagesIndex > -1){
+							var index = images.indexOf(hexHash);
+							if (index > -1){
 								$(this).parent().parent("td").addClass("GM_fcn_ng_images");
-								$(this).parent().parent("td").css("display","none");
-								ngDate[imagesIndex] = getDate();
+								$(this).parent().parent("td").css("display", "none");
+								ngDate[index] = getDate();
 							} else if (hexHash.length == 32) {
 								if (this.width != this.naturalWidth || this.height != this.naturalHeight) {
 									// スレ画像の表示サイズでNG判定（v1.6.1以前の判定方法）
 									data = convertDataURI(this, this.width, this.height);
 									if (data) {
 										hexHash = md5(data);
-										imagesIndex = images.indexOf(hexHash);
-										if (imagesIndex > -1) {
+										index = images.indexOf(hexHash);
+										if (index > -1) {
 											$(this).parent().parent("td").addClass("GM_fcn_ng_images");
-											$(this).parent().parent("td").css("display","none");
-											ngDate[imagesIndex] = getDate();
-										} else if (hexHash.length == 32) {
-											okImages.unshift(imgNumber);
+											$(this).parent().parent("td").css("display", "none");
+											ngDate[index] = getDate();
 										} else {
-											console.error("futaba_catalog_NG - hexHash abnormal: image No." + imgNumber + ", hexHash: " + hexHash);	// eslint-disable-line no-console
+											// dHash判定
+											dHash = convertDHash(this);
+											if (dHash) {
+												dHashesNum = dHashes.length;
+												for (i = 0; i < dHashesNum; ++i) {
+													if (dHashes[i] && getHammingDistance(dHash, dHashes[i]) <= DISTANCE_THRESHOLD) {
+														if (ENABLE_DHASH_TEST) {
+															$(this).css("border", "2px dashed red");
+															console.debug("futaba_catalog_NG - catalog hash: " + dHash.toString(16) + ", NG list hash: " + dHashes[i].toString(16));
+															console.debug("futaba_catalog_NG - hamming distance: " + getHammingDistance(dHash, dHashes[i]));
+														} else {
+															$(this).parent().parent("td").addClass("GM_fcn_ng_images");
+															$(this).parent().parent("td").css("display", "none");
+														}
+														ngDate[i] = getDate();
+														break;
+													}
+												}
+												if (i == dHashesNum && hexHash.length == 32) {
+													okImages.unshift(imgNumber);
+												}
+											} else if (hexHash.length == 32) {
+												okImages.unshift(imgNumber);
+											}
 										}
 									}
 								} else {
-									okImages.unshift(imgNumber);
+									// dHash判定
+									dHash = convertDHash(this);
+									if (dHash) {
+										dHashesNum = dHashes.length;
+										for (i = 0; i < dHashesNum; ++i) {
+											if (dHashes[i] && getHammingDistance(dHash, dHashes[i]) <= DISTANCE_THRESHOLD) {
+												if (ENABLE_DHASH_TEST) {
+													$(this).css("border", "2px dashed red");
+													console.debug("futaba_catalog_NG - catalog hash: " + dHash.toString(16) + ", NG list hash: " + dHashes[i].toString(16));
+													console.debug("futaba_catalog_NG - hamming distance: " + getHammingDistance(dHash, dHashes[i]));
+												} else {
+													$(this).parent().parent("td").addClass("GM_fcn_ng_images");
+													$(this).parent().parent("td").css("display", "none");
+												}
+												ngDate[i] = getDate();
+												break;
+											}
+										}
+										if (i == dHashesNum) {
+											okImages.unshift(imgNumber);
+										}
+									} else {
+										okImages.unshift(imgNumber);
+									}
 								}
 							} else {
 								console.error("futaba_catalog_NG - hexHash abnormal: image No." + imgNumber + ", hexHash: " + hexHash);	// eslint-disable-line no-console
@@ -1295,14 +1435,61 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 													$(this).parent().parent("td").addClass("GM_fcn_ng_images");
 													$(this).parent().parent("td").css("display","none");
 													ngDate[imagesIndex] = getDate();
-												} else if (hexHash.length == 32) {
-													okImages.unshift(imgNumber);
+													GM_setValue("_futaba_catalog_NG_date", ngDate);
 												} else {
-													console.error("futaba_catalog_NG - hexHash abnormal: image No." + imgNumber + ", hexHash: " + hexHash);	// eslint-disable-line no-console
+													// dHash判定
+													dHash = convertDHash(this);
+													if (dHash) {
+														dHashesNum = dHashes.length;
+														for (i = 0; i < dHashesNum; ++i) {
+															if (dHashes[i] && getHammingDistance(dHash, dHashes[i]) <= DISTANCE_THRESHOLD) {
+																if (ENABLE_DHASH_TEST) {
+																	$(this).css("border", "2px dashed red");
+																	console.debug("futaba_catalog_NG - catalog hash: " + dHash.toString(16) + ", NG list hash: " + dHashes[i].toString(16));
+																	console.debug("futaba_catalog_NG - hamming distance: " + getHammingDistance(dHash, dHashes[i]));
+																} else {
+																	$(this).parent().parent("td").addClass("GM_fcn_ng_images");
+																	$(this).parent().parent("td").css("display", "none");
+																}
+																ngDate[i] = getDate();
+																GM_setValue("_futaba_catalog_NG_date", ngDate);
+																break;
+															}
+														}
+														if (i == dHashesNum && hexHash.length == 32) {
+															okImages.unshift(imgNumber);
+														}
+													} else if (hexHash.length == 32) {
+														okImages.unshift(imgNumber);
+													}
 												}
 											}
 										} else {
-											okImages.unshift(imgNumber);
+											// dHash判定
+											dHash = convertDHash(this);
+											if (dHash) {
+												dHashesNum = dHashes.length;
+												for (i = 0; i < dHashesNum; ++i) {
+													if (dHashes[i] && getHammingDistance(dHash, dHashes[i]) <= DISTANCE_THRESHOLD) {
+														if (ENABLE_DHASH_TEST) {
+															$(this).css("border", "2px dashed red");
+															console.debug("futaba_catalog_NG - catalog hash: " + dHash.toString(16) + ", NG list hash: " + dHashes[i].toString(16));
+															console.debug("futaba_catalog_NG - hamming distance: " + getHammingDistance(dHash, dHashes[i]));
+														} else {
+															$(this).parent().parent("td").addClass("GM_fcn_ng_images");
+															$(this).parent().parent("td").css("display", "none");
+														}
+														ngDate[i] = getDate();
+														GM_setValue("_futaba_catalog_NG_date", ngDate);
+														break;
+													}
+												}
+												if (i == dHashesNum) {
+													okImages.unshift(imgNumber);
+												}
+											} else {
+												okImages.unshift(imgNumber);
+											}
 										}
 									} else {
 										console.error("futaba_catalog_NG - hexHash abnormal: image No." + imgNumber + ", hexHash: " + hexHash);	// eslint-disable-line no-console
@@ -1340,6 +1527,39 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 		}
 		//console.log("futaba_catalog_NG - okImages.length: " + okImages.length);
 		console.log("futaba_catalog_NG - Parsing@" + serverFullPath + ": "+((new Date()).getTime()-Start) +"msec");	// eslint-disable-line no-console
+
+		/**
+		 * ハミング距離取得
+		 * @param {number} hash1 測定するHash(49bit)
+		 * @param {number} hash2 測定するHash(49bit)
+		 * @return {number} ハミング距離(0～49)
+		 */
+		function getHammingDistance(hash1, hash2) {
+			// 2つのHashを上位17bitと下位32bitに分割して32ビット演算する
+			var hash1L = hash1 & 0xffffffff;
+			var hash1H = (hash1 - hash1L) / 0x100000000;
+			var hash2L = hash2 & 0xffffffff;
+			var hash2H = (hash2 - hash2L) / 0x100000000;
+
+			// 下位32bitのビットの異なる位置を抽出
+			var xorL = hash1L ^ hash2L;
+			var count = 0;
+			// 立っている最下位ビットを消してカウント
+			while (xorL) {
+				xorL &= xorL - 1;
+				++count;
+			}
+
+			// 上位17bitのビットの異なる位置を抽出
+			var xorH = hash1H ^ hash2H;
+			// 立っている最下位ビットを消してカウント
+			while (xorH) {
+				xorH &= xorH - 1;
+				++count;
+			}
+
+			return count;
+		}
 	}
 
 	/**
@@ -1477,9 +1697,9 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 			"}" +
 			// NGリスト枠
 			"#GM_fcn_ng_list_pane {" +
-			"  width: 788px;" +
+			"  width: 928px;" +
 			"  height: 308px;" +
-			"  margin-left: 81px;" +
+			"  margin-left: 11px;" +
 			"  border-width: 1px;" +
 			"  border-style: solid;" +
 			"  background-color: #eee;" +
@@ -1495,13 +1715,17 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 			"#GM_fcn_ng_list_item_md5 {" +
 			"  width: 360px;" +
 			"}" +
+			// NGリスト項目dHash
+			"#GM_fcn_ng_list_item_dHash {" +
+			"  width: 170px;" +
+			"}" +
 			// NGリスト項目コメント
 			"#GM_fcn_ng_list_item_comment {" +
-			"  width: 260px;" +
+			"  width: 250px;" +
 			"}" +
 			// NGリスト項目最終検出日
 			"#GM_fcn_ng_list_item_date {" +
-			"  width: 150px;" +
+			"  width: 130px;" +
 			"}" +
 			// NGリスト項目スクロールバースペース
 			"#GM_fcn_ng_list_item_scrl {" +
@@ -1521,14 +1745,14 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 			"}" +
 			// NGリストコンテンツ
 			"#GM_fcn_ng_list_content {" +
-			"  width: 788px;" +
+			"  width: 928px;" +
 			"  height: 286px;" +
 			"  overflow-x: hidden;" +
 			"  overflow-y: auto;" +
 			"}" +
 			// NGリスト行
 			".GM_fcn_ng_list_row {" +
-			"  width: 788px;" +
+			"  width: 928px;" +
 			"  height: 22px;" +
 			"  cursor: pointer;" +
 			"  overflow: hidden;" +
@@ -1545,16 +1769,31 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 			"  overflow: hidden;" +
 			"  white-space: nowrap;" +
 			"  text-overflow: ellipsis;" +
+			"  font-family: Consolas, 'Courier New', monospace;" +
+			"}" +
+			// NGリストdHash
+			".GM_fcn_ng_list_dHash {" +
+			"  display: inline-block;" +
+			"  width: 170px;" +
+			"  height: 22px;" +
+			"  border-width: 1px;" +
+			"  border-style: solid;" +
+			"  box-sizing: border-box;" +
+			"  overflow: hidden;" +
+			"  white-space: nowrap;" +
+			"  text-overflow: ellipsis;" +
+			"  font-family: Consolas, 'Courier New', monospace;" +
 			"}" +
 			// NGリストコメント
 			".GM_fcn_ng_list_comment {" +
 			"  display: inline-block;" +
-			"  width: 260px;" +
+			"  width: 250px;" +
 			"  height: 22px;" +
-			"  padding-left: 5px;" +
+			"  padding-left: 10px;" +
 			"  border-width: 1px;" +
 			"  border-style: solid;" +
 			"  box-sizing: border-box;" +
+			"  text-align: left;" +
 			"  overflow: hidden;" +
 			"  white-space: nowrap;" +
 			"  text-overflow: ellipsis;" +
@@ -1562,7 +1801,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 			// NGリスト日時
 			".GM_fcn_ng_list_date {" +
 			"  display: inline-block;" +
-			"  width: 150px;" +
+			"  width: 130px;" +
 			"  height: 22px;" +
 			"  border-width: 1px;" +
 			"  border-style: solid;" +
@@ -1570,6 +1809,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 			"  overflow: hidden;" +
 			"  white-space: nowrap;" +
 			"  text-overflow: ellipsis;" +
+			"  font-family: Consolas, 'Courier New', monospace;" +
 			"}" +
 			// NGリストスクロールバー
 			".GM_fcn_ng_list_scrl {" +
