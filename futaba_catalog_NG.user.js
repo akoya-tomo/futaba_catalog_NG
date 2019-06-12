@@ -59,12 +59,14 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 
 	function init(){
 		clearNgNumber();
-		console.log("futaba_catalog_NG commmon: " +	// eslint-disable-line no-console
-			GM_getValue("_futaba_catalog_NG_words", ""));
-		console.log("futaba_catalog_NG indivisual: " +	// eslint-disable-line no-console
-			getCurrentIndivValue("NG_words_indiv", ""));
+		//console.log("futaba_catalog_NG commmon: " +
+		//	GM_getValue("_futaba_catalog_NG_words", ""));
+		//console.log("futaba_catalog_NG indivisual: " +
+		//	getCurrentIndivValue("NG_words_indiv", ""));
 		GM_registerMenuCommand("ＮＧワード編集", editNgWords);
-		if (USE_NG_IMAGES) GM_registerMenuCommand("ＮＧリスト編集", editNgList);
+		if (USE_NG_IMAGES) {
+			GM_registerMenuCommand("ＮＧリスト編集", editNgList);
+		}
 		GM_registerMenuCommand("スレＮＧクリア", confirmClearNgNumber);
 		setStyle();
 		makeNgMenubar();
@@ -82,11 +84,13 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 	 * @param {boolean} forced 強制的にクリアするか
 	 */
 	function clearNgNumber(forced) {
-		if (!forced && window.name) return;
+		if (!forced && window.name) {
+			return;
+		}
 		window.name = location.href;
 
 		var ngNumberObj = getIndivObj("NG_numbers_indiv");
-		if (ngNumberObj === ""){
+		if (ngNumberObj === "") {
 			ngNumberObj = {};
 		}
 		ngNumberObj[serverFullPath] = [];
@@ -188,9 +192,9 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 	 */
 	function confirmClearNgNumber() {
 		if (confirm("この板のスレNGを全てクリアします。\nよろしいですか？")) {
-			$(".GM_fcn_ng_numbers").each(function(){
+			$(".GM_fcn_ng_numbers").each(function() {
 				$(this).removeClass("GM_fcn_ng_numbers");
-				$(this).css("display","");
+				$(this).css("display", "");
 			});
 			clearNgNumber(true);
 		}
@@ -210,10 +214,10 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 		var listCount = imageList.length;
 		$(".GM_fcn_ng_list_row").remove();
 
-		for (var i = 0; i < listCount; i++) {
+		for (var i = 0; i < listCount; ++i) {
 			var row = $("<div>", {
 				class: "GM_fcn_ng_list_row",
-				click: function(){	// eslint-disable-line no-loop-func
+				click: function() {	// eslint-disable-line no-loop-func
 					selectIndex = $(this).index();
 					selectNgList();
 				}
@@ -248,7 +252,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 	 */
 	function selectNgList() {
 		$(".GM_fcn_ng_list_row").css("background-color", "#ffffff")
-			.eq(selectIndex).css("background-color","#ffecfd");
+			.eq(selectIndex).css("background-color", "#ffecfd");
 		$("#GM_fcn_md5").val(imageList[selectIndex]);
 		$("#GM_fcn_comment").val(commentList[selectIndex]);
 	}
@@ -281,14 +285,12 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 			css: {
 				cursor: "pointer",
 			},
-			click: function() {
-				editNgWords();
-			}
+			click: editNgWords
 		});
-		$ngWordsButton.hover(function () {
-			$(this).css({ backgroundColor:"#EEAA88" });
-		}, function () {
-			$(this).css({ backgroundColor:"#F0E0D6" });
+		$ngWordsButton.hover(function() {
+			$(this).css("background-color", "#EEAA88");
+		}, function() {
+			$(this).css("background-color", "#F0E0D6");
 		});
 		$ngWordsHeader.append($ngWordsButton);
 
@@ -311,14 +313,12 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 				css: {
 					cursor: "pointer",
 				},
-				click: function() {
-					confirmClearNgNumber();
-				}
+				click: confirmClearNgNumber
 			});
-			$ngThreadClearButton.hover(function () {
-				$(this).css({ backgroundColor:"#EEAA88" });
-			}, function () {
-				$(this).css({ backgroundColor:"#F0E0D6" });
+			$ngThreadClearButton.hover(function() {
+				$(this).css("background-color", "#EEAA88");
+			}, function() {
+				$(this).css("background-color", "#F0E0D6");
 			});
 			$ngThreadHeader.append($ngThreadClearButton);
 		}
@@ -342,14 +342,12 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 				css: {
 					cursor: "pointer",
 				},
-				click: function() {
-					editNgList();
-				}
+				click: editNgList
 			});
 			$ngListButton.hover(function () {
-				$(this).css({ backgroundColor:"#EEAA88" });
+				$(this).css("background-color", "#EEAA88");
 			}, function () {
-				$(this).css({ backgroundColor:"#F0E0D6" });
+				$(this).css("background-color", "#F0E0D6" );
 			});
 			$ngListHeader.append($ngListButton);
 		}
@@ -402,7 +400,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 							class: "GM_fcn_config_button",
 							type: "button",
 							val: "区切り文字挿入",
-							click: function(){
+							click: function() {
 								insertDelimiter("GM_fcn_ng_words_common");
 							},
 						})
@@ -419,7 +417,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 							class: "GM_fcn_config_button",
 							type: "button",
 							val: "区切り文字挿入",
-							click: function(){
+							click: function() {
 								insertDelimiter("GM_fcn_ng_words_individual");
 							},
 						})
@@ -434,9 +432,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 						class: "GM_fcn_config_button",
 						type: "button",
 						val: "更新",
-						click: function(){
-							setNgWords();
-						},
+						click: setNgWords
 					})
 				),
 				$("<span>").css("margin", "0 1em").append(
@@ -444,7 +440,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 						class: "GM_fcn_config_button",
 						type: "button",
 						val: "キャンセル",
-						click: function(){
+						click: function() {
 							$configContainer.fadeOut(100);
 						},
 					})
@@ -544,8 +540,10 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 							id: "GM_fcn_comment",
 							class: "GM_fcn_ng_list_input",
 							width: "360px",
-							keypress: function(e){
-								if (e.key == "Enter") editSelectedRow();
+							keypress: function(e) {
+								if (e.key == "Enter") {
+									editSelectedRow();
+								}
 							}
 						})
 					)
@@ -558,9 +556,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 								type: "button",
 								val: "修正",
 								width: "70px",
-								click: function(){
-									editSelectedRow();
-								},
+								click: editSelectedRow
 							})
 						),
 						$("<span>").append(
@@ -569,9 +565,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 								type: "button",
 								val: "削除",
 								width: "70px",
-								click: function(){
-									deleteSelectedRow();
-								},
+								click: deleteSelectedRow
 							})
 						),
 						$("<span>").css("margin", "0 0 0 1em").append(
@@ -579,7 +573,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 								class: "GM_fcn_ng_list_button",
 								type: "button",
 								val: "上",
-								click: function(){
+								click: function() {
 									swapRow(selectIndex - 1);
 								},
 							})
@@ -589,7 +583,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 								class: "GM_fcn_ng_list_button",
 								type: "button",
 								val: "下",
-								click: function(){
+								click: function() {
 									swapRow(selectIndex);
 								},
 							})
@@ -608,7 +602,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 							id: "GM_fcn_ng_list_item_md5",
 							class: "GM_fcn_ng_list_item",
 							text: item_md5_text + "　",
-							click: function(){
+							click: function() {
 								if ($(this).text() == item_md5_text + "▲") {
 									resetNgListItemText();
 									$(this).text(item_md5_text + "▼");
@@ -640,7 +634,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 							id: "GM_fcn_ng_list_item_comment",
 							class: "GM_fcn_ng_list_item",
 							text: item_comment_text + "　",
-							click: function(){
+							click: function() {
 								if ($(this).text() == item_comment_text + "▲") {
 									resetNgListItemText();
 									$(this).text(item_comment_text + "▼");
@@ -677,15 +671,13 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 						id: "GM_fcn_ng_list_content"
 					})
 				),
-				$("<div>").css({
-					"margin-top": "1em",
-				}).append(
+				$("<div>").css("margin-top", "1em").append(
 					$("<span>").css("margin", "0 1em").append(
 						$("<input>", {
 							class: "GM_fcn_config_button",
 							type: "button",
 							val: "更新",
-							click: function(){
+							click: function() {
 								GM_setValue("_futaba_catalog_NG_images", imageList);
 								GM_setValue("_futaba_catalog_NG_comment", commentList);
 								GM_setValue("_futaba_catalog_NG_date", dateList);
@@ -766,7 +758,9 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 		 * @param {number} index 入替する行番号（先頭行が0）
 		 */
 		function swapRow(index) {
-			if (index <= -1 || index + 1 >= imageList.length) return;
+			if (index <= -1 || index + 1 >= imageList.length) {
+				return;
+			}
 
 			imageList.splice(index, 2, imageList[index + 1], imageList[index]);
 			commentList.splice(index, 2, commentList[index + 1], commentList[index]);
@@ -779,9 +773,12 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 			var selectPos = selectIndex * rowHeight;
 			var scrollTop = $("#GM_fcn_ng_list_content").scrollTop();
 			var scrollBottom = scrollTop + (rowHeight * (listLines - 1));
-			if (selectPos < scrollTop) $("#GM_fcn_ng_list_content").scrollTop(selectPos);
-			if (selectPos > scrollBottom) $("#GM_fcn_ng_list_content").scrollTop(selectPos - (rowHeight * (listLines - 1)));
-
+			if (selectPos < scrollTop) {
+				$("#GM_fcn_ng_list_content").scrollTop(selectPos);
+			}
+			if (selectPos > scrollBottom) {
+				$("#GM_fcn_ng_list_content").scrollTop(selectPos - (rowHeight * (listLines - 1)));
+			}
 			refreshNgList();
 			selectNgList();
 			resetNgListItemText();
@@ -794,7 +791,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 		 */
 		function sortNgList(index, order = 1) {
 			var array = new Array();
-			for (var i = 0; i < imageList.length; i++) {
+			for (var i = 0; i < imageList.length; ++i) {
 				array[i] = new Array();
 				array[i][0] = imageList[i];
 				array[i][1] = commentList[i];
@@ -802,11 +799,15 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 				array[i][3] = dHashList[i];
 			}
 			array.sort(function(a, b){
-				if (a[index] > b[index]) return order;
-				if (a[index] < b[index]) return -order;
+				if (a[index] > b[index]) {
+					return order;
+				}
+				if (a[index] < b[index]) {
+					return -order;
+				}
 				return 0;
 			});
-			for (var j = 0; j < imageList.length; j++) {
+			for (var j = 0; j < imageList.length; ++j) {
 				imageList[j] = array[j][0];
 				commentList[j] = array[j][1];
 				dateList[j] = array[j][2];
@@ -832,7 +833,9 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 		} else {
 			document.addEventListener("AkahukuContentApplied", () => {
 				target = $("#akahuku_catalog_reload_status").get(0);
-				if (target) checkAkahukuReloadStatus();
+				if (target) {
+					checkAkahukuReloadStatus();
+				}
 			});
 		}
 
@@ -841,7 +844,9 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 			var config = { childList: true };
 			var observer = new MutationObserver(function(mutations) {
 				mutations.forEach(function(mutation) {	// eslint-disable-line no-unused-vars
-					if (target.textContent == status) return;
+					if (target.textContent == status) {
+						return;
+					}
 					status = target.textContent;
 					if (status == "完了しました" || status == "アンドゥしました" || status == "リドゥしました") {
 						makeNgButton();
@@ -910,7 +915,9 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 	 */
 	function makeNgButton() {
 		// カタログソートが「設定」なら作成しない
-		if (location.search.match(/mode=catset/)) return;
+		if (location.search.match(/mode=catset/)) {
+			return;
+		}
 		// NGボタン
 		var $ngButton = $("<span>", {
 			class: "GM_fcn_ng_button",
@@ -958,9 +965,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 				makeNgButtonMenu($(this));
 			});
 			$(this).hover(function () {
-				$cloneNgButton.css({
-					"display": "inline"
-				});
+				$cloneNgButton.css("display", "inline");
 				$cloneNgButton.siblings(".KOSHIAN_response_increase").css("display", "none");
 				$cloneNgButton.siblings(".fvw_num").css("display", "none");
 			}, function () {
@@ -1206,16 +1211,21 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 	 * @return {string} 変換したdataURI文字列
 	 */
 	function convertDataURI(imgObj, width = imgObj.naturalWidth, height = imgObj.naturalHeight){
-		if (!imgObj || !imgObj.complete || !width || !height) return;
+		if (!imgObj || !imgObj.complete || !width || !height) {
+			return;
+		}
 		// canvasを生成してimg要素を反映
 		var cvs = document.createElement("canvas");
 		cvs.width = width;
 		cvs.height = height;
-		var ctx = cvs.getContext("2d");
+		var ctx = cvs.getContext("2d", {
+			alpha: false	// 背景不透明で高速化
+		});
 		try {
 			ctx.drawImage(imgObj, 0, 0);
 		} catch (e) {
-			console.error("futaba_catalog_NG - drawImage error: src=" + imgObj.src + ", error=" + e);	// eslint-disable-line no-console
+			console.error("futaba_catalog_NG - drawImage error: src= " + imgObj.src + ", " + e.name + ": " + e.message);
+			console.dir(e);
 			return;
 		}
 		// canvasをdataURI化
@@ -1223,11 +1233,12 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 		try {
 			data = cvs.toDataURL("image/jpeg");
 		} catch (e) {
-			console.error("futaba_catalog_NG - dataURI convert error: src=" + imgObj.src + ", error=" + e);	// eslint-disable-line no-console
+			console.error("futaba_catalog_NG - dataURI convert error: src= " + imgObj.src + ", " + e.name + ": " + e.message);
+			console.dir(e);
 			return;
 		}
-		if (data.substr(0,23) !== "data:image/jpeg;base64,"){
-			console.error("futaba_catalog_NG - dataURI abnormal: src=" + imgObj.src + ", dataURI=" + data);	// eslint-disable-line no-console
+		if (data.substr(0,23) !== "data:image/jpeg;base64,") {
+			console.error("futaba_catalog_NG - dataURI abnormal: src= " + imgObj.src + ", dataURI= " + data);
 			return;
 		}
 		return data;
@@ -1328,7 +1339,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 			return;
 		}
 		if (isWordsChanged) {
-			$(".GM_fcn_ng_words").css("display","");
+			$(".GM_fcn_ng_words").css("display", "");
 			$(".GM_fcn_ng_words").removeClass("GM_fcn_ng_words");
 		}
 		if (words !== "") {
@@ -1336,10 +1347,10 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 				if (re.test($(this).text())) {
 					if ($(this).parent("a").length) {		//文字スレ
 						$(this).parent().parent("td").addClass("GM_fcn_ng_words");
-						$(this).parent().parent("td").css("display","none");
+						$(this).parent().parent("td").css("display", "none");
 					} else {
 						$(this).parent("td").addClass("GM_fcn_ng_words");
-						$(this).parent().parent("td").css("display","none");
+						$(this).parent().parent("td").css("display", "none");
 					}
 				}
 			});
@@ -1355,7 +1366,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 				var hrefNum = $(this).attr("href").slice(4,-4);
 				if (numbers.indexOf(hrefNum) > -1){
 					$(this).parent("td").addClass("GM_fcn_ng_numbers");
-					$(this).parent("td").css("display","none");
+					$(this).parent("td").css("display", "none");
 				}
 			});
 		}
@@ -1366,7 +1377,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 			$("#cattable td > a:first-of-type > img").each(function() {
 				var imgSrc = this.src.match(/(\d+)s\.jpg$/);
 				if (imgSrc) {
-					var imgNumber = parseInt(imgSrc[1]);
+					var imgNumber = parseInt(imgSrc[1], 10);
 					if (okImages.indexOf(imgNumber) == -1) {
 						var data = convertDataURI(this);
 						if (data) {
@@ -1447,14 +1458,14 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 							// スレ画像読込完了確認
 							this.onload = () => {
 								this.onload = null;
-								imgNumber = parseInt(this.src.match(/(\d+)s\.jpg$/)[1]);
+								imgNumber = parseInt(this.src.match(/(\d+)s\.jpg$/)[1], 10);
 								data = convertDataURI(this);
 								if (data) {
 									var hexHash = md5(data);
 									var imagesIndex = images.indexOf(hexHash);
 									if (imagesIndex > -1){
 										$(this).parent().parent("td").addClass("GM_fcn_ng_images");
-										$(this).parent().parent("td").css("display","none");
+										$(this).parent().parent("td").css("display", "none");
 										ngDate[imagesIndex] = getDate();
 										GM_setValue("_futaba_catalog_NG_date", ngDate);
 									} else if (hexHash.length == 32) {
@@ -1466,7 +1477,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 												imagesIndex = images.indexOf(hexHash);
 												if (imagesIndex > -1) {
 													$(this).parent().parent("td").addClass("GM_fcn_ng_images");
-													$(this).parent().parent("td").css("display","none");
+													$(this).parent().parent("td").css("display", "none");
 													ngDate[imagesIndex] = getDate();
 													GM_setValue("_futaba_catalog_NG_date", ngDate);
 												} else {
@@ -1525,13 +1536,14 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 											}
 										}
 									} else {
-										console.error("futaba_catalog_NG - hexHash abnormal: image No." + imgNumber + ", hexHash: " + hexHash);	// eslint-disable-line no-console
+										console.error("futaba_catalog_NG - hexHash abnormal: image No." + imgNumber + ", hexHash: " + hexHash);
 									}
 								} else {
-									console.error("futaba_catalog_NG - image data abnormal: image No." + imgNumber);	// eslint-disable-line no-console
+									console.error("futaba_catalog_NG - image data abnormal: image No." + imgNumber);
 								}
 							};
 							if (this.complete && this.width && this.height && this.onload) {
+								// onloadセット中に画像読込完了していたらloadをトリガーする
 								$(this).trigger("load");
 							}
 						}
@@ -1547,7 +1559,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 			$("#cattable td a img").each(function() {
 				var imgSrc = this.src.match(/(\d+)s\.jpg$/);
 				if (imgSrc) {
-					var imgNumber = parseInt(imgSrc[1]);
+					var imgNumber = parseInt(imgSrc[1], 10);
 					if (okImages.indexOf(imgNumber) == -1) {
 						okImages.unshift(imgNumber);
 					}
@@ -1559,7 +1571,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 			setIndivValue("OK_images_indiv", okImages);
 		}
 		//console.log("futaba_catalog_NG - okImages.length: " + okImages.length);
-		console.log("futaba_catalog_NG - Parsing@" + serverFullPath + ": "+((new Date()).getTime()-Start) +"msec");	// eslint-disable-line no-console
+		console.log("futaba_catalog_NG - Parsing@" + serverFullPath + ": " + ((new Date()).getTime() - Start) + "msec");	// eslint-disable-line no-console
 
 		/**
 		 * ハミング距離取得
@@ -1596,18 +1608,18 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 	}
 
 	/**
-	 * KOSHIAN delイベント監視
+	 * KOSHIAN del イベント監視
 	 */
 	function listenKoshianDelEvent() {
 		document.addEventListener("KOSHIAN_del", () => {
 			// delされたスレをNG登録して非表示
-			$(".KOSHIAN_del").each(function(){
+			$(".KOSHIAN_del").each(function() {
 				var threadNumber = $(this).children("a:first").length ? $(this).children("a:first").attr("href").slice(4,-4) : "";
 				if (threadNumber) {
 					addNgNumber(threadNumber);
 				}
 				$(this).addClass("GM_fcn_ng_numbers");
-				$(this).css("display","none");
+				$(this).css("display", "none");
 				$(this).removeClass("KOSHIAN_del");
 			});
 			hideNgThreads();
@@ -1615,7 +1627,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 	}
 
 	/**
-	 * futaba thread highlighter Kピックアップイベント監視
+	 * futaba thread highlighter K ピックアップイベント監視
 	 */
 	function listenFthPickupEvent() {
 		document.addEventListener("FutabaTH_pickup", () => {
