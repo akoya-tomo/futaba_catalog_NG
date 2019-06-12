@@ -272,7 +272,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 				"padding-right": "16px"
 			}
 		});
-		$("body > table[border]").before($ngMenubarArea);
+		$("#cattable").before($ngMenubarArea);
 		$ngMenubarArea.append($ngWordsHeader);
 		// 設定ボタン
 		var $ngWordsButton = $("<span>", {
@@ -847,11 +847,11 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 						makeNgButton();
 						hideNgThreads();
 						$("body").attr("__fcn_catalog_visibility", "visible");
-						$("body > table[border] > tbody").css("opacity", "1");
+						$("#cattable > tbody").css("opacity", "1");
 						$("#GM_fth_highlighted_threads").css("visibility", "visible");
 					} else if (HIDE_CATALOG_BEFORE_LOAD && status !== "") {
 						$("body").attr("__fcn_catalog_visibility", "hidden");
-						$("body > table[border] > tbody").css("opacity", "0");
+						$("#cattable > tbody").css("opacity", "0");
 						$("#GM_fth_highlighted_threads").css("visibility", "hidden");
 					}
 				});
@@ -863,13 +863,13 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 		document.addEventListener("KOSHIAN_cat_reload", () => {
 			if (HIDE_CATALOG_BEFORE_LOAD) {
 				$("body").attr("__fcn_catalog_visibility", "hidden");
-				$("body > table[border] > tbody").css("opacity", "0");
+				$("#cattable > tbody").css("opacity", "0");
 				$("#GM_fth_highlighted_threads").css("visibility", "hidden");
 			}
 			makeNgButton();
 			hideNgThreads();
 			$("body").attr("__fcn_catalog_visibility", "visible");
-			$("body > table[border] > tbody").css("opacity", "1");
+			$("#cattable > tbody").css("opacity", "1");
 			$("#GM_fth_highlighted_threads").css("visibility", "visible");
 		});
 	}
@@ -909,7 +909,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 			}
 		});
 
-		$("body > table[border] td").each(function(){
+		$("#cattable td").each(function() {
 			var $oldNgButtons = $(this).children(".GM_fcn_ng_button");
 			if ($oldNgButtons.length) {
 				$oldNgButtons.remove();
@@ -1299,7 +1299,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 			$(".GM_fcn_ng_words").removeClass("GM_fcn_ng_words");
 		}
 		if (words !== "") {
-			$("body > table[border] td small").each(function(){
+			$("#cattable td small").each(function() {
 				if (re.test($(this).text())) {
 					if ($(this).parent("a").length) {		//文字スレ
 						$(this).parent().parent("td").addClass("GM_fcn_ng_words");
@@ -1318,7 +1318,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 
 		// NG番号
 		if (numbers.length) {
-			$("body > table[border] td > a:first-of-type").each(function(){
+			$("#cattable td > a:first-of-type").each(function() {
 				var hrefNum = $(this).attr("href").slice(4,-4);
 				if (numbers.indexOf(hrefNum) > -1){
 					$(this).parent("td").addClass("GM_fcn_ng_numbers");
@@ -1330,7 +1330,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 		// NG画像
 		if (images.length) {
 			var dHash, dHashesNum, i;
-			$("body > table[border] td > a:first-of-type > img").each(function(){
+			$("#cattable td > a:first-of-type > img").each(function() {
 				var imgSrc = this.src.match(/(\d+)s\.jpg$/);
 				if (imgSrc) {
 					var imgNumber = parseInt(imgSrc[1]);
@@ -1511,7 +1511,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 			}
 			setIndivValue("OK_images_indiv", okImages);
 		} else if (USE_NG_IMAGES) {
-			$("body > table[border] td a img").each(function(){
+			$("#cattable td a img").each(function() {
 				var imgSrc = this.src.match(/(\d+)s\.jpg$/);
 				if (imgSrc) {
 					var imgNumber = parseInt(imgSrc[1]);
@@ -1634,7 +1634,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 	 */
 	function setCatalogHiddenStyle() {
 		var css =
-			"body > table[border] {" +
+			"#cattable {" +
 			"  opacity: 0;" +
 			"}";
 		GM_addStyle(css);
@@ -1645,7 +1645,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 	 */
 	function setCatalogShownStyle() {
 		var css =
-			"body > table[border] {" +
+			"#cattable {" +
 			"  opacity: 1;" +
 			"}";
 		GM_addStyle(css);
