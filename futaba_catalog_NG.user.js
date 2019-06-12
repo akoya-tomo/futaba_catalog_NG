@@ -872,6 +872,37 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 			$("#cattable > tbody").css("opacity", "1");
 			$("#GM_fth_highlighted_threads").css("visibility", "visible");
 		});
+
+		// ふたクロ
+		checkFutakuroReloadStatus();
+
+		function checkFutakuroReloadStatus() {
+			var opacityZero = false;
+			var target = $("#cattable").get(0);
+			var config = { attributes: true , attributeFilter: ["style"] };
+			var observer = new MutationObserver(function(mutations) {
+				mutations.forEach(function(mutation) {
+					if ($("#cat_search").length) {
+						if (mutation.target.attributes.style.nodeValue == "opacity: 0;") {
+							opacityZero = true;
+							if (HIDE_CATALOG_BEFORE_LOAD) {
+								$("body").attr("__fcn_catalog_visibility", "hidden");
+								$("#cattable > tbody").css("opacity", "0");
+								$("#GM_fth_highlighted_threads").css("visibility", "hidden");
+							}
+						} else if (opacityZero) {
+							opacityZero = false;
+							makeNgButton();
+							hideNgThreads();
+							$("body").attr("__fcn_catalog_visibility", "visible");
+							$("#cattable > tbody").css("opacity", "1");
+							$("#GM_fth_highlighted_threads").css("visibility", "visible");
+						}
+					}
+				});
+			});
+			observer.observe(target, config);
+		}
 	}
 
 	/**
@@ -931,10 +962,12 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 					"display": "inline"
 				});
 				$cloneNgButton.siblings(".KOSHIAN_response_increase").css("display", "none");
+				$cloneNgButton.siblings(".fvw_num").css("display", "none");
 			}, function () {
 				$cloneNgButton.css("display", "none");
 				$cloneNgButtonMenu.css("display", "none");
 				$cloneNgButton.siblings(".KOSHIAN_response_increase").css("display", "inline");
+				$cloneNgButton.siblings(".fvw_num").css("display", "");
 			});
 
 			$cloneNgButton.append($cloneNgButtonMenu);
@@ -1602,10 +1635,12 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 					$(this).hover(function () {
 						$ngButton.css("display", "inline");
 						$ngButton.siblings(".KOSHIAN_response_increase").css("display", "none");
+						$ngButton.siblings(".fvw_num").css("display", "none");
 					}, function () {
 						$ngButton.css("display", "none");
 						$ngButtonMenu.css("display", "none");
 						$ngButton.siblings(".KOSHIAN_response_increase").css("display", "inline");
+						$ngButton.siblings(".fvw_num").css("display", "");
 					});
 				}
 			});
@@ -1825,6 +1860,10 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 			// カタログ下スペース
 			"#GM_fcn_catalog_space {" +
 			"  min-height: 2000px;" +
+			"}" +
+			// ふたクロNGボタン
+			".fvw_ng {" +
+			"  display: none !important;" +
 			"}";
 		GM_addStyle(css);
 	}
