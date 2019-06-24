@@ -1408,7 +1408,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 													if (dHashes[i] && getHammingDistance(dHash, dHashes[i]) <= DISTANCE_THRESHOLD) {
 														if (ENABLE_DHASH_TEST) {
 															$(this).css("border", "2px dashed red");
-															console.debug("futaba_catalog_NG - catalog hash: " + dHash.toString(16) + ", NG list hash: " + dHashes[i].toString(16));
+															console.debug("futaba_catalog_NG - catalog hash: " + ("000000000000" + dHash.toString(16)).slice(-13) + ", NG list hash: " + ("000000000000" + dHashes[i].toString(16)).slice(-13));
 															console.debug("futaba_catalog_NG - hamming distance: " + getHammingDistance(dHash, dHashes[i]));
 														} else {
 															$(this).parent().parent("td").addClass("GM_fcn_ng_images");
@@ -1435,7 +1435,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 											if (dHashes[i] && getHammingDistance(dHash, dHashes[i]) <= DISTANCE_THRESHOLD) {
 												if (ENABLE_DHASH_TEST) {
 													$(this).css("border", "2px dashed red");
-													console.debug("futaba_catalog_NG - catalog hash: " + dHash.toString(16) + ", NG list hash: " + dHashes[i].toString(16));
+													console.debug("futaba_catalog_NG - catalog hash: " + ("000000000000" + dHash.toString(16)).slice(-13) + ", NG list hash: " + ("000000000000" + dHashes[i].toString(16)).slice(-13));
 													console.debug("futaba_catalog_NG - hamming distance: " + getHammingDistance(dHash, dHashes[i]));
 												} else {
 													$(this).parent().parent("td").addClass("GM_fcn_ng_images");
@@ -1490,7 +1490,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 															if (dHashes[i] && getHammingDistance(dHash, dHashes[i]) <= DISTANCE_THRESHOLD) {
 																if (ENABLE_DHASH_TEST) {
 																	$(this).css("border", "2px dashed red");
-																	console.debug("futaba_catalog_NG - catalog hash: " + dHash.toString(16) + ", NG list hash: " + dHashes[i].toString(16));
+																	console.debug("futaba_catalog_NG - catalog hash: " + ("000000000000" + dHash.toString(16)).slice(-13) + ", NG list hash: " + ("000000000000" + dHashes[i].toString(16)).slice(-13));
 																	console.debug("futaba_catalog_NG - hamming distance: " + getHammingDistance(dHash, dHashes[i]));
 																} else {
 																	$(this).parent().parent("td").addClass("GM_fcn_ng_images");
@@ -1518,7 +1518,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 													if (dHashes[i] && getHammingDistance(dHash, dHashes[i]) <= DISTANCE_THRESHOLD) {
 														if (ENABLE_DHASH_TEST) {
 															$(this).css("border", "2px dashed red");
-															console.debug("futaba_catalog_NG - catalog hash: " + dHash.toString(16) + ", NG list hash: " + dHashes[i].toString(16));
+															console.debug("futaba_catalog_NG - catalog hash: " + ("000000000000" + dHash.toString(16)).slice(-13) + ", NG list hash: " + ("000000000000" + dHashes[i].toString(16)).slice(-13));
 															console.debug("futaba_catalog_NG - hamming distance: " + getHammingDistance(dHash, dHashes[i]));
 														} else {
 															$(this).parent().parent("td").addClass("GM_fcn_ng_images");
