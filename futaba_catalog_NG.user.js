@@ -1363,7 +1363,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 
 		// NG番号
 		if (numbers.length) {
-			$("#cattable td > a:first-of-type").each(function() {
+			$("#cattable td[class!='GM_fcn_ng_words'] > a:first-of-type").each(function() {
 				var hrefNum = $(this).attr("href").slice(4,-4);
 				if (numbers.indexOf(hrefNum) > -1){
 					$(this).parent("td").addClass("GM_fcn_ng_numbers");
@@ -1375,7 +1375,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 		// NG画像
 		if (images.length) {
 			var dHash, dHashesNum, i;
-			$("#cattable td > a:first-of-type > img").each(function() {
+			$("#cattable td:not([class^='GM_fcn_ng_']) > a:first-of-type > img").each(function() {
 				var imgSrc = this.src.match(/(\d+)s\.jpg$/);
 				if (imgSrc) {
 					var imgNumber = parseInt(imgSrc[1], 10);
