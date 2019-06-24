@@ -1,13 +1,13 @@
 ## futaba catalog NG
-このUserscriptはふたば☆ちゃんねるのカタログに現在表示されているすべてのスレ本文の文字列を監視して、登録したNGワードに該当するスレを非表示にします。NGワードには正規表現が利用できます。  
+この Userscript はふたば☆ちゃんねるのカタログに現在表示されているすべてのスレ本文の文字列を監視して、登録したNGワードに該当するスレを非表示にします。NGワードには正規表現が利用できます。  
 また、スレのNGボタンから一時的に非表示にしたり、スレ本文をNGワードに登録したり、スレ画像をNGリストに登録することもできます。  
 
-Firefoxの場合、[Tampermonkey](https://addons.mozilla.org/ja/firefox/addon/tampermonkey/)を先にインスールしてからスクリプトをインストールして下さい。  
-(GreasemonkeyやViolentmonkeyでの動作は未確認です)  
-Chromeの場合、[Tampermonkey](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo/)を先にインスールしてからスクリプトをインストールして下さい。  
+Firefox の場合、[Tampermonkey](https://addons.mozilla.org/ja/firefox/addon/tampermonkey/) を先にインスールしてからスクリプトをインストールして下さい。  
+(Greasemonkey や Violentmonkey での動作は未確認です)  
+Chrome の場合、[Tampermonkey](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo/) を先にインスールしてからスクリプトをインストールして下さい。  
 
-※このUserscriptは単体で利用可能ですが、Firefoxアドオン[KOSHIAN](https://addons.mozilla.org/ja/firefox/user/anonymous-a0bba9187b568f98732d22d51c5955a6/)（[改変版](https://github.com/akoya-tomo/futaba_auto_reloader_K/wiki/)含む）や[赤福Extended・赤福Firefox SP](http://toshiakisp.github.io/akahuku-firefox-sp/)またはChromeアドオン[ふたクロ](http://futakuro.com/)との併用も可能です。[五平餅](https://toshiaki-gohei.github.io/gohei-mochi/)との併用では正常に動作しません。  
-※その他のふたば閲覧支援ツールは[こちら](https://github.com/akoya-tomo/futaba_auto_reloader_K/wiki/)。
+※この Userscript は単体で利用可能ですが、Firefox アドオン [KOSHIAN](https://addons.mozilla.org/ja/firefox/user/anonymous-a0bba9187b568f98732d22d51c5955a6/)（[改変版](https://github.com/akoya-tomo/futaba_auto_reloader_K/wiki/)含む）や [赤福Extended・赤福Firefox SP](http://toshiakisp.github.io/akahuku-firefox-sp/) または Chrome アドオン [ふたクロ](http://futakuro.com/) との併用も可能です。[五平餅](https://toshiaki-gohei.github.io/gohei-mochi/) との併用では正常に動作しません。  
+※その他のふたば閲覧支援ツールは [こちら](https://github.com/akoya-tomo/futaba_auto_reloader_K/wiki/)。
 
 ## 使い方
 * NGワード使用時はふたばのカタログモードの設定で「文字数」を適当な大きさ(4以上推奨)に設定してください。(板毎に設定が必要です)
@@ -49,28 +49,28 @@ NGワードは全板共通と各板個別でそれぞれ設定できます。
   - スレNGをクリアするボタンを表示します。クリアボタンを押すとその板で登録したスレNGが全てクリアされます。  
     ![スクリーンショット](images/screenshot06.png)  
 
-    `false`に設定していてもTampermonkeyのツールバーボタンのメニューにある「スレNGクリア」で同じ操作ができます。  
+    `false`に設定していても Tampermonkey のツールバーボタンのメニューにある「スレNGクリア」で同じ操作ができます。  
     ![スクリーンショット](images/screenshot07.png)  
 * \(New\) USE\_DHASH : 近似画像NGを使用する（デフォルト：false）
   - NG画像に近似するスレ画像を非表示にします。
-* \(New\) DISTANCE_THRESHOLD : NG判定する画像の近似度（デフォルト：7）
+* \(New\) DISTANCE_THRESHOLD : NG判定する画像の近似度（デフォルト：4）
   - 近似度（ハミング距離）は0～49の値を取り、値が小さいほど画像の近似度が高くなります。0でほぼ一致、10を超えると異なる画像といった感じです。
 * \(New\) ENABLE_DHASH_TEST : 近似画像NGのテストモードを有効にする。（デフォルト：false）
-  - 近似画像NGにしたスレを隠さずにスレ画像を赤破線で囲みます。開発ツール\(Ctrl+Shift+I\)のコンソールでNG判定した画像のHash値と近似度が確認できます。近似度の調整後の確認にご使用ください。
+  - 近似画像NGにしたスレを隠さずにスレ画像を赤破線で囲みます。開発ツール\(Ctrl + Shift + I\)のコンソールでNG判定した画像のdHash値と近似度が確認できます。近似度の調整後の確認にご使用ください。
 
 ## 注意事項
-* [futaba thread highlighter K](https://greasyfork.org/ja/scripts/36639-futaba-thread-highlighter-k/)と併用する場合はfutaba thread highlighter K **rev17以上**をインストールして、Tampermonkeyのダッシュボードからfutaba catalog NGの**実行順が先**になるように設定してください。  
+* [futaba thread highlighter K](https://greasyfork.org/ja/scripts/36639-futaba-thread-highlighter-k/) と併用する場合は futaba thread highlighter K **rev17以上**をインストールして、Tampermonkey のダッシュボードから futaba catalog NG の**実行順が先**になるように設定してください。  
   ![スクリーンショット](images/screenshot04.png)  
-* 画像NGの判定負荷が重いため、環境によってはリロード後のカタログ表示完了が非常に遅くなる可能性があります。その場合はUSE\_NG\_IMAGESを`false`に設定して画像NG機能を無効にしてください。
+* 画像NGの判定負荷が重いため、環境によってはリロード後のカタログ表示完了が非常に遅くなる可能性があります。その場合は USE\_NG\_IMAGES を `false` に設定して画像NG機能を無効にしてください。
 * 環境によっては「ページ読み込みが完了するまでカタログを隠す」を有効にしてもリロード時にカタログが一瞬表示されることがあります。
 * カタログのスレ画像サイズが1~5の状態でv1.6.1以前にNG登録した画像はv1.6.2以降でも画像の一部分だけでNG判定されます。誤判定などの問題があるときはNGリストから一度削除してから再登録することで問題を解消できます。
-* \(New\) ふたクロのNG機能と併用できますが\[NG\]ボタンはfutaba catalog NGの物が表示されます。
+* \(New\) ふたクロのNG機能と併用できますが\[NG\]ボタンは futaba catalog NG の物が表示されます。
 
 ## 既知の問題
-* Tampermonkeyで優先順序を先に設定していても他のUserscriptの後で実行されることがある。
-  - md5変換の外部ライブラリをブラウザ起動後やスクリプト更新後に最初に読み込むときに発生することがあるようです。一度ライブラリを読み込めば次回のリロードからは優先順序に沿ってUserscriptが実行されます。
-* WaterfoxでNGリストのメニューの表示が崩れる
-  - 赤福Firefox spの「レス一般→デフォルトのスタイルを無視する」のチェックを外してください。
+* Tampermonkey で優先順序を先に設定していても他の Userscript の後で実行されることがある。
+  - md5 変換の外部ライブラリをブラウザ起動後やスクリプト更新後に最初に読み込むときに発生することがあるようです。一度ライブラリを読み込めば次回のリロードからは優先順序に沿って Userscript が実行されます。
+* Waterfox でNGリストのメニューの表示が崩れる
+  - 赤福Firefox sp の「レス一般→デフォルトのスタイルを無視する」のチェックを外してください。
 
 ## Tips
 * スレ本文の文字数を増やしたらカタログが見づらくて生きるのが辛い  
@@ -79,16 +79,16 @@ NGワードは全板共通と各板個別でそれぞれ設定できます。
     または  
   - [futaba\_catalog\_mod(クラシックバージョン)](https://userstyles.org/styles/114130/futaba-catalog-mod-classic)  
 * NGリストをバックアップしたい  
-  Tampermonkeyのダッシュボードを開いて
+  Tampermonkey のダッシュボードを開いて
   - 「ユーティリティ」タブから「スクリプトのストレージを含める」にチェックしてエクスポートする。  
     （インストールしている全てのスクリプトとデータを一括保存）  
     または
-  - 「インストール済みUserScript」タブからfutaba catalog NGを選択して「ストレージ」タブのテキストエリア内の文字を全選択してコピーし、テキストエディタに貼り付けて保存する。  
+  - 「インストール済み UserScript」タブから futaba catalog NG を選択して「ストレージ」タブのテキストエリア内の文字を全選択してコピーし、テキストエディタに貼り付けて保存する。  
     （NGデータだけを保存）  
 * \(New\) 近似画像NG機能について  
   v1.7.0以降で登録された（dHashがある）NG画像のみ近似画像判定されます。  
   基本的に「見た目は同じだけどファイルとしては異なる」画像を近似画像としてNGにする機能です。  
-  見た目は似ているけど違いが判別できる画像は近似画像と判定されないことがあるのでご注意ください。  
+  見た目は似ているけど違いが判別できる画像は基本的に近似画像と判定されないのでご注意ください。  
 
   以下は近似画像として判定されないケースです。  
   - トリミングされた画像
@@ -99,11 +99,16 @@ NGワードは全板共通と各板個別でそれぞれ設定できます。
   逆にバストアップなど構図が同じ画像は誤検出する可能性があります。  
 
 ## ライセンス
-* このUserscriptにはmd5変換に[js-md5](https://github.com/emn178/js-md5/)を使用しています。
+* この Userscript には md5 変換に [js-md5](https://github.com/emn178/js-md5/) を使用しています。
 * 近似画像判定に使用しているdHashの計算は以下のブログに記載されている方法をベースにしています。  
   [THE HACKER FACTOR BLOG](http://www.hackerfactor.com/blog/index.php?/archives/529-Kind-of-Like-That.html)
 
 ## 更新履歴
+* v1.7.1 2019-06-24
+  - 近似画像NGが無効でもNG画像登録で常にdHashを登録するように修正
+  - 近似画像NGの閾値のデフォルトを 7 → 4 に変更
+  - 近似画像NGのテストモードでdHashを常に13桁で表示するように修正
+  - NG判定対象条件を修正
 * v1.7.0 2019-06-13
   - 近似画像NG機能を追加
   - ふたクロで動作するように修正
@@ -111,7 +116,7 @@ NGワードは全板共通と各板個別でそれぞれ設定できます。
   - カタログでUNDOしたときに\[NG\]ボタンが表示されなくなる不具合を修正
   - \[NG\]ボタンのサイズを調整
 * v1.6.5 2019-05-15
-  - [KOSHIAN リロード拡張 改](https://github.com/akoya-tomo/koshian_reload_futaba_kai/)のカタログリロードに対応
+  - [KOSHIAN リロード拡張 改](https://github.com/akoya-tomo/koshian_reload_futaba_kai/) のカタログリロードに対応
 * v1.6.4 2019-04-29
   - NGボタンメニューをdelフォームより前面に表示するように修正
 * v1.6.3 2019-02-17
@@ -139,16 +144,16 @@ NGワードは全板共通と各板個別でそれぞれ設定できます。
   - NG画像の最終検出日が更新されないことがある不具合を修正
   - コード整理
 * v1.4.1 2018-07-10
-  - NGボタンを[KOSHIAN カタログマーカー](https://addons.mozilla.org/ja/firefox/addon/koshian-catalog-marker/)（[改](https://github.com/akoya-tomo/koshian_catalog_marker_kai/)）のレス増加数と排他的に表示するように変更
+  - NGボタンを [KOSHIAN カタログマーカー](https://addons.mozilla.org/ja/firefox/addon/koshian-catalog-marker/)（[改](https://github.com/akoya-tomo/koshian_catalog_marker_kai/)）のレス増加数と排他的に表示するように変更
 * v1.4.0 2018-07-06
-  - [futaba thread highlighter K](https://greasyfork.org/ja/scripts/36639-futaba-thread-highlighter-k/)がピックアップしたスレのNGボタンが動作するように修正
+  - [futaba thread highlighter K](https://greasyfork.org/ja/scripts/36639-futaba-thread-highlighter-k/) がピックアップしたスレのNGボタンが動作するように修正
 * v1.3.0 2018-04-23
-  - [KOSHIAN delフォームをポップアップで開く 改](https://github.com/akoya-tomo/koshian_del_kai/)への対応
+  - [KOSHIAN delフォームをポップアップで開く 改](https://github.com/akoya-tomo/koshian_del_kai/) への対応
 * v1.2.7 2018-03-24
   - KOSHIAN フォーム拡張アドオンと併用すると誤動作する不具合修正
   - NGリストを閉じたらNGリストのスクロール位置がトップになるように修正
 * v1.2.6 2018-03-15
-  - [KOSHIAN カタログの画像をポップアップで表示 改](https://github.com/akoya-tomo/koshian_image_popuper_kai/)の新機能への対応 
+  - [KOSHIAN カタログの画像をポップアップで表示 改](https://github.com/akoya-tomo/koshian_image_popuper_kai/) の新機能への対応 
 * v1.2.5 2018-03-10
   - カタログ以外でNGボタンが表示されてしまうことがある不具合を修正
   - 赤福でリロード後の新着スレにNGボタンが表示されない不具合を修正
@@ -160,13 +165,13 @@ NGワードは全板共通と各板個別でそれぞれ設定できます。
 * v1.2.2 2018-02-24
   - スレ画像を取得失敗したときの処理を修正
 * v1.2.1 2018-02-21
-  - NG操作でfutaba thread highlighter Kのピックアップに即時反映されるように変更
+  - NG操作で futaba thread highlighter Kの ピックアップに即時反映されるように変更
 * v1.2.0 2018-02-07
   - 「画像NG」機能追加
   - 「本文NG」機能追加
 * v1.1.0 2018-01-30
   - 「スレNG」機能追加
 * v1.0.1 2018-01-18
-  - futaba thread highlighter(K)使用時はスレッド検索設定とNGワード設定を同じ並びに変更
+  - futaba thread highlighter(K) 使用時はスレッド検索設定とNGワード設定を同じ並びに変更
 * v1.0.0 2018-01-18
   - 新規リリース
