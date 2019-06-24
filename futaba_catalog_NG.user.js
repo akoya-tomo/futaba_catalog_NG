@@ -1141,7 +1141,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 				return;
 			}
 			var hexHash = md5(data);
-			var dHash = convertDHash(imgObj);
+			var dHash = convertDHash(imgObj, true);
 			//console.log("futaba_catalog_NG - hexHash: " + hexHash);
 			//console.log("futaba_catalog_NG - dHash: " + dHash.toString(16));
 			addNgListObj("_futaba_catalog_NG_images", hexHash);
@@ -1247,11 +1247,12 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 	/**
 	 * dHash変換
 	 * @param {HTMLImageElement} imgObj dHashに変換する画像のimg要素
+	 * @param {boolean} force 近似画像NGが無効でも強制的にdHash変換する
 	 * @return {number} 変換したdHash
 	 *     オリジナルは64bitのHash値だがJSの最大整数値2^53に収める為49bitのHash値を返す
 	 */
-	function convertDHash(imgObj) {
-		if (!USE_DHASH || !imgObj || !imgObj.complete || !imgObj.naturalWidth || !imgObj.naturalHeight) {
+	function convertDHash(imgObj, force = false) {
+		if ((!USE_DHASH && !force) || !imgObj || !imgObj.complete || !imgObj.naturalWidth || !imgObj.naturalHeight) {
 			return;
 		}
 		// 8x7のcanvasを生成してimg要素を反映
