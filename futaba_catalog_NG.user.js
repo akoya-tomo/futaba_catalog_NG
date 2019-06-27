@@ -1419,7 +1419,8 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 											index = findIndexOfDHashes(convertDHash(this));
 											if (index > -1) {
 												if (ENABLE_DHASH_TEST) {
-													$(this).css("border", "2px dashed red");
+													$(this).css("border", "3px dashed red");
+													$(this).parent().parent("td").css("background-color", "#e594a1");
 												} else {
 													$(this).parent().parent("td").addClass("GM_fcn_ng_images");
 													$(this).parent().parent("td").css("display", "none");
@@ -1435,7 +1436,8 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 									index = findIndexOfDHashes(convertDHash(this));
 									if (index > -1) {
 										if (ENABLE_DHASH_TEST) {
-											$(this).css("border", "2px dashed red");
+											$(this).css("border", "3px dashed red");
+											$(this).parent().parent("td").css("background-color", "#e594a1");
 										} else {
 											$(this).parent().parent("td").addClass("GM_fcn_ng_images");
 											$(this).parent().parent("td").css("display", "none");
@@ -1494,7 +1496,8 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 													index = findIndexOfDHashes(convertDHash(this));
 													if (index > -1) {
 														if (ENABLE_DHASH_TEST) {
-															$(this).css("border", "2px dashed red");
+															$(this).css("border", "3px dashed red");
+															$(this).parent().parent("td").css("background-color", "#e594a1");
 														} else {
 															$(this).parent().parent("td").addClass("GM_fcn_ng_images");
 															$(this).parent().parent("td").css("display", "none");
@@ -1511,7 +1514,8 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 											index = findIndexOfDHashes(convertDHash(this));
 											if (index > -1) {
 												if (ENABLE_DHASH_TEST) {
-													$(this).css("border", "2px dashed red");
+													$(this).css("border", "3px dashed red");
+													$(this).parent().parent("td").css("background-color", "#e594a1");
 												} else {
 													$(this).parent().parent("td").addClass("GM_fcn_ng_images");
 													$(this).parent().parent("td").css("display", "none");
