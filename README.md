@@ -6,8 +6,8 @@ Firefox の場合、[Tampermonkey](https://addons.mozilla.org/ja/firefox/addon/tampe
 (Greasemonkey や Violentmonkey での動作は未確認です)  
 Chrome の場合、[Tampermonkey](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo/) を先にインスールしてからスクリプトをインストールして下さい。  
 
-※この Userscript は単体で利用可能ですが、Firefox アドオン [KOSHIAN](https://addons.mozilla.org/ja/firefox/user/anonymous-a0bba9187b568f98732d22d51c5955a6/)（[改変版](https://github.com/akoya-tomo/futaba_auto_reloader_K/wiki/)含む）や [赤福Extended・赤福Firefox SP](http://toshiakisp.github.io/akahuku-firefox-sp/) または Chrome アドオン [ふたクロ](http://futakuro.com/) との併用も可能です。[五平餅](https://toshiaki-gohei.github.io/gohei-mochi/) との併用では正常に動作しません。  
-※その他のふたば閲覧支援ツールは [こちら](https://github.com/akoya-tomo/futaba_auto_reloader_K/wiki/)。
+※この Userscript は単体で利用可能ですが、Firefoxアドオン [KOSHIAN](https://addons.mozilla.org/ja/firefox/user/anonymous-a0bba9187b568f98732d22d51c5955a6/)（[改変版](https://github.com/akoya-tomo/futaba_auto_reloader_K/wiki/)含む）や [赤福Extended・赤福Firefox SP](http://toshiakisp.github.io/akahuku-firefox-sp/) または Chromeアドオン [ふたクロ](http://futakuro.com/) との併用も可能です。[五平餅](https://toshiaki-gohei.github.io/gohei-mochi/) との併用では正常に動作しません。  
+※その他のふたば閲覧支援ツールは[こちら](https://github.com/akoya-tomo/futaba_auto_reloader_K/wiki/)。
 
 ## 使い方
 * NGワード使用時はふたばのカタログモードの設定で「文字数」を適当な大きさ(4以上推奨)に設定してください。(板毎に設定が必要です)
@@ -36,27 +36,27 @@ NGワードは全板共通と各板個別でそれぞれ設定できます。
 機能の動作はスクリプト冒頭の大文字変数をエディタで編集すれば変更することができます。  
 
 * USE\_NG\_IMAGES : スレ画像のNG機能を有効にする（デフォルト：true）  
-  - NGリストに登録されたスレ画像を非表示にする機能を有効にします。この設定値を`false`にすると画像NG機能が無効となります。  
+  - NGリストに登録されたスレ画像を非表示にする機能を有効にします。この設定値を `false` にすると画像NG機能が無効となります。  
 * MAX\_NG\_THREADS : NGスレの最大保持数（デフォルト：500）  
   - 記憶可能なNGスレの最大数です。NGスレの記憶数が設定値を超えると古い順に破棄されます。  
 * MAX\_OK\_IMAGES : 非NG画像名の最大保持数（板毎）（デフォルト：500）  
   - 記憶可能な非NG画像名の板毎の最大数です。画像NGの負荷を軽減するために、NGリストにマッチしなかったスレ画像名を記憶しています。この画像名の記憶数が設定値を超えると古い順に破棄されます。  
 * HIDE\_CATALOG\_BEFORE\_LOAD : ページ読み込みが完了するまでカタログを隠す（デフォルト：false）  
-  - ページの読込が完了するまでカタログを非表示にします。リロードしたときにNGにしたスレが一瞬表示されるのを避けたいときは`true`に設定して、Tampermonkeyのダッシュボードからfutaba catalog NGの**実行順を1**に設定してください。  
+  - ページの読込が完了するまでカタログを非表示にします。リロードしたときにNGにしたスレが一瞬表示されるのを避けたいときは `true` に設定して、Tampermonkey のダッシュボードから futaba catalog NG の**実行順を1**に設定してください。  
   ![スクリーンショット](images/screenshot05.png)  
   画像も含めたページの読み込みが全て完了するまではカタログが表示されませんので、スレ表示数を増やしている場合は表示されるのが遅くなる場合があります。  
 * USE\_NG\_THREAD\_CLEAR\_BUTTON : スレNG\[クリア\]ボタンを使用する（デフォルト：false）  
   - スレNGをクリアするボタンを表示します。クリアボタンを押すとその板で登録したスレNGが全てクリアされます。  
     ![スクリーンショット](images/screenshot06.png)  
 
-    `false`に設定していても Tampermonkey のツールバーボタンのメニューにある「スレNGクリア」で同じ操作ができます。  
+    `false` に設定していても Tampermonkey のツールバーボタンのメニューにある「スレNGクリア」で同じ操作ができます。  
     ![スクリーンショット](images/screenshot07.png)  
 * \(New\) USE\_DHASH : 近似画像NGを使用する（デフォルト：false）
   - NG画像に近似するスレ画像を非表示にします。
 * \(New\) DISTANCE_THRESHOLD : NG判定する画像の近似度（デフォルト：4）
   - 近似度（ハミング距離）は0～49の値を取り、値が小さいほど画像の近似度が高くなります。0でほぼ一致、10を超えると異なる画像といった感じです。
 * \(New\) ENABLE_DHASH_TEST : 近似画像NGのテストモードを有効にする。（デフォルト：false）
-  - 近似画像NGにしたスレを隠さずにスレ画像を赤破線で囲みます。開発ツール\(Ctrl + Shift + I\)のコンソールでNG判定した画像のdHash値と近似度が確認できます。近似度の調整後の確認にご使用ください。
+  - 近似画像NGにしたスレを隠さずにスレ画像を赤破線で囲み、スレの背景色を変えます。開発ツール\(Ctrl + Shift + I\)のコンソールで近似画像NG判定した画像のdHash値と近似度が確認できます。近似度の調整にご利用ください。
 
 ## 注意事項
 * [futaba thread highlighter K](https://greasyfork.org/ja/scripts/36639-futaba-thread-highlighter-k/) と併用する場合は futaba thread highlighter K **rev17以上**をインストールして、Tampermonkey のダッシュボードから futaba catalog NG の**実行順が先**になるように設定してください。  
@@ -68,7 +68,7 @@ NGワードは全板共通と各板個別でそれぞれ設定できます。
 
 ## 既知の問題
 * Tampermonkey で優先順序を先に設定していても他の Userscript の後で実行されることがある。
-  - md5 変換の外部ライブラリをブラウザ起動後やスクリプト更新後に最初に読み込むときに発生することがあるようです。一度ライブラリを読み込めば次回のリロードからは優先順序に沿って Userscript が実行されます。
+  - md5変換の外部ライブラリをブラウザ起動後やスクリプト更新後に最初に読み込むときに発生することがあるようです。一度ライブラリを読み込めば次回のリロードからは優先順序に沿って Userscript が実行されます。
 * Waterfox でNGリストのメニューの表示が崩れる
   - 赤福Firefox sp の「レス一般→デフォルトのスタイルを無視する」のチェックを外してください。
 
@@ -86,8 +86,9 @@ NGワードは全板共通と各板個別でそれぞれ設定できます。
   - 「インストール済み UserScript」タブから futaba catalog NG を選択して「ストレージ」タブのテキストエリア内の文字を全選択してコピーし、テキストエディタに貼り付けて保存する。  
     （NGデータだけを保存）  
 * \(New\) 近似画像NG機能について  
-  v1.7.0以降で登録された（dHashがある）NG画像のみ近似画像判定されます。  
-  基本的に「見た目は同じだけどファイルとしては異なる」画像を近似画像としてNGにする機能です。  
+  v1.7.0以降で登録されたNG画像とv1.7.2以降でカタログから検出されたNG画像のみ近似画像NG判定されます。  
+  つまりNGリストでdHashがあるNG画像のみ近似画像NGが判定されるということです。  
+  近似画像NGは「見た目は同じだけどファイルとしては異なる」画像を近似画像としてNGにする機能です。  
   見た目は似ているけど違いが判別できる画像は基本的に近似画像と判定されないのでご注意ください。  
 
   以下は近似画像として判定されないケースです。  
@@ -104,6 +105,9 @@ NGワードは全板共通と各板個別でそれぞれ設定できます。
   [THE HACKER FACTOR BLOG](http://www.hackerfactor.com/blog/index.php?/archives/529-Kind-of-Like-That.html)
 
 ## 更新履歴
+* v1.7.2 2019-06-27
+  - カタログから検出したNG画像にdHashが無かったらdHashを登録するように修正
+  - 近似画像NGのテストモードで検出した画像のマークを修正
 * v1.7.1 2019-06-24
   - 近似画像NGが無効でもNG画像登録で常にdHashを登録するように修正
   - 近似画像NGの閾値のデフォルトを 7 → 4 に変更
