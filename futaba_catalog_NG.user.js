@@ -758,6 +758,9 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 				e.preventDefault();
 				scrollToSelectedRow();
 				$("#GM_fcn_comment").blur();
+			} else if (e.key == "F2" && selectIndex > -1) {
+				$("#GM_fcn_comment").focus();
+				e.preventDefault();
 			}
 		});
 
