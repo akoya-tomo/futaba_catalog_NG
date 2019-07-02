@@ -708,6 +708,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 								$("#GM_fcn_ng_list_content").scrollTop(0);
 								$("#GM_fcn_catalog_space").remove();
 								$("html, body").css("overflow", "");
+								selectIndex = -1;
 								$ngListContainer.fadeOut(100);
 								$(".GM_fcn_ng_images").css("display", "");
 								$(".GM_fcn_ng_images").removeClass("GM_fcn_ng_images");
@@ -727,6 +728,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 								$("#GM_fcn_ng_list_content").scrollTop(0);
 								$("#GM_fcn_catalog_space").remove();
 								$("html, body").css("overflow", "");
+								selectIndex = -1;
 								$ngListContainer.fadeOut(100);
 							},
 						})
@@ -743,6 +745,20 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 			$(this).css("background-color", "#CCE9FF");
 		}, function() {
 			$(this).css("background-color", "#FFECFD");
+		});
+
+		$(document).keydown((e) => {
+			if (e.key == "ArrowUp" && selectIndex > 0) {
+				$(".GM_fcn_ng_list_comment").eq(selectIndex - 1).click();
+				e.preventDefault();
+				scrollToSelectedRow();
+				$("#GM_fcn_comment").blur();
+			} else if (e.key == "ArrowDown" && selectIndex > -1 && selectIndex < imageList.length) {
+				$(".GM_fcn_ng_list_comment").eq(selectIndex + 1).click();
+				e.preventDefault();
+				scrollToSelectedRow();
+				$("#GM_fcn_comment").blur();
+			}
 		});
 
 		/**
@@ -788,20 +804,27 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 			dHashList.splice(index, 2, dHashList[index + 1], dHashList[index]);
 			selectIndex = selectIndex == index ? index + 1 : index;
 
+			scrollToSelectedRow();
+			refreshNgList();
+			selectNgList();
+			resetNgListItemText();
+		}
+
+		/**
+		 * 選択行までスクロール
+		 */
+		function scrollToSelectedRow() {
 			var rowHeight = 22;	// NGリストの1行当たりの高さ(px)
 			var listLines = 13;	// NGリストの表示行数
 			var selectPos = selectIndex * rowHeight;
 			var scrollTop = $("#GM_fcn_ng_list_content").scrollTop();
-			var scrollBottom = scrollTop + (rowHeight * (listLines - 1));
+			var scrollBottom = scrollTop + (rowHeight * (listLines - 2));
 			if (selectPos < scrollTop) {
 				$("#GM_fcn_ng_list_content").scrollTop(selectPos);
 			}
 			if (selectPos > scrollBottom) {
-				$("#GM_fcn_ng_list_content").scrollTop(selectPos - (rowHeight * (listLines - 1)));
+				$("#GM_fcn_ng_list_content").scrollTop(selectPos - (rowHeight * (listLines - 2)));
 			}
-			refreshNgList();
-			selectNgList();
-			resetNgListItemText();
 		}
 
 		/**
