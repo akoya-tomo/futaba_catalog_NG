@@ -441,6 +441,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 						type: "button",
 						val: "キャンセル",
 						click: function() {
+							setCursor();
 							$configContainer.fadeOut(100);
 						},
 					})
@@ -481,8 +482,27 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 		GM_setValue("_futaba_catalog_NG_words", inputCommon);
 		console.log("futaba_catalog_NG: common NGword updated - " + inputCommon);	// eslint-disable-line no-console
 		setIndivValue("NG_words_indiv", inputIndiv);
+		setCursor();
 		$("#GM_fcn_config_container").fadeOut(100);
 		hideNgThreads(true);
+	}
+
+	/**
+	 * NGワードのカーソルを先頭に移動
+	 */
+	function setCursor() {
+		var inputCommonElm = $("#GM_fcn_ng_words_common").get(0);
+		if (inputCommonElm) {
+			inputCommonElm.focus();
+			inputCommonElm.setSelectionRange(0, 0);	// カーソルを先頭に移動
+			inputCommonElm.blur();
+		}
+		var inputIndivElm = $("#GM_fcn_ng_words_individual").get(0);
+		if (inputIndivElm) {
+			inputIndivElm.focus();
+			inputIndivElm.setSelectionRange(0, 0);	// カーソルを先頭に移動
+			inputIndivElm.blur();
+		}
 	}
 
 	/**
