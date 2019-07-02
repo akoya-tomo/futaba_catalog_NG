@@ -793,7 +793,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 
 		/**
 		 * NGリスト行入替
-		 * indexの行と一つ後の行を入れ替える。
+		 *     indexの行と一つ後の行を入れ替える。
 		 * @param {number} index 入替する行番号（先頭行が0）
 		 */
 		function swapRow(index) {
@@ -1671,7 +1671,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 	 * KOSHIAN del イベント監視
 	 */
 	function listenKoshianDelEvent() {
-		document.addEventListener("KOSHIAN_del", () => {
+		$(document).on("KOSHIAN_del", () => {
 			// delされたスレをNG登録して非表示
 			$(".KOSHIAN_del").each(function() {
 				var threadNumber = $(this).children("a:first").length ? $(this).children("a:first").attr("href").slice(4,-4) : "";
@@ -1690,7 +1690,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 	 * futaba thread highlighter K ピックアップイベント監視
 	 */
 	function listenFthPickupEvent() {
-		document.addEventListener("FutabaTH_pickup", () => {
+		$(document).on("FutabaTH_pickup", () => {
 			// ピックアップされたスレにNGボタンをセット
 			$(".GM_fth_pickuped, .GM_fth_opened").each(function() {
 				var $ngButton = $(this).children(".GM_fcn_ng_button");
