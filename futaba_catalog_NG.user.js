@@ -875,43 +875,43 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 		// 赤福
 		var target = $("#akahuku_catalog_reload_status").get(0);
 		if (target) {
-			checkAkahukuReloadStatus();
+			checkAkahukuReloadStatus(target);
 		} else {
-			document.addEventListener("AkahukuContentApplied", () => {
+			$(document).on("AkahukuContentApplied", () => {
 				target = $("#akahuku_catalog_reload_status").get(0);
 				if (target) {
-					checkAkahukuReloadStatus();
+					checkAkahukuReloadStatus(target);
+				} else {
+					console.error ("futaba_catalog_NG - #akahuku_catalog_reload_status not found");
 				}
 			});
 		}
 
-		var status = "";
-		function checkAkahukuReloadStatus() {
+		function checkAkahukuReloadStatus(target) {
+			var status = "";
 			var config = { childList: true };
-			var observer = new MutationObserver(function(mutations) {
-				mutations.forEach(function(mutation) {	// eslint-disable-line no-unused-vars
-					if (target.textContent == status) {
-						return;
-					}
-					status = target.textContent;
-					if (status == "完了しました" || status == "アンドゥしました" || status == "リドゥしました") {
-						makeNgButton();
-						hideNgThreads();
-						$("body").attr("__fcn_catalog_visibility", "visible");
-						$("#cattable > tbody").css("opacity", "1");
-						$("#GM_fth_highlighted_threads").css("visibility", "visible");
-					} else if (HIDE_CATALOG_BEFORE_LOAD && status !== "") {
-						$("body").attr("__fcn_catalog_visibility", "hidden");
-						$("#cattable > tbody").css("opacity", "0");
-						$("#GM_fth_highlighted_threads").css("visibility", "hidden");
-					}
-				});
+			var observer = new MutationObserver(function() {
+				if (target.textContent == status) {
+					return;
+				}
+				status = target.textContent;
+				if (status == "完了しました" || status == "アンドゥしました" || status == "リドゥしました") {
+					makeNgButton();
+					hideNgThreads();
+					$("body").attr("__fcn_catalog_visibility", "visible");
+					$("#cattable > tbody").css("opacity", "1");
+					$("#GM_fth_highlighted_threads").css("visibility", "visible");
+				} else if (HIDE_CATALOG_BEFORE_LOAD && status !== "") {
+					$("body").attr("__fcn_catalog_visibility", "hidden");
+					$("#cattable > tbody").css("opacity", "0");
+					$("#GM_fth_highlighted_threads").css("visibility", "hidden");
+				}
 			});
 			observer.observe(target, config);
 		}
 
 		// KOSHIAN
-		document.addEventListener("KOSHIAN_cat_reload", () => {
+		$(document).on("KOSHIAN_cat_reload", () => {
 			if (HIDE_CATALOG_BEFORE_LOAD) {
 				$("body").attr("__fcn_catalog_visibility", "hidden");
 				$("#cattable > tbody").css("opacity", "0");
@@ -932,8 +932,8 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 			var target = $("#cattable").get(0);
 			var config = { attributes: true , attributeFilter: ["style"] };
 			var observer = new MutationObserver(function(mutations) {
-				mutations.forEach(function(mutation) {
-					if ($("#cat_search").length) {
+				if ($("#cat_search").length) {
+					mutations.forEach(function(mutation) {
 						if (mutation.target.attributes.style.nodeValue == "opacity: 0;") {
 							opacityZero = true;
 							if (HIDE_CATALOG_BEFORE_LOAD) {
@@ -941,7 +941,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 								$("#cattable > tbody").css("opacity", "0");
 								$("#GM_fth_highlighted_threads").css("visibility", "hidden");
 							}
-						} else if (opacityZero) {
+						} else if (opacityZero && mutation.target.attributes.style.nodeValue != "opacity: 0;") {
 							opacityZero = false;
 							makeNgButton();
 							hideNgThreads();
@@ -949,8 +949,8 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 							$("#cattable > tbody").css("opacity", "1");
 							$("#GM_fth_highlighted_threads").css("visibility", "visible");
 						}
-					}
-				});
+					});
+				}
 			});
 			observer.observe(target, config);
 		}
