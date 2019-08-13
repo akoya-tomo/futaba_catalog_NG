@@ -712,6 +712,8 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 								$ngListContainer.fadeOut(100);
 								$(".GM_fcn_ng_images").css("display", "");
 								$(".GM_fcn_ng_images").removeClass("GM_fcn_ng_images");
+								$(".GM_fcn_ng_dhash_td").removeClass("GM_fcn_ng_dhash_td");
+								$(".GM_fcn_ng_dhash_img").removeClass("GM_fcn_ng_dhash_img");
 								hideNgThreads();
 							},
 						})
@@ -1465,8 +1467,8 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 											index = findIndexOfDHashes(convertDHash(this));
 											if (index > -1) {
 												if (ENABLE_DHASH_TEST) {
-													$(this).css("border", "3px dashed red");
-													$(this).parent().parent("td").css("background-color", "#e594a1");
+													$(this).addClass("GM_fcn_ng_dhash_img");
+													$(this).parent().parent("td").addClass("GM_fcn_ng_dhash_td");
 												} else {
 													$(this).parent().parent("td").addClass("GM_fcn_ng_images");
 													$(this).parent().parent("td").css("display", "none");
@@ -1482,8 +1484,8 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 									index = findIndexOfDHashes(convertDHash(this));
 									if (index > -1) {
 										if (ENABLE_DHASH_TEST) {
-											$(this).css("border", "3px dashed red");
-											$(this).parent().parent("td").css("background-color", "#e594a1");
+											$(this).addClass("GM_fcn_ng_dhash_img");
+											$(this).parent().parent("td").addClass("GM_fcn_ng_dhash_td");
 										} else {
 											$(this).parent().parent("td").addClass("GM_fcn_ng_images");
 											$(this).parent().parent("td").css("display", "none");
@@ -1542,8 +1544,8 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 													index = findIndexOfDHashes(convertDHash(this));
 													if (index > -1) {
 														if (ENABLE_DHASH_TEST) {
-															$(this).css("border", "3px dashed red");
-															$(this).parent().parent("td").css("background-color", "#e594a1");
+															$(this).addClass("GM_fcn_ng_dhash_img");
+															$(this).parent().parent("td").addClass("GM_fcn_ng_dhash_td");
 														} else {
 															$(this).parent().parent("td").addClass("GM_fcn_ng_images");
 															$(this).parent().parent("td").css("display", "none");
@@ -1560,8 +1562,8 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 											index = findIndexOfDHashes(convertDHash(this));
 											if (index > -1) {
 												if (ENABLE_DHASH_TEST) {
-													$(this).css("border", "3px dashed red");
-													$(this).parent().parent("td").css("background-color", "#e594a1");
+													$(this).addClass("GM_fcn_ng_dhash_img");
+													$(this).parent().parent("td").addClass("GM_fcn_ng_dhash_td");
 												} else {
 													$(this).parent().parent("td").addClass("GM_fcn_ng_images");
 													$(this).parent().parent("td").css("display", "none");
@@ -1774,6 +1776,17 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 			// NG画像
 			".GM_fcn_ng_images {" +
 			"  display: none;" +
+			"}" +
+			// 近似画像NGスレ
+			".GM_fcn_ng_dhash_td {" +
+			"  background-color: #e1b2ec;" +
+			"}" +
+			// 近似NG画像
+			".GM_fcn_ng_dhash_img {" +
+			"  opacity: 0.2;" +
+			"}" +
+			".GM_fcn_ng_dhash_img:hover {" +
+			"  opacity: 1;" +
 			"}" +
 			// NGボタン
 			".GM_fcn_ng_button {" +
