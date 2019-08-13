@@ -166,8 +166,8 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 		$("<div>", {
 			id: "GM_fcn_catalog_space"
 		}).appendTo("body");
-		if ($(window).scrollTop() < 1) {
-			$("html, body").scrollTop(1);
+		if ($(window).scrollTop() < 2) {
+			$("html, body").scrollTop(2);
 		}
 		$("html, body").css("overflow", "hidden");
 
