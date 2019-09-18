@@ -371,6 +371,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 				width: "950px",
 				//height: "100px",
 				display: "none",
+				fontSize: "16px",
 				fontWeight: "normal",
 				"box-shadow": "3px 3px 5px #853e52",
 				"border": "1px outset",
@@ -391,10 +392,14 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 			$("<div>").css("margin-top", "1em").append(
 				$("<div>").append(
 					$("<label>").text("全板共通").attr("for", "GM_fcn_ng_words_common"),
-					$("<input>").attr({
-						"id": "GM_fcn_ng_words_common",
-						"class": "GM_fcn_input"
-					}).css("width", "54em"),
+					$("<input>", {
+						id: "GM_fcn_ng_words_common",
+						class: "GM_fcn_input",
+						css: {
+							width: "54em",
+							fontSize: "13.33px"
+						}
+					}),
 					$("<span>").append(
 						$("<input>", {
 							class: "GM_fcn_config_button",
@@ -408,10 +413,14 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 				),
 				$("<div>").append(
 					$("<label>").text("各板個別").attr("for", "GM_fcn_ng_words_individual"),
-					$("<input>").attr({
+					$("<input>", {
 						"id": "GM_fcn_ng_words_individual",
-						"class": "GM_fcn_input"
-					}).css("width", "54em"),
+						"class": "GM_fcn_input",
+						css: {
+							width: "54em",
+							fontSize: "13.33px"
+						}
+					}),
 					$("<span>").append(
 						$("<input>", {
 							class: "GM_fcn_config_button",
@@ -453,6 +462,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 			"background-color": "#FFECFD",
 			"border": "2px outset #96ABFF",
 			"border-radius": "5px",
+			"font-size": "13.33px",
 		}).hover(function() {
 			$(this).css("background-color", "#CCE9FF");
 		}, function() {
@@ -532,6 +542,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 				width: "950px",
 				//height: "500px",
 				display: "none",
+				fontSize: "16px",
 				fontWeight: "normal",
 				"box-shadow": "3px 3px 5px #853e52",
 				"border": "1px outset",
@@ -545,21 +556,21 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 				$("<div>").text("ＮＧリスト編集").css({
 					"background-color": "#ffeeee",
 					"padding": "2px",
+					"font-size": "16px",
 					"font-weight": "bold"
 				}),
 				$("<div>").css("margin-top", "1em").append(
 					$("<div>").append(
 						$("<label>").text("md5：").attr("for", "GM_fcn_md5"),
-						$("<input>").attr({
-							"id": "GM_fcn_md5",
-							"class": "GM_fcn_ng_list_input",
-							"readonly": "readonly"
-						}).css("width", "360px"),
+						$("<input>", {
+							id: "GM_fcn_md5",
+							class: "GM_fcn_ng_list_input",
+							readonly: "readonly",
+						}),
 						$("<label>").text("コメント：").attr("for", "GM_fcn_comment"),
 						$("<input>", {
 							id: "GM_fcn_comment",
 							class: "GM_fcn_ng_list_input",
-							width: "360px",
 							keypress: function(e) {
 								if (e.key == "Enter") {
 									editSelectedRow();
@@ -572,25 +583,23 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 					$("<div>").css("margin-left", "475px").append(
 						$("<span>").append(
 							$("<input>", {
-								class: "GM_fcn_ng_list_button",
+								class: "GM_fcn_ng_list_button GM_fcn_ng_list_edit_button",
 								type: "button",
 								val: "修正",
-								width: "70px",
 								click: editSelectedRow
 							})
 						),
 						$("<span>").append(
 							$("<input>", {
-								class: "GM_fcn_ng_list_button",
+								class: "GM_fcn_ng_list_button GM_fcn_ng_list_edit_button",
 								type: "button",
 								val: "削除",
-								width: "70px",
 								click: deleteSelectedRow
 							})
 						),
 						$("<span>").css("margin", "0 0 0 1em").append(
 							$("<input>", {
-								class: "GM_fcn_ng_list_button",
+								class: "GM_fcn_ng_list_button GM_fcn_ng_list_move_button",
 								type: "button",
 								val: "上",
 								click: function() {
@@ -600,7 +609,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 						),
 						$("<span>").append(
 							$("<input>", {
-								class: "GM_fcn_ng_list_button",
+								class: "GM_fcn_ng_list_button GM_fcn_ng_list_move_button",
 								type: "button",
 								val: "下",
 								click: function() {
@@ -694,7 +703,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 				$("<div>").css("margin-top", "1em").append(
 					$("<span>").css("margin", "0 1em").append(
 						$("<input>", {
-							class: "GM_fcn_config_button",
+							class: "GM_fcn_ng_list_button",
 							type: "button",
 							val: "更新",
 							click: function() {
@@ -720,7 +729,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 					),
 					$("<span>").css("margin", "0 1em").append(
 						$("<input>", {
-							class: "GM_fcn_config_button",
+							class: "GM_fcn_ng_list_button",
 							type: "button",
 							val: "キャンセル",
 							click: function(){
@@ -738,11 +747,12 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 				)
 			)
 		);
-		$(".GM_fcn_close_button").css({
+		$(".GM_fcn_ng_list_button").css({
 			"cursor": "pointer",
 			"background-color": "#FFECFD",
 			"border": "2px outset #96ABFF",
 			"border-radius": "5px",
+			"font-size": "13.33px"
 		}).hover(function() {
 			$(this).css("background-color", "#CCE9FF");
 		}, function() {
@@ -1809,10 +1819,17 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 			"}" +
 			// NGリスト入力
 			".GM_fcn_ng_list_input {" +
+			"  width: 360px;" +
+			"  margin-right: 16px;" +
+			"  font-size: 16px;" +
+			"}" +
+			// NGリスト編集ボタン
+			".GM_fcn_ng_list_edit_button {" +
+			"  width: 70px;" +
 			"  margin-right: 16px;" +
 			"}" +
-			// NGリストボタン
-			".GM_fcn_ng_list_button {" +
+			// NGリスト移動ボタン
+			".GM_fcn_ng_list_move_button {" +
 			"  margin-right: 16px;" +
 			"}" +
 			// NGリスト枠
