@@ -30,7 +30,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 	var HIDE_CATALOG_BEFORE_LOAD = false;	// ページの読み込みが完了するまでカタログを隠す
 	var USE_NG_THREAD_CLEAR_BUTTON = false;	// スレNGのクリアボタンを使用する
 	var USE_DHASH = false;					// 近似画像NGを使用する
-	var DISTANCE_THRESHOLD = 4;				// 近似画像判定閾値(デフォルト：4)
+	var DISTANCE_THRESHOLD = 3;				// 近似画像判定閾値(デフォルト：3)
 	var ENABLE_DHASH_TEST = false;			// 近似画像NGのテストモードを有効にする
 
 	var serverName = document.domain.match(/^[^.]+/);
