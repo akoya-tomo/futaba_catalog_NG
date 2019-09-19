@@ -1254,8 +1254,9 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 			ngNumberObj[serverFullPath] = [];
 		}
 		ngNumberObj[serverFullPath].push(number);
-		if (ngNumberObj[serverFullPath].length > MAX_NG_THREADS) {
-			ngNumberObj[serverFullPath].shift();
+		var deleteCount = ngNumberObj[serverFullPath].length - MAX_NG_THREADS;
+		if (deleteCount > 0) {
+			ngNumberObj[serverFullPath].splice(0, deleteCount);
 		}
 		var jsonString = JSON.stringify(ngNumberObj);
 		GM_setValue("NG_numbers_indiv", jsonString);
