@@ -1013,26 +1013,14 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 			text: "[NG]",
 			css: {
 				color: "blue",
-				cursor: "pointer",
 				display: "none",
-				position: "relative",
 			},
 		});
 		// NGボタンメニュー
 		var $ngButtonMenu = $("<div>", {
 			class: "GM_fcn_ng_menu",
 			css: {
-				"background-color": "rgba(240, 192, 214, 0.95)",
 				display: "none",
-				"z-index": "203",
-				position: "absolute",
-				top: "15px",
-				left: "0px",
-				"min-width": "140px",
-				width: "100%",
-				"border": "1px outset",
-				"border-radius": "5px",
-				"padding": "5px",
 			}
 		});
 
@@ -1861,15 +1849,24 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 			// NGボタン
 			".GM_fcn_ng_button {" +
 			"  font-size: 12px;" +
+			"  cursor: pointer;" +
 			"}" +
 			// NGメニュー
 			".GM_fcn_ng_menu {" +
 			"  font-size: medium;" +
+			"  background-color: rgba(240, 192, 214, 0.95);" +
+			"  z-index: 203;" +
+			"  position: absolute;" +
+			"  min-width: 140px;" +
+			"  width: auto;" +
+			"  border: 1px outset;" +
+			"  border-radius: 5px;" +
+			"  padding: 5px;" +
 			"}" +
 			// NGメニュー項目
 			".GM_fcn_ng_menu_item {" +
 			"  padding: 5px;" +
-			"  z-index: 1;" +
+			"  z-index: 203;" +
 			"  cursor: pointer;" +
 			"}" +
 			// NGリストラベル
