@@ -1267,7 +1267,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 				}
 				ngListObj.unshift(val);
 				if (ngListObj.length > MAX_NG_THREADS) {
-					ngListObj.pop();
+					ngListObj.splice(MAX_NG_THREADS);
 				}
 				GM_setValue(target, ngListObj);
 			}
