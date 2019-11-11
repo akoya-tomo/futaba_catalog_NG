@@ -106,6 +106,8 @@ NGワードは全板共通と各板個別でそれぞれ設定できます。
   [THE HACKER FACTOR BLOG](http://www.hackerfactor.com/blog/index.php?/archives/529-Kind-of-Like-That.html)
 
 ## 更新履歴
+* v1.8.0 2019-11-11
+  - 新レイアウトのカタログに暫定対応
 * v1.7.5 2019-09-20
   - 近似画像NGの閾値のデフォルトを 4 → 3 に変更
   - 軽微な不具合を修正

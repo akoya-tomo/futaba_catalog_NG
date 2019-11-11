@@ -5,7 +5,7 @@
 // @author      akoya_tomo
 // @include     http://*.2chan.net/*/futaba.php?mode=cat*
 // @include     https://*.2chan.net/*/futaba.php?mode=cat*
-// @version     1.7.5
+// @version     1.8.0
 // @require     http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js
 // @require     https://cdn.jsdelivr.net/npm/js-md5@0.7.3/src/md5.min.js
 // @grant       GM_registerMenuCommand
@@ -42,6 +42,8 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 	var item_comment_text = "　コメント";
 	var item_date_text = "　最終検出日";
 	var item_dHash_text = "　dHash";
+	var isNewLayout;
+	var timer;
 
 	// dHashリスト初期化
 	dHashList = GM_getValue("_futaba_catalog_NG_dHashes", []);
@@ -58,6 +60,10 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 	}
 
 	function init(){
+		isNewLayout = $("#cattable").length && $("#cattable").prop("tagName") != "TABLE";
+		if (isNewLayout) {
+			checkAddedThreads();
+		}
 		clearNgNumber();
 		//console.log("futaba_catalog_NG commmon: " +
 		//	GM_getValue("_futaba_catalog_NG_words", ""));
@@ -969,6 +975,31 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 	}
 
 	/**
+	 * ふたばカタログの新レイアウトのスレ追加を検出
+	 */
+	function checkAddedThreads() {
+		var target = $("#cattable").get(0);
+		var config = { childList: true };
+		var observer = new MutationObserver(function(mutations) {
+			mutations.forEach(function(mutation) {
+				var $nodes = $(mutation.addedNodes);
+				if ($nodes.hasClass("cs")) {
+					if (timer) {
+						clearTimeout(timer);
+						timer = null;
+					}
+					timer = setTimeout(function() {
+						timer = null;
+						makeNgButton();
+						hideNgThreads();
+					}, 100);
+				}
+			});
+		});
+		observer.observe(target, config);
+	}
+
+	/**
 	 * カタログのスレにNGボタン作成
 	 */
 	function makeNgButton() {
@@ -982,30 +1013,19 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 			text: "[NG]",
 			css: {
 				color: "blue",
-				cursor: "pointer",
 				display: "none",
-				position: "relative",
 			},
 		});
 		// NGボタンメニュー
 		var $ngButtonMenu = $("<div>", {
 			class: "GM_fcn_ng_menu",
 			css: {
-				"background-color": "rgba(240, 192, 214, 0.95)",
 				display: "none",
-				"z-index": "203",
-				position: "absolute",
-				top: "15px",
-				left: "0px",
-				"min-width": "140px",
-				width: "100%",
-				"border": "1px outset",
-				"border-radius": "5px",
-				"padding": "5px",
 			}
 		});
 
-		$("#cattable td").each(function() {
+		var $catTd = isNewLayout ? $("#cattable .cu") : $("#cattable td");
+		$catTd.each(function() {
 			var $oldNgButtons = $(this).children(".GM_fcn_ng_button");
 			if ($oldNgButtons.length) {
 				$oldNgButtons.remove();
@@ -1043,6 +1063,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 	 * @param {jQuery} $button メニューを作成するNGボタンのjQueryオブジェクト
 	 */
 	function makeNgButtonMenu($button) {
+		var $menu = $button.children(".GM_fcn_ng_menu");
 		if (!$button.find(".GM_fcn_ng_menu_item").length) {
 			// スレNG
 			var $ngNumber = $("<div>", {
@@ -1080,10 +1101,16 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 				}
 			});
 
-			var $td = $button.parent();
-			var threadNumber = $td.children("a:first").length ? $td.children("a:first").attr("href").slice(4,-4) : "";
+			var $td = isNewLayout ? $button.parent().parent() : $button.parent();
+			var threadNumber = $td.find("a:first").length ? $td.find("a:first").attr("href").slice(4,-4) : "";
 			var threadImgObj = $td.find("img:first").length ? $td.find("img:first")[0] : "";
-			var threadComment = $td.find("small:first, .GM_fth_pickuped_caption, .GM_fth_opened_caption").length ? $td.find("small:first, .GM_fth_pickuped_caption, .GM_fth_opened_caption").text() : "";
+			var threadComment;
+			if (isNewLayout) {
+				var matches = $td.get(0).innerText.match(/([^\n]+)\n/);
+				threadComment = matches ? matches[1] : "";
+			} else {
+				threadComment = $td.find("small:first, .GM_fth_pickuped_caption, .GM_fth_opened_caption").length ? $td.find("small:first, .GM_fth_pickuped_caption, .GM_fth_opened_caption").text() : "";
+			}
 
 			var $cloneNgNumber = $ngNumber.clone();
 			var $cloneNgWordCommon = $ngWordCommon.clone();
@@ -1157,17 +1184,23 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 			});
 
 			if (threadNumber) {
-				$button.children(".GM_fcn_ng_menu").append($cloneNgNumber);
+				$menu.append($cloneNgNumber);
 			}
 			if (threadComment) {
-				$button.children(".GM_fcn_ng_menu").append($cloneNgWordCommon);
-				$button.children(".GM_fcn_ng_menu").append($cloneNgWordIndiv);
+				$menu.append($cloneNgWordCommon);
+				$menu.append($cloneNgWordIndiv);
 			}
 			if (threadImgObj && USE_NG_IMAGES) {
-				$button.children(".GM_fcn_ng_menu").append($cloneNgImage);
+				$menu.append($cloneNgImage);
 			}
 		}
-		$button.children(".GM_fcn_ng_menu").css("display", "block");
+
+		var buttonPos = $button.offset();
+		var menuLeft = buttonPos.left;
+		var menuTop = buttonPos.top + $button.height();
+		$menu.css("left", `${menuLeft}px`);
+		$menu.css("top", `${menuTop}px`);
+		$menu.css("display", "block");
 
 		/**
 		 * NGワード追加
@@ -1234,7 +1267,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 				}
 				ngListObj.unshift(val);
 				if (ngListObj.length > MAX_NG_THREADS) {
-					ngListObj.pop();
+					ngListObj.splice(MAX_NG_THREADS);
 				}
 				GM_setValue(target, ngListObj);
 			}
@@ -1404,17 +1437,27 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 			$(".GM_fcn_ng_words").removeClass("GM_fcn_ng_words");
 		}
 		if (words !== "") {
-			$("#cattable td small").each(function() {
-				if (re.test($(this).text())) {
-					if ($(this).parent("a").length) {		//文字スレ
-						$(this).parent().parent("td").addClass("GM_fcn_ng_words");
-						$(this).parent().parent("td").css("display", "none");
-					} else {
-						$(this).parent("td").addClass("GM_fcn_ng_words");
-						$(this).parent().parent("td").css("display", "none");
+			if (isNewLayout) {
+				$("#cattable .cs").each(function() {
+					var matches = $(this).get(0).innerText.match(/([^\n]+)\n/);
+					if (matches && re.test(matches[1])) {
+						$(this).addClass("GM_fcn_ng_words");
+						$(this).css("display", "none");
 					}
-				}
-			});
+				});
+			} else {
+				$("#cattable td small").each(function() {
+					if (re.test($(this).text())) {
+						if ($(this).parent("a").length) {		//文字スレ
+							$(this).parent().parent("td").addClass("GM_fcn_ng_words");
+							$(this).parent().parent("td").css("display", "none");
+						} else {
+							$(this).parent("td").addClass("GM_fcn_ng_words");
+							$(this).parent().parent("td").css("display", "none");
+						}
+					}
+				});
+			}
 		}
 		if (isWordsChanged) {
 			console.log("futaba_catalog_NG - Parsing@" + serverFullPath + ": "+((new Date()).getTime()-Start) +"msec");	// eslint-disable-line no-console
@@ -1423,18 +1466,21 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 
 		// NG番号
 		if (numbers.length) {
-			$("#cattable td[class!='GM_fcn_ng_words'] > a:first-of-type").each(function() {
+			var $catAnchors = isNewLayout ? $("#cattable .cs[class!='GM_fcn_ng_words'] > .cu > a:first-of-type") : $("#cattable td[class!='GM_fcn_ng_words'] > a:first-of-type");
+			$catAnchors.each(function() {
 				var hrefNum = $(this).attr("href").slice(4,-4);
 				if (numbers.indexOf(hrefNum) > -1){
-					$(this).parent("td").addClass("GM_fcn_ng_numbers");
-					$(this).parent("td").css("display", "none");
+					$(this).closest("td, .cs").addClass("GM_fcn_ng_numbers");
+					$(this).closest("td, .cs").css("display", "none");
 				}
 			});
 		}
 
 		// NG画像
 		if (images.length) {
-			$("#cattable td:not([class^='GM_fcn_ng_']) > a:first-of-type > img").each(function() {
+			var $catImages = isNewLayout ? $("#cattable .cs:not([class^='GM_fcn_ng_']) > .cu > a:first-of-type > img") : $("#cattable td:not([class^='GM_fcn_ng_']) > a:first-of-type > img");
+			$catImages.each(function() {
+				var $td = isNewLayout ? $(this).closest(".cs") : $(this).closest("td");
 				var imgSrc = this.src.match(/(\d+)s\.jpg$/);
 				if (imgSrc) {
 					var imgNumber = parseInt(imgSrc[1], 10);
@@ -1444,8 +1490,8 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 							var hexHash = md5(data);
 							var index = images.indexOf(hexHash);
 							if (index > -1){
-								$(this).parent().parent("td").addClass("GM_fcn_ng_images");
-								$(this).parent().parent("td").css("display", "none");
+								$td.addClass("GM_fcn_ng_images");
+								$td.css("display", "none");
 								ngDate[index] = getDate();
 								if (dHashes[index] == null) {
 									dHashes[index] = convertDHash(this, true);
@@ -1463,8 +1509,8 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 										hexHash = md5(data);
 										index = images.indexOf(hexHash);
 										if (index > -1) {
-											$(this).parent().parent("td").addClass("GM_fcn_ng_images");
-											$(this).parent().parent("td").css("display", "none");
+											$td.addClass("GM_fcn_ng_images");
+											$td.css("display", "none");
 											ngDate[index] = getDate();
 											if (dHashes[index] == null) {
 												dHashes[index] = convertDHash(this, true);
@@ -1479,10 +1525,10 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 											if (index > -1) {
 												if (ENABLE_DHASH_TEST) {
 													$(this).addClass("GM_fcn_ng_dhash_img");
-													$(this).parent().parent("td").addClass("GM_fcn_ng_dhash_td");
+													$td.addClass("GM_fcn_ng_dhash_td");
 												} else {
-													$(this).parent().parent("td").addClass("GM_fcn_ng_images");
-													$(this).parent().parent("td").css("display", "none");
+													$td.addClass("GM_fcn_ng_images");
+													$td.css("display", "none");
 												}
 												ngDate[index] = getDate();
 											} else if (!isError) {
@@ -1496,10 +1542,10 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 									if (index > -1) {
 										if (ENABLE_DHASH_TEST) {
 											$(this).addClass("GM_fcn_ng_dhash_img");
-											$(this).parent().parent("td").addClass("GM_fcn_ng_dhash_td");
+											$td.addClass("GM_fcn_ng_dhash_td");
 										} else {
-											$(this).parent().parent("td").addClass("GM_fcn_ng_images");
-											$(this).parent().parent("td").css("display", "none");
+											$td.addClass("GM_fcn_ng_images");
+											$td.css("display", "none");
 										}
 										ngDate[index] = getDate();
 									} else if (!isError) {
@@ -1517,8 +1563,8 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 									var hexHash = md5(data);
 									var index = images.indexOf(hexHash);
 									if (index > -1){
-										$(this).parent().parent("td").addClass("GM_fcn_ng_images");
-										$(this).parent().parent("td").css("display", "none");
+										$td.addClass("GM_fcn_ng_images");
+										$td.css("display", "none");
 										ngDate[index] = getDate();
 										GM_setValue("_futaba_catalog_NG_date", ngDate);
 										if (dHashes[index] == null) {
@@ -1538,8 +1584,8 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 												hexHash = md5(data);
 												index = images.indexOf(hexHash);
 												if (index > -1) {
-													$(this).parent().parent("td").addClass("GM_fcn_ng_images");
-													$(this).parent().parent("td").css("display", "none");
+													$td.addClass("GM_fcn_ng_images");
+													$td.css("display", "none");
 													ngDate[index] = getDate();
 													GM_setValue("_futaba_catalog_NG_date", ngDate);
 													if (dHashes[index] == null) {
@@ -1556,10 +1602,10 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 													if (index > -1) {
 														if (ENABLE_DHASH_TEST) {
 															$(this).addClass("GM_fcn_ng_dhash_img");
-															$(this).parent().parent("td").addClass("GM_fcn_ng_dhash_td");
+															$td.addClass("GM_fcn_ng_dhash_td");
 														} else {
-															$(this).parent().parent("td").addClass("GM_fcn_ng_images");
-															$(this).parent().parent("td").css("display", "none");
+															$td.addClass("GM_fcn_ng_images");
+															$td.css("display", "none");
 														}
 														ngDate[index] = getDate();
 														GM_setValue("_futaba_catalog_NG_date", ngDate);
@@ -1574,10 +1620,10 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 											if (index > -1) {
 												if (ENABLE_DHASH_TEST) {
 													$(this).addClass("GM_fcn_ng_dhash_img");
-													$(this).parent().parent("td").addClass("GM_fcn_ng_dhash_td");
+													$td.addClass("GM_fcn_ng_dhash_td");
 												} else {
-													$(this).parent().parent("td").addClass("GM_fcn_ng_images");
-													$(this).parent().parent("td").css("display", "none");
+													$td.addClass("GM_fcn_ng_images");
+													$td.css("display", "none");
 												}
 												ngDate[index] = getDate();
 												GM_setValue("_futaba_catalog_NG_date", ngDate);
@@ -1605,7 +1651,8 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 			}
 			setIndivValue("OK_images_indiv", okImages);
 		} else if (USE_NG_IMAGES) {
-			$("#cattable td a img").each(function() {
+			var $catImg = isNewLayout ? $("#cattable .cs .cu a img") : $("#cattable td a img");
+			$catImg.each(function() {
 				var imgSrc = this.src.match(/(\d+)s\.jpg$/);
 				if (imgSrc) {
 					var imgNumber = parseInt(imgSrc[1], 10);
@@ -1687,7 +1734,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 		$(document).on("KOSHIAN_del", () => {
 			// delされたスレをNG登録して非表示
 			$(".KOSHIAN_del").each(function() {
-				var threadNumber = $(this).children("a:first").length ? $(this).children("a:first").attr("href").slice(4,-4) : "";
+				var threadNumber = $(this).find("a:first").length ? $(this).find("a:first").attr("href").slice(4,-4) : "";
 				if (threadNumber) {
 					addNgNumber(threadNumber);
 				}
@@ -1706,7 +1753,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 		$(document).on("FutabaTH_pickup", () => {
 			// ピックアップされたスレにNGボタンをセット
 			$(".GM_fth_pickuped, .GM_fth_opened").each(function() {
-				var $ngButton = $(this).children(".GM_fcn_ng_button");
+				var $ngButton = $(this).find(".GM_fcn_ng_button");
 				if ($ngButton.length) {
 					var $ngButtonMenu = $ngButton.children(".GM_fcn_ng_menu");
 					$ngButton.hover(function() {
@@ -1802,15 +1849,24 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 			// NGボタン
 			".GM_fcn_ng_button {" +
 			"  font-size: 12px;" +
+			"  cursor: pointer;" +
 			"}" +
 			// NGメニュー
 			".GM_fcn_ng_menu {" +
 			"  font-size: medium;" +
+			"  background-color: rgba(240, 192, 214, 0.95);" +
+			"  z-index: 203;" +
+			"  position: absolute;" +
+			"  min-width: 140px;" +
+			"  width: auto;" +
+			"  border: 1px outset;" +
+			"  border-radius: 5px;" +
+			"  padding: 5px;" +
 			"}" +
 			// NGメニュー項目
 			".GM_fcn_ng_menu_item {" +
 			"  padding: 5px;" +
-			"  z-index: 1;" +
+			"  z-index: 203;" +
 			"  cursor: pointer;" +
 			"}" +
 			// NGリストラベル
