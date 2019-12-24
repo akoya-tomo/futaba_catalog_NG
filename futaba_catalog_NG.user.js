@@ -1195,9 +1195,8 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 			}
 		}
 
-		var buttonPos = $button.offset();
-		var menuLeft = buttonPos.left;
-		var menuTop = buttonPos.top + $button.height();
+		var menuLeft = 0;
+		var menuTop = $button.height();
 		$menu.css("left", `${menuLeft}px`);
 		$menu.css("top", `${menuTop}px`);
 		$menu.css("display", "block");
@@ -1848,6 +1847,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 			"}" +
 			// NGボタン
 			".GM_fcn_ng_button {" +
+			"  position: relative;" +
 			"  font-size: 12px;" +
 			"  cursor: pointer;" +
 			"}" +
@@ -2019,6 +2019,14 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 			// カタログ下スペース
 			"#GM_fcn_catalog_space {" +
 			"  min-height: 2000px;" +
+			"}" +
+			// futaba thread highlighter ピックアップ
+			".GM_fth_pickuped {" +
+			"  overflow: visible !important;" +
+			"}" +
+			// futaba thread highlighter 既読
+			".GM_fth_opened {" +
+			"  overflow: visible !important;" +
 			"}" +
 			// ふたクロNGボタン
 			".fvw_ng {" +
