@@ -2031,6 +2031,10 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 			// ふたクロNGボタン
 			".fvw_ng {" +
 			"  display: none !important;" +
+			"}" +
+			// スレのプルダウンメニューボタン用スペース
+			"#cattable > tbody > tr > td {" +
+			"  padding-bottom: 12px !important;" +
 			"}";
 		GM_addStyle(css);
 	}
