@@ -5,7 +5,7 @@
 // @author      akoya_tomo
 // @match       http://*.2chan.net/*/futaba.php?mode=cat*
 // @match       https://*.2chan.net/*/futaba.php?mode=cat*
-// @version     1.9.1
+// @version     1.9.2
 // @require     http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js
 // @require     https://cdn.jsdelivr.net/npm/js-md5@0.7.3/src/md5.min.js
 // @grant       GM_registerMenuCommand
