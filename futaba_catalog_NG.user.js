@@ -1790,6 +1790,10 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 			// 近似画像NGスレ
 			".GM_fcn_ng_dhash_td {" +
 			"  background-color: #e1b2ec;" +
+			"  opacity: 0.2;" +
+			"}" +
+			".GM_fcn_ng_dhash_td:hover {" +
+			"  opacity: 1;" +
 			"}" +
 			// 近似NG画像
 			".GM_fcn_ng_dhash_img {" +
