@@ -1653,9 +1653,9 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 		 */
 		function getHammingDistance(hash1, hash2) {
 			// 2つのHashを上位17bitと下位32bitに分割して32ビット演算する
-			var hash1L = hash1 & 0xffffffff;
+			var hash1L = hash1 >>> 0;
 			var hash1H = (hash1 - hash1L) / 0x100000000;
-			var hash2L = hash2 & 0xffffffff;
+			var hash2L = hash2 >>> 0;
 			var hash2H = (hash2 - hash2L) / 0x100000000;
 
 			// 下位32bitのビットの異なる位置を抽出
