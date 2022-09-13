@@ -3,8 +3,8 @@
 // @namespace   https://github.com/akoya-tomo
 // @description カタログのスレをＮＧで非表示
 // @author      akoya_tomo
-// @include     http://*.2chan.net/*/futaba.php?mode=cat*
-// @include     https://*.2chan.net/*/futaba.php?mode=cat*
+// @match       http://*.2chan.net/*/futaba.php?mode=cat*
+// @match       https://*.2chan.net/*/futaba.php?mode=cat*
 // @version     1.9.1
 // @require     http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js
 // @require     https://cdn.jsdelivr.net/npm/js-md5@0.7.3/src/md5.min.js
