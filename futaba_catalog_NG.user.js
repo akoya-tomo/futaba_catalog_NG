@@ -1406,7 +1406,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 						$(this).parent().parent("td").css("display", "none");
 					} else {
 						$(this).parent("td").addClass("GM_fcn_ng_words");
-						$(this).parent().parent("td").css("display", "none");
+						$(this).parent("td").css("display", "none");
 					}
 				}
 			});
