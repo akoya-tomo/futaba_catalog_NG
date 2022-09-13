@@ -3,9 +3,9 @@
 // @namespace   https://github.com/akoya-tomo
 // @description カタログのスレをＮＧで非表示
 // @author      akoya_tomo
-// @include     http://*.2chan.net/*/futaba.php?mode=cat*
-// @include     https://*.2chan.net/*/futaba.php?mode=cat*
-// @version     1.9.1
+// @match       http://*.2chan.net/*/futaba.php?mode=cat*
+// @match       https://*.2chan.net/*/futaba.php?mode=cat*
+// @version     1.9.2
 // @require     http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js
 // @require     https://cdn.jsdelivr.net/npm/js-md5@0.7.3/src/md5.min.js
 // @grant       GM_registerMenuCommand
@@ -1406,7 +1406,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 						$(this).parent().parent("td").css("display", "none");
 					} else {
 						$(this).parent("td").addClass("GM_fcn_ng_words");
-						$(this).parent().parent("td").css("display", "none");
+						$(this).parent("td").css("display", "none");
 					}
 				}
 			});
@@ -1454,55 +1454,19 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 									isError = true;
 									console.error("futaba_catalog_NG - hexHash abnormal: image No." + imgNumber + ", hexHash: " + hexHash);	// eslint-disable-line no-console
 								}
-								if (this.width != this.naturalWidth || this.height != this.naturalHeight) {
-									// スレ画像の表示サイズでNG判定（v1.6.1以前の判定方法）
-									data = convertDataURI(this, this.width, this.height);
-									if (data) {
-										hexHash = md5(data);
-										index = images.indexOf(hexHash);
-										if (index > -1) {
-											$td.addClass("GM_fcn_ng_images");
-											$td.css("display", "none");
-											ngDate[index] = getDate();
-											if (dHashes[index] == null) {
-												dHashes[index] = convertDHash(this, true);
-											}
-										} else {
-											if (hexHash.length !== 32) {
-												isError = true;
-												console.error("futaba_catalog_NG - hexHash abnormal: image No." + imgNumber + ", hexHash: " + hexHash);	// eslint-disable-line no-console
-											}
-											// dHash判定
-											index = findIndexOfDHashes(convertDHash(this));
-											if (index > -1) {
-												if (ENABLE_DHASH_TEST) {
-													$(this).addClass("GM_fcn_ng_dhash_img");
-													$td.addClass("GM_fcn_ng_dhash_td");
-												} else {
-													$td.addClass("GM_fcn_ng_images");
-													$td.css("display", "none");
-												}
-												ngDate[index] = getDate();
-											} else if (!isError) {
-												okImages.unshift(imgNumber);
-											}
-										}
+								// dHash判定
+								index = findIndexOfDHashes(convertDHash(this));
+								if (index > -1) {
+									if (ENABLE_DHASH_TEST) {
+										$(this).addClass("GM_fcn_ng_dhash_img");
+										$td.addClass("GM_fcn_ng_dhash_td");
+									} else {
+										$td.addClass("GM_fcn_ng_images");
+										$td.css("display", "none");
 									}
-								} else {
-									// dHash判定
-									index = findIndexOfDHashes(convertDHash(this));
-									if (index > -1) {
-										if (ENABLE_DHASH_TEST) {
-											$(this).addClass("GM_fcn_ng_dhash_img");
-											$td.addClass("GM_fcn_ng_dhash_td");
-										} else {
-											$td.addClass("GM_fcn_ng_images");
-											$td.css("display", "none");
-										}
-										ngDate[index] = getDate();
-									} else if (!isError) {
-										okImages.unshift(imgNumber);
-									}
+									ngDate[index] = getDate();
+								} else if (!isError) {
+									okImages.unshift(imgNumber);
 								}
 							}
 						} else {
@@ -1529,59 +1493,20 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 											isError = true;
 											console.error("futaba_catalog_NG - hexHash abnormal: image No." + imgNumber + ", hexHash: " + hexHash);
 										}
-										if (this.width != this.naturalWidth || this.height != this.naturalHeight) {
-											// スレ画像の表示サイズでNG判定（v1.6.1以前の判定方法）
-											data = convertDataURI(this, this.width, this.height);
-											if (data) {
-												hexHash = md5(data);
-												index = images.indexOf(hexHash);
-												if (index > -1) {
-													$td.addClass("GM_fcn_ng_images");
-													$td.css("display", "none");
-													ngDate[index] = getDate();
-													GM_setValue("_futaba_catalog_NG_date", ngDate);
-													if (dHashes[index] == null) {
-														dHashes[index] = convertDHash(this, true);
-														GM_setValue("_futaba_catalog_NG_dHashes", dHashes);
-													}
-												} else {
-													if (hexHash.length !== 32) {
-														isError = true;
-														console.error("futaba_catalog_NG - hexHash abnormal: image No." + imgNumber + ", hexHash: " + hexHash);
-													}
-													// dHash判定
-													index = findIndexOfDHashes(convertDHash(this));
-													if (index > -1) {
-														if (ENABLE_DHASH_TEST) {
-															$(this).addClass("GM_fcn_ng_dhash_img");
-															$td.addClass("GM_fcn_ng_dhash_td");
-														} else {
-															$td.addClass("GM_fcn_ng_images");
-															$td.css("display", "none");
-														}
-														ngDate[index] = getDate();
-														GM_setValue("_futaba_catalog_NG_date", ngDate);
-													} else if (!isError) {
-														okImages.unshift(imgNumber);
-													}
-												}
+										// dHash判定
+										index = findIndexOfDHashes(convertDHash(this));
+										if (index > -1) {
+											if (ENABLE_DHASH_TEST) {
+												$(this).addClass("GM_fcn_ng_dhash_img");
+												$td.addClass("GM_fcn_ng_dhash_td");
+											} else {
+												$td.addClass("GM_fcn_ng_images");
+												$td.css("display", "none");
 											}
-										} else {
-											// dHash判定
-											index = findIndexOfDHashes(convertDHash(this));
-											if (index > -1) {
-												if (ENABLE_DHASH_TEST) {
-													$(this).addClass("GM_fcn_ng_dhash_img");
-													$td.addClass("GM_fcn_ng_dhash_td");
-												} else {
-													$td.addClass("GM_fcn_ng_images");
-													$td.css("display", "none");
-												}
-												ngDate[index] = getDate();
-												GM_setValue("_futaba_catalog_NG_date", ngDate);
-											} else if (!isError) {
-												okImages.unshift(imgNumber);
-											}
+											ngDate[index] = getDate();
+											GM_setValue("_futaba_catalog_NG_date", ngDate);
+										} else if (!isError) {
+											okImages.unshift(imgNumber);
 										}
 									}
 								} else {
@@ -1653,9 +1578,9 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 		 */
 		function getHammingDistance(hash1, hash2) {
 			// 2つのHashを上位17bitと下位32bitに分割して32ビット演算する
-			var hash1L = hash1 & 0xffffffff;
+			var hash1L = hash1 >>> 0;
 			var hash1H = (hash1 - hash1L) / 0x100000000;
-			var hash2L = hash2 & 0xffffffff;
+			var hash2L = hash2 >>> 0;
 			var hash2H = (hash2 - hash2L) / 0x100000000;
 
 			// 下位32bitのビットの異なる位置を抽出
@@ -1790,6 +1715,10 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 			// 近似画像NGスレ
 			".GM_fcn_ng_dhash_td {" +
 			"  background-color: #e1b2ec;" +
+			"  opacity: 0.2;" +
+			"}" +
+			".GM_fcn_ng_dhash_td:hover {" +
+			"  opacity: 1;" +
 			"}" +
 			// 近似NG画像
 			".GM_fcn_ng_dhash_img {" +
