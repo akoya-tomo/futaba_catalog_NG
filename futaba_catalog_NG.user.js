@@ -60,10 +60,12 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 
 	function init(){
 		clearNgNumber();
-		//console.log("futaba_catalog_NG commmon: " +
+		//console.log("futaba_catalog_NG - commmon: " +
 		//	GM_getValue("_futaba_catalog_NG_words", ""));
-		//console.log("futaba_catalog_NG indivisual: " +
+		//console.log("futaba_catalog_NG - indivisual: " +
 		//	getCurrentIndivValue("NG_words_indiv", ""));
+		//console.log("futaba_catalog_NG - registered NG images: " +
+		//	imageList.length);
 		GM_registerMenuCommand("ＮＧワード編集", editNgWords);
 		if (USE_NG_IMAGES) {
 			GM_registerMenuCommand("ＮＧリスト編集", editNgList);
