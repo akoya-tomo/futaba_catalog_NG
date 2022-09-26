@@ -26,6 +26,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 	 */
 	var USE_NG_IMAGES = true;				// スレ画像のNGを有効にする
 	var MAX_NG_THREADS = 500;				// NGスレの最大保持数（板毎）
+	var MAX_REGISTERED_NG_IMAGES = 2048;	// NG画像の最大登録数
 	var MAX_OK_IMAGES = 500;				// 非NG画像名の最大保持数（板毎）
 	var HIDE_CATALOG_BEFORE_LOAD = false;	// ページの読み込みが完了するまでカタログを隠す
 	var USE_NG_THREAD_CLEAR_BUTTON = false;	// スレNGのクリアボタンを使用する
@@ -1228,8 +1229,8 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 					ngListObj = [];
 				}
 				ngListObj.unshift(val);
-				if (ngListObj.length > MAX_NG_THREADS) {
-					ngListObj.splice(MAX_NG_THREADS);
+				if (ngListObj.length > MAX_REGISTERED_NG_IMAGES) {
+					ngListObj.splice(MAX_REGISTERED_NG_IMAGES);
 				}
 				GM_setValue(target, ngListObj);
 			}
