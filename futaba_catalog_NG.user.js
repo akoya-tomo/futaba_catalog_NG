@@ -1330,7 +1330,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 		for (var y = 0; y < pixels.height; ++y) {
 			for (var x = 0; x < pixels.width; ++x) {
 				var i = (y * 4) * pixels.width + x * 4;
-				var rgb = parseInt((pixels.data[i] + pixels.data[i + 1] + pixels.data[i + 2]) / 3, 10);	// 画素をグレイスケール化
+				var rgb = pixels.data[i] + pixels.data[i + 1] + pixels.data[i + 2];	// 画素をグレイスケール化
 				grayScale.push(rgb);
 			}
 		}
