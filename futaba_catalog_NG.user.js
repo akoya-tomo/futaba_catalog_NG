@@ -1456,10 +1456,12 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 									console.error("futaba_catalog_NG - hexHash abnormal: image No." + imgNumber + ", hexHash: " + hexHash);	// eslint-disable-line no-console
 								}
 								// dHash判定
-								index = findIndexOfDHashes(convertDHash(this));
+								var distance, dHash = convertDHash(this);
+								[index, distance] = findIndexOfDHashes(dHash);
 								if (index > -1) {
 									if (ENABLE_DHASH_TEST) {
 										$(this).addClass("GM_fcn_ng_dhash_img");
+										$(this).attr("title", "distance: " + distance + ", dHash: " + ("000000000000" + dHash.toString(16)).slice(-13));
 										$td.addClass("GM_fcn_ng_dhash_td");
 									} else {
 										$td.addClass("GM_fcn_ng_images");
@@ -1495,10 +1497,12 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 											console.error("futaba_catalog_NG - hexHash abnormal: image No." + imgNumber + ", hexHash: " + hexHash);
 										}
 										// dHash判定
-										index = findIndexOfDHashes(convertDHash(this));
+										var distance, dHash = convertDHash(this);
+										[index, distance] = findIndexOfDHashes(dHash);
 										if (index > -1) {
 											if (ENABLE_DHASH_TEST) {
 												$(this).addClass("GM_fcn_ng_dhash_img");
+												$(this).attr("title", "distance: " + distance + ", dHash: " + ("000000000000" + dHash.toString(16)).slice(-13));
 												$td.addClass("GM_fcn_ng_dhash_td");
 											} else {
 												$td.addClass("GM_fcn_ng_images");
@@ -1550,8 +1554,10 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 		/**
 		 * dHashリストのインデックス探索
 		 * @param {number} dHash 近似画像NG判定する画像のdHash値
-		 * @return {number} 近似度が閾値以下のdHashリスト(dHashes)配列内のインデックス
-		 *     無ければ-1を返す
+		 * @return {Array.<number>} [i, distance]
+		 *     {number} i 近似度が閾値以下のdHashリスト(dHashes)配列内のインデックス
+		 *     {number} distance ハミング距離
+		 *     dHashリストに該当が無ければi, distance共に-1を返す
 		 */
 		function findIndexOfDHashes(dHash) {
 			if (dHash != null) {
@@ -1563,12 +1569,12 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 								console.debug("futaba_catalog_NG - catalog dHash: " + ("000000000000" + dHash.toString(16)).slice(-13) + ", NG list dHash: " + ("000000000000" + dHashes[i].toString(16)).slice(-13));
 								console.debug("futaba_catalog_NG - hamming distance: " + distance);
 							}
-							return i;
+							return [i, distance];
 						}
 					}
 				}
 			}
-			return -1;
+			return [-1, -1];
 		}
 
 		/**
