@@ -25,8 +25,9 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 	 *	設定
 	 */
 	var USE_NG_IMAGES = true;				// スレ画像のNGを有効にする
-	var MAX_NG_THREADS = 500;				// NGスレの最大保持数（板毎）
-	var MAX_OK_IMAGES = 500;				// 非NG画像名の最大保持数（板毎）
+	var MAX_NG_THREADS = 512;				// NGスレの最大保持数（板毎）
+	var MAX_REGISTERED_NG_IMAGES = 2048;	// NG画像の最大登録数
+	var MAX_OK_IMAGES = 1024;				// 非NG画像名の最大保持数（板毎）
 	var HIDE_CATALOG_BEFORE_LOAD = false;	// ページの読み込みが完了するまでカタログを隠す
 	var USE_NG_THREAD_CLEAR_BUTTON = false;	// スレNGのクリアボタンを使用する
 	var USE_DHASH = false;					// 近似画像NGを使用する
@@ -59,10 +60,12 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 
 	function init(){
 		clearNgNumber();
-		//console.log("futaba_catalog_NG commmon: " +
+		//console.log("futaba_catalog_NG - commmon: " +
 		//	GM_getValue("_futaba_catalog_NG_words", ""));
-		//console.log("futaba_catalog_NG indivisual: " +
+		//console.log("futaba_catalog_NG - indivisual: " +
 		//	getCurrentIndivValue("NG_words_indiv", ""));
+		//console.log("futaba_catalog_NG - registered NG images: " +
+		//	imageList.length);
 		GM_registerMenuCommand("ＮＧワード編集", editNgWords);
 		if (USE_NG_IMAGES) {
 			GM_registerMenuCommand("ＮＧリスト編集", editNgList);
@@ -1228,8 +1231,8 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 					ngListObj = [];
 				}
 				ngListObj.unshift(val);
-				if (ngListObj.length > MAX_NG_THREADS) {
-					ngListObj.splice(MAX_NG_THREADS);
+				if (ngListObj.length > MAX_REGISTERED_NG_IMAGES) {
+					ngListObj.splice(MAX_REGISTERED_NG_IMAGES);
 				}
 				GM_setValue(target, ngListObj);
 			}
@@ -1329,7 +1332,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 		for (var y = 0; y < pixels.height; ++y) {
 			for (var x = 0; x < pixels.width; ++x) {
 				var i = (y * 4) * pixels.width + x * 4;
-				var rgb = parseInt((pixels.data[i] + pixels.data[i + 1] + pixels.data[i + 2]) / 3, 10);	// 画素をグレイスケール化
+				var rgb = pixels.data[i] + pixels.data[i + 1] + pixels.data[i + 2];	// 画素をグレイスケール化
 				grayScale.push(rgb);
 			}
 		}
@@ -1455,10 +1458,12 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 									console.error("futaba_catalog_NG - hexHash abnormal: image No." + imgNumber + ", hexHash: " + hexHash);	// eslint-disable-line no-console
 								}
 								// dHash判定
-								index = findIndexOfDHashes(convertDHash(this));
+								var distance, dHash = convertDHash(this);
+								[index, distance] = findIndexOfDHashes(dHash);
 								if (index > -1) {
 									if (ENABLE_DHASH_TEST) {
 										$(this).addClass("GM_fcn_ng_dhash_img");
+										$(this).attr("title", "distance: " + distance + ", dHash: " + ("000000000000" + dHash.toString(16)).slice(-13));
 										$td.addClass("GM_fcn_ng_dhash_td");
 									} else {
 										$td.addClass("GM_fcn_ng_images");
@@ -1494,10 +1499,12 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 											console.error("futaba_catalog_NG - hexHash abnormal: image No." + imgNumber + ", hexHash: " + hexHash);
 										}
 										// dHash判定
-										index = findIndexOfDHashes(convertDHash(this));
+										var distance, dHash = convertDHash(this);
+										[index, distance] = findIndexOfDHashes(dHash);
 										if (index > -1) {
 											if (ENABLE_DHASH_TEST) {
 												$(this).addClass("GM_fcn_ng_dhash_img");
+												$(this).attr("title", "distance: " + distance + ", dHash: " + ("000000000000" + dHash.toString(16)).slice(-13));
 												$td.addClass("GM_fcn_ng_dhash_td");
 											} else {
 												$td.addClass("GM_fcn_ng_images");
@@ -1549,8 +1556,10 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 		/**
 		 * dHashリストのインデックス探索
 		 * @param {number} dHash 近似画像NG判定する画像のdHash値
-		 * @return {number} 近似度が閾値以下のdHashリスト(dHashes)配列内のインデックス
-		 *     無ければ-1を返す
+		 * @return {Array.<number>} [i, distance]
+		 *     {number} i 近似度が閾値以下のdHashリスト(dHashes)配列内のインデックス
+		 *     {number} distance ハミング距離
+		 *     dHashリストに該当が無ければi, distance共に-1を返す
 		 */
 		function findIndexOfDHashes(dHash) {
 			if (dHash != null) {
@@ -1562,12 +1571,12 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 								console.debug("futaba_catalog_NG - catalog dHash: " + ("000000000000" + dHash.toString(16)).slice(-13) + ", NG list dHash: " + ("000000000000" + dHashes[i].toString(16)).slice(-13));
 								console.debug("futaba_catalog_NG - hamming distance: " + distance);
 							}
-							return i;
+							return [i, distance];
 						}
 					}
 				}
 			}
-			return -1;
+			return [-1, -1];
 		}
 
 		/**
