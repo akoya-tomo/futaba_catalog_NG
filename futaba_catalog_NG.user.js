@@ -29,7 +29,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 	var MAX_REGISTERED_NG_IMAGES = 2048;	// NG画像の最大登録数
 	var MAX_OK_IMAGES = 1024;				// 非NG画像名の最大保持数（板毎）
 	var HIDE_CATALOG_BEFORE_LOAD = false;	// ページの読み込みが完了するまでカタログを隠す
-	var USE_NG_THREAD_CLEAR_BUTTON = false;	// スレNGのクリアボタンを使用する
+	var USE_NG_THREAD_CLEAR_BUTTON = true;	// スレNGのクリアボタンを使用する
 	var USE_NG_DISABLE_BUTTON = true;		// NG機能一時無効ボタンを使用する
 	var USE_DHASH = false;					// 近似画像NGを使用する
 	var DISTANCE_THRESHOLD = 3;				// 近似画像判定閾値(デフォルト：3)
