@@ -1464,10 +1464,10 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 		var wordsCommon = GM_getValue("_futaba_catalog_NG_words", "");
 		var wordsIndiv = getCurrentIndivValue("NG_words_indiv", "");
 		var numbers = getCurrentIndivValue("NG_numbers_indiv", []);
-		images = GM_getValue("_futaba_catalog_NG_images", "");
-		ngDate = GM_getValue("_futaba_catalog_NG_date", "");
+		images = GM_getValue("_futaba_catalog_NG_images", []);
+		ngDate = GM_getValue("_futaba_catalog_NG_date", []);
 		okImages = getCurrentIndivValue("OK_images_indiv", []);
-		dHashes = GM_getValue("_futaba_catalog_NG_dHashes", "");
+		dHashes = GM_getValue("_futaba_catalog_NG_dHashes", []);
 
 		// NGワード
 		if( wordsCommon !== "" ) {
