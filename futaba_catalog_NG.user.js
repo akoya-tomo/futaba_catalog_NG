@@ -1558,7 +1558,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 								if (index > -1) {
 									if (ENABLE_DHASH_TEST) {
 										$(this).addClass("GM_fcn_ng_dhash_img");
-										$(this).attr("title", "distance: " + distance + ", dHash: " + ("000000000000" + dHash.toString(16)).slice(-13));
+										$td.children(".GM_fcn_ng_button").attr("title", "distance: " + distance + ", dHash: " + ("000000000000" + dHash.toString(16)).slice(-13));
 										$td.addClass("GM_fcn_ng_dhash_td");
 									} else {
 										$td.addClass("GM_fcn_ng_images");
@@ -1599,7 +1599,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 										if (index > -1) {
 											if (ENABLE_DHASH_TEST) {
 												$(this).addClass("GM_fcn_ng_dhash_img");
-												$(this).attr("title", "distance: " + distance + ", dHash: " + ("000000000000" + dHash.toString(16)).slice(-13));
+												$td.children(".GM_fcn_ng_button").attr("title", "distance: " + distance + ", dHash: " + ("000000000000" + dHash.toString(16)).slice(-13));
 												$td.addClass("GM_fcn_ng_dhash_td");
 											} else {
 												$td.addClass("GM_fcn_ng_images");
