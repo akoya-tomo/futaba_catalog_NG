@@ -83,8 +83,6 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 		//	GM_getValue("_futaba_catalog_NG_words", ""));
 		//console.log("futaba_catalog_NG - indivisual: " +
 		//	getCurrentIndivValue("NG_words_indiv", ""));
-		//console.log("futaba_catalog_NG - registered NG images: " +
-		//	imageList.length);
 		GM_registerMenuCommand("ＮＧワード編集", editNgWords);
 		if (USE_NG_IMAGES) {
 			GM_registerMenuCommand("ＮＧリスト編集", editNgList);
@@ -1504,6 +1502,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 						$(this).parent("td").addClass("GM_fcn_ng_words");
 						$(this).parent("td").css("display", "none");
 					}
+					//console.log("futaba catalog NG - caption: " + $(this).text() + " NG word: " + $(this).text().match(re)[0]);
 				}
 			});
 		}
