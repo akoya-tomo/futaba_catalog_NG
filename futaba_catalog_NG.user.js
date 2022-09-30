@@ -5,7 +5,7 @@
 // @author      akoya_tomo
 // @match       http://*.2chan.net/*/futaba.php?mode=cat*
 // @match       https://*.2chan.net/*/futaba.php?mode=cat*
-// @version     1.9.3
+// @version     1.10.0
 // @require     http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js
 // @require     https://cdn.jsdelivr.net/npm/js-md5@0.7.3/src/md5.min.js
 // @grant       GM_registerMenuCommand
@@ -16,8 +16,6 @@
 // @run-at      document-start
 // @icon        data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAAEnQAABJ0Ad5mH3gAAAAZdEVYdFNvZnR3YXJlAHBhaW50Lm5ldCA0LjAuMjHxIGmVAAABXElEQVQ4T8VSTUvDQBRcEcGL0H+QQ3c3KSVtmhRMe5aC4rX+Fb15F/PVUqFSqwcV8SxSPYknUcSDKCqICNZ/YBEv62xcS0CQ5iBOeMm+92beDrsh/w8WMIuFrEdD2kdc8ZAvacvapGoPIWs84IsxJ+J96I6yftYmKLywiInCekFUdirCbJsCzfNiUMwoLdECLQPe2TfH6lhCarDxK8HrKU5UlLfKwu7agvnsUOkJDehBaaMknE1nyIsjYM8ExBkMGSQbkiid0FU6D9uzcv1DHLEB9Wkt3kH3dBNDTpIEd9uVFvdA2o3XiR4cnfIVXojFScDSNAghnnu9qUuLD1jf5Vo5gTN4RETUo66i/w7msTmI3yH64D5fQGnsq5MCcHCNa71VaXpgwAXiUqXpgd1vEOkH5Fv5mt7Qj+WJG01jTZVHh9Ewuvhd3+S32qlOqfLoqO/Xx522M6HSvwQhn8ChorvE+0t7AAAAAElFTkSuQmCC
 // ==/UserScript==
-
-/* globals jQuery, md5 */
 this.$ = this.jQuery = jQuery.noConflict(true);
 
 (function ($) {
@@ -29,27 +27,36 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 	var MAX_REGISTERED_NG_IMAGES = 2048;	// NG画像の最大登録数
 	var MAX_OK_IMAGES = 1024;				// 非NG画像名の最大保持数（板毎）
 	var HIDE_CATALOG_BEFORE_LOAD = false;	// ページの読み込みが完了するまでカタログを隠す
-	var USE_NG_THREAD_CLEAR_BUTTON = false;	// スレNGのクリアボタンを使用する
+	var USE_NG_THREAD_CLEAR_BUTTON = true;	// スレNGのクリアボタンを使用する
+	var USE_NG_DISABLE_BUTTON = true;		// NG機能一時無効ボタンを使用する
 	var USE_DHASH = false;					// 近似画像NGを使用する
 	var DISTANCE_THRESHOLD = 3;				// 近似画像判定閾値(デフォルト：3)
 	var ENABLE_DHASH_TEST = false;			// 近似画像NGのテストモードを有効にする
+	var CHECK_NG_LIST = true;				// NGリストが正常かチェックする
 
 	var serverName = document.domain.match(/^[^.]+/);
 	var pathName = location.pathname.match(/[^/]+/);
 	var serverFullPath = serverName + "_" + pathName;
 	var selectIndex = -1;
-	var imageList, commentList, dateList, dHashList, images, ngDate, okImages, dHashes;
+	var imageList = GM_getValue("_futaba_catalog_NG_images", []);
+	var commentList = GM_getValue("_futaba_catalog_NG_comment", []);
+	var dateList = GM_getValue("_futaba_catalog_NG_date", []);
+	var dHashList = GM_getValue("_futaba_catalog_NG_dHashes", []);
+	var images, ngDate, okImages, dHashes;
 	var item_md5_text = "　md5";
 	var item_comment_text = "　コメント";
 	var item_date_text = "　最終検出日";
 	var item_dHash_text = "　dHash";
+	var isNgEnable = true;
 
 	// dHashリスト初期化
-	dHashList = GM_getValue("_futaba_catalog_NG_dHashes", []);
-	imageList = GM_getValue("_futaba_catalog_NG_images", []);
 	if (dHashList.length == 0 && imageList.length > 0) {
 		dHashList = new Array(imageList.length).fill(null);
 		GM_setValue("_futaba_catalog_NG_dHashes", dHashList);
+	}
+
+	if (CHECK_NG_LIST && USE_NG_IMAGES && !isNgListNormal()) {
+		alert("NGリストが壊れています");
 	}
 
 	if (HIDE_CATALOG_BEFORE_LOAD) {
@@ -58,14 +65,24 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 		$(init);
 	}
 
-	function init(){
-		clearNgNumber();
+	function isNgListNormal() {
+		var imageNum = imageList.length;
+		var commentNum = commentList.length;
+		var dateNum = dateList.length;
+		var dHashNum = dHashList.length;
+		//console.log("futaba catalog NG - imageNum: " + imageNum);
+		//console.log("futaba catalog NG - commentNum: " + commentNum);
+		//console.log("futaba catalog NG - dateNum: " + dateNum);
+		//console.log("futaba catalog NG - dHashNum: " + dHashNum);
+		return (imageNum == commentNum) && (imageNum == dateNum) && (imageNum == dHashNum);
+	}
+
+	function init() {
+		//clearNgNumber();
 		//console.log("futaba_catalog_NG - commmon: " +
 		//	GM_getValue("_futaba_catalog_NG_words", ""));
 		//console.log("futaba_catalog_NG - indivisual: " +
 		//	getCurrentIndivValue("NG_words_indiv", ""));
-		//console.log("futaba_catalog_NG - registered NG images: " +
-		//	imageList.length);
 		GM_registerMenuCommand("ＮＧワード編集", editNgWords);
 		if (USE_NG_IMAGES) {
 			GM_registerMenuCommand("ＮＧリスト編集", editNgList);
@@ -204,6 +221,29 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 	}
 
 	/**
+	 * NG機能無効切り替え
+	 */
+	function toggleNgDisable() {
+		var $ngDisableButton = $("#GM_fcn_ng_disable_button");
+		if (isNgEnable) {
+			$ngDisableButton.css("background", "#a9d8ff");
+			isNgEnable = false;
+			$(".GM_fcn_ng_words").css("display", "");
+			$(".GM_fcn_ng_words").removeClass("GM_fcn_ng_words");
+			$(".GM_fcn_ng_numbers").css("display", "");
+			$(".GM_fcn_ng_numbers").removeClass("GM_fcn_ng_numbers");
+			$(".GM_fcn_ng_images").css("display", "");
+			$(".GM_fcn_ng_images").removeClass("GM_fcn_ng_images");
+			$(".GM_fcn_ng_dhash_td").removeClass("GM_fcn_ng_dhash_td");
+			$(".GM_fcn_ng_dhash_img").removeClass("GM_fcn_ng_dhash_img");
+		} else {
+			$ngDisableButton.css("background", "none");
+			isNgEnable = true;
+			hideNgThreads();
+		}
+	}
+
+	/**
 	 * NGリスト表示更新
 	 * @param {boolean} loadNgList NGリストデータを読み込みするか
 	 */
@@ -296,6 +336,30 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 			$(this).css("background-color", "#F0E0D6");
 		});
 		$ngWordsHeader.append($ngWordsButton);
+
+		if (USE_NG_DISABLE_BUTTON) {
+			// NG機能一時無効
+			var $ngDisableHeader = $("<span>", {
+				id: "GM_fcn_ng_disalbe_header",
+				text: "ＮＧ機能",
+				css: {
+					"background-color": "#F0E0D6",
+					fontWeight: "bolder",
+					"padding-right": "16px"
+				}
+			});
+			$ngWordsHeader.after($ngDisableHeader);
+			// NG機能一時無効ボタン
+			var $ngDisableButton = $("<a>", {
+				id: "GM_fcn_ng_disable_button",
+				text: "[一時無効]",
+				css: {
+					cursor: "pointer",
+				},
+				click: toggleNgDisable
+			});
+			$ngDisableHeader.append($ngDisableButton);
+		}
 
 		if (USE_NG_THREAD_CLEAR_BUTTON) {
 			// スレNG
@@ -710,23 +774,27 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 							type: "button",
 							val: "更新",
 							click: function() {
-								GM_setValue("_futaba_catalog_NG_images", imageList);
-								GM_setValue("_futaba_catalog_NG_comment", commentList);
-								GM_setValue("_futaba_catalog_NG_date", dateList);
-								GM_setValue("_futaba_catalog_NG_dHashes", dHashList);
-								$(".GM_fcn_ng_list_row").css("background-color", "#ffffff");
-								$("#GM_fcn_md5").val("");
-								$("#GM_fcn_comment").val("");
-								$("#GM_fcn_ng_list_content").scrollTop(0);
-								$("#GM_fcn_catalog_space").remove();
-								$("html, body").css("overflow", "");
-								selectIndex = -1;
-								$ngListContainer.fadeOut(100);
-								$(".GM_fcn_ng_images").css("display", "");
-								$(".GM_fcn_ng_images").removeClass("GM_fcn_ng_images");
-								$(".GM_fcn_ng_dhash_td").removeClass("GM_fcn_ng_dhash_td");
-								$(".GM_fcn_ng_dhash_img").removeClass("GM_fcn_ng_dhash_img");
-								hideNgThreads();
+								if (!CHECK_NG_LIST || isNgListNormal()) {
+									GM_setValue("_futaba_catalog_NG_images", imageList);
+									GM_setValue("_futaba_catalog_NG_comment", commentList);
+									GM_setValue("_futaba_catalog_NG_date", dateList);
+									GM_setValue("_futaba_catalog_NG_dHashes", dHashList);
+									$(".GM_fcn_ng_list_row").css("background-color", "#ffffff");
+									$("#GM_fcn_md5").val("");
+									$("#GM_fcn_comment").val("");
+									$("#GM_fcn_ng_list_content").scrollTop(0);
+									$("#GM_fcn_catalog_space").remove();
+									$("html, body").css("overflow", "");
+									selectIndex = -1;
+									$ngListContainer.fadeOut(100);
+									$(".GM_fcn_ng_images").css("display", "");
+									$(".GM_fcn_ng_images").removeClass("GM_fcn_ng_images");
+									$(".GM_fcn_ng_dhash_td").removeClass("GM_fcn_ng_dhash_td");
+									$(".GM_fcn_ng_dhash_img").removeClass("GM_fcn_ng_dhash_img");
+									hideNgThreads();
+								} else {
+									alert("NGリストが壊れています\n一度キャンセルしてからやり直してください");
+								}
 							},
 						})
 					),
@@ -911,6 +979,10 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 				}
 				status = target.textContent;
 				if (status == "完了しました" || status == "アンドゥしました" || status == "リドゥしました") {
+					if (!isNgEnable) {
+						$("#GM_fcn_ng_disable_button").css("background", "none");
+						isNgEnable = true;
+					}
 					makeNgButton();
 					hideNgThreads();
 					$("body").attr("__fcn_catalog_visibility", "visible");
@@ -931,6 +1003,10 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 				$("body").attr("__fcn_catalog_visibility", "hidden");
 				$("#cattable > tbody").css("opacity", "0");
 				$("#GM_fth_highlighted_threads").css("visibility", "hidden");
+			}
+			if (!isNgEnable) {
+				$("#GM_fcn_ng_disable_button").css("background", "none");
+				isNgEnable = true;
 			}
 			makeNgButton();
 			hideNgThreads();
@@ -958,6 +1034,10 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 							}
 						} else if (opacityZero && mutation.target.attributes.style.nodeValue != "opacity: 0;") {
 							opacityZero = false;
+							if (!isNgEnable) {
+								$("#GM_fcn_ng_disable_button").css("background", "none");
+								isNgEnable = true;
+							}
 							makeNgButton();
 							hideNgThreads();
 							$("body").attr("__fcn_catalog_visibility", "visible");
@@ -1035,6 +1115,9 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 	 * @param {jQuery} $button メニューを作成するNGボタンのjQueryオブジェクト
 	 */
 	function makeNgButtonMenu($button) {
+		if (!isNgEnable) {
+			return;
+		}
 		var $menu = $button.children(".GM_fcn_ng_menu");
 		if (!$button.find(".GM_fcn_ng_menu_item").length) {
 			// スレNG
@@ -1204,8 +1287,10 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 			addNgListObj("_futaba_catalog_NG_comment", comment);
 			addNgListObj("_futaba_catalog_NG_date", getDate());
 			addNgListObj("_futaba_catalog_NG_dHashes", dHash);
-			$td.addClass("GM_fcn_ng_images");
-			$td.css("display","none");
+			if (isNgEnable) {
+				$td.addClass("GM_fcn_ng_images");
+				$td.css("display","none");
+			}
 			// 非NG画像リストからNG画像を削除
 			var okImages = getCurrentIndivValue("OK_images_indiv", []);
 			var imgNumber = parseInt($td.find("img").attr("src").match(/(\d+)s\.jpg$/)[1], 10);
@@ -1250,6 +1335,9 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 		}
 		if (!ngNumberObj[serverFullPath]) {
 			ngNumberObj[serverFullPath] = [];
+		}
+		if (ngNumberObj[serverFullPath].indexOf(number) > -1) {
+			return;
 		}
 		ngNumberObj[serverFullPath].push(number);
 		var deleteCount = ngNumberObj[serverFullPath].length - MAX_NG_THREADS;
@@ -1366,15 +1454,18 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 	 * @param {boolean} isWordsChanged NGワードを変更したか
 	 */
 	function hideNgThreads(isWordsChanged) {
+		if (!isNgEnable) {
+			return;
+		}
 		var Start = new Date().getTime();//count parsing time
 		var words = "";
 		var wordsCommon = GM_getValue("_futaba_catalog_NG_words", "");
 		var wordsIndiv = getCurrentIndivValue("NG_words_indiv", "");
 		var numbers = getCurrentIndivValue("NG_numbers_indiv", []);
-		images = GM_getValue("_futaba_catalog_NG_images", "");
-		ngDate = GM_getValue("_futaba_catalog_NG_date", "");
+		images = GM_getValue("_futaba_catalog_NG_images", []);
+		ngDate = GM_getValue("_futaba_catalog_NG_date", []);
 		okImages = getCurrentIndivValue("OK_images_indiv", []);
-		dHashes = GM_getValue("_futaba_catalog_NG_dHashes", "");
+		dHashes = GM_getValue("_futaba_catalog_NG_dHashes", []);
 
 		// NGワード
 		if( wordsCommon !== "" ) {
@@ -1411,6 +1502,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 						$(this).parent("td").addClass("GM_fcn_ng_words");
 						$(this).parent("td").css("display", "none");
 					}
+					//console.log("futaba catalog NG - caption: " + $(this).text() + " NG word: " + $(this).text().match(re)[0]);
 				}
 			});
 		}
@@ -1432,123 +1524,125 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 		}
 
 		// NG画像
-		if (images.length) {
-			var $catImages = $("#cattable td:not([class^='GM_fcn_ng_']) > a:first-of-type > img");
-			$catImages.each(function() {
-				var $td = $(this).closest("td");
-				var imgSrc = this.src.match(/(\d+)s\.jpg$/);
-				if (imgSrc) {
-					var imgNumber = parseInt(imgSrc[1], 10);
-					if (okImages.indexOf(imgNumber) == -1) {
-						var data = convertDataURI(this);
-						if (data) {
-							var hexHash = md5(data);
-							var index = images.indexOf(hexHash);
-							if (index > -1){
-								$td.addClass("GM_fcn_ng_images");
-								$td.css("display", "none");
-								ngDate[index] = getDate();
-								if (dHashes[index] == null) {
-									dHashes[index] = convertDHash(this, true);
-								}
-							} else {
-								var isError = false;	// md5変換エラーフラグ
-								if (hexHash.length !== 32) {
-									isError = true;
-									console.error("futaba_catalog_NG - hexHash abnormal: image No." + imgNumber + ", hexHash: " + hexHash);	// eslint-disable-line no-console
-								}
-								// dHash判定
-								var distance, dHash = convertDHash(this);
-								[index, distance] = findIndexOfDHashes(dHash);
-								if (index > -1) {
-									if (ENABLE_DHASH_TEST) {
-										$(this).addClass("GM_fcn_ng_dhash_img");
-										$(this).attr("title", "distance: " + distance + ", dHash: " + ("000000000000" + dHash.toString(16)).slice(-13));
-										$td.addClass("GM_fcn_ng_dhash_td");
-									} else {
-										$td.addClass("GM_fcn_ng_images");
-										$td.css("display", "none");
-									}
+		if (USE_NG_IMAGES) {
+			if (images.length) {
+				var $catImages = $("#cattable td:not([class^='GM_fcn_ng_']) > a:first-of-type > img");
+				$catImages.each(function() {
+					var $td = $(this).closest("td");
+					var imgSrc = this.src.match(/(\d+)s\.jpg$/);
+					if (imgSrc) {
+						var imgNumber = parseInt(imgSrc[1], 10);
+						if (okImages.indexOf(imgNumber) == -1) {
+							var data = convertDataURI(this);
+							if (data) {
+								var hexHash = md5(data);
+								var index = images.indexOf(hexHash);
+								if (index > -1){
+									$td.addClass("GM_fcn_ng_images");
+									$td.css("display", "none");
 									ngDate[index] = getDate();
-								} else if (!isError) {
-									okImages.unshift(imgNumber);
-								}
-							}
-						} else {
-							// スレ画像読込完了確認
-							this.onload = () => {
-								this.onload = null;
-								var imgNumber = parseInt(this.src.match(/(\d+)s\.jpg$/)[1], 10);
-								var data = convertDataURI(this);
-								if (data) {
-									var hexHash = md5(data);
-									var index = images.indexOf(hexHash);
-									if (index > -1){
-										$td.addClass("GM_fcn_ng_images");
-										$td.css("display", "none");
-										ngDate[index] = getDate();
-										GM_setValue("_futaba_catalog_NG_date", ngDate);
-										if (dHashes[index] == null) {
-											dHashes[index] = convertDHash(this, true);
-											GM_setValue("_futaba_catalog_NG_dHashes", dHashes);
-										}
-									} else {
-										var isError = false;	// md5変換エラーフラグ
-										if (hexHash.length !== 32) {
-											isError = true;
-											console.error("futaba_catalog_NG - hexHash abnormal: image No." + imgNumber + ", hexHash: " + hexHash);
-										}
-										// dHash判定
-										var distance, dHash = convertDHash(this);
-										[index, distance] = findIndexOfDHashes(dHash);
-										if (index > -1) {
-											if (ENABLE_DHASH_TEST) {
-												$(this).addClass("GM_fcn_ng_dhash_img");
-												$(this).attr("title", "distance: " + distance + ", dHash: " + ("000000000000" + dHash.toString(16)).slice(-13));
-												$td.addClass("GM_fcn_ng_dhash_td");
-											} else {
-												$td.addClass("GM_fcn_ng_images");
-												$td.css("display", "none");
-											}
-											ngDate[index] = getDate();
-											GM_setValue("_futaba_catalog_NG_date", ngDate);
-										} else if (!isError) {
-											okImages.unshift(imgNumber);
-										}
+									if (dHashes[index] == null) {
+										dHashes[index] = convertDHash(this, true);
 									}
 								} else {
-									console.error("futaba_catalog_NG - image data abnormal: image No." + imgNumber);
+									var isError = false;	// md5変換エラーフラグ
+									if (hexHash.length !== 32) {
+										isError = true;
+										console.error("futaba_catalog_NG - hexHash abnormal: image No." + imgNumber + ", hexHash: " + hexHash);	// eslint-disable-line no-console
+									}
+									// dHash判定
+									var distance, dHash = convertDHash(this);
+									[index, distance] = findIndexOfDHashes(dHash);
+									if (index > -1) {
+										if (ENABLE_DHASH_TEST) {
+											$(this).addClass("GM_fcn_ng_dhash_img");
+											$td.children(".GM_fcn_ng_button").attr("title", "distance: " + distance + ", dHash: " + ("000000000000" + dHash.toString(16)).slice(-13));
+											$td.addClass("GM_fcn_ng_dhash_td");
+										} else {
+											$td.addClass("GM_fcn_ng_images");
+											$td.css("display", "none");
+										}
+										ngDate[index] = getDate();
+									} else if (!isError) {
+										okImages.unshift(imgNumber);
+									}
 								}
-							};
-							if (this.complete && this.width && this.height && this.onload) {
-								// onloadセット中に画像読込完了していたらloadをトリガーする
-								$(this).trigger("load");
+							} else {
+								// スレ画像読込完了確認
+								this.onload = () => {
+									this.onload = null;
+									var imgNumber = parseInt(this.src.match(/(\d+)s\.jpg$/)[1], 10);
+									var data = convertDataURI(this);
+									if (data) {
+										var hexHash = md5(data);
+										var index = images.indexOf(hexHash);
+										if (index > -1){
+											$td.addClass("GM_fcn_ng_images");
+											$td.css("display", "none");
+											ngDate[index] = getDate();
+											GM_setValue("_futaba_catalog_NG_date", ngDate);
+											if (dHashes[index] == null) {
+												dHashes[index] = convertDHash(this, true);
+												GM_setValue("_futaba_catalog_NG_dHashes", dHashes);
+											}
+										} else {
+											var isError = false;	// md5変換エラーフラグ
+											if (hexHash.length !== 32) {
+												isError = true;
+												console.error("futaba_catalog_NG - hexHash abnormal: image No." + imgNumber + ", hexHash: " + hexHash);
+											}
+											// dHash判定
+											var distance, dHash = convertDHash(this);
+											[index, distance] = findIndexOfDHashes(dHash);
+											if (index > -1) {
+												if (ENABLE_DHASH_TEST) {
+													$(this).addClass("GM_fcn_ng_dhash_img");
+													$td.children(".GM_fcn_ng_button").attr("title", "distance: " + distance + ", dHash: " + ("000000000000" + dHash.toString(16)).slice(-13));
+													$td.addClass("GM_fcn_ng_dhash_td");
+												} else {
+													$td.addClass("GM_fcn_ng_images");
+													$td.css("display", "none");
+												}
+												ngDate[index] = getDate();
+												GM_setValue("_futaba_catalog_NG_date", ngDate);
+											} else if (!isError) {
+												okImages.unshift(imgNumber);
+											}
+										}
+									} else {
+										console.error("futaba_catalog_NG - image data abnormal: image No." + imgNumber);
+									}
+								};
+								if (this.complete && this.width && this.height && this.onload) {
+									// onloadセット中に画像読込完了していたらloadをトリガーする
+									$(this).trigger("load");
+								}
 							}
 						}
 					}
+				});
+				GM_setValue("_futaba_catalog_NG_date", ngDate);
+				GM_setValue("_futaba_catalog_NG_dHashes", dHashes);
+				if (okImages.length > MAX_OK_IMAGES) {
+					okImages.splice(MAX_OK_IMAGES);
 				}
-			});
-			GM_setValue("_futaba_catalog_NG_date", ngDate);
-			GM_setValue("_futaba_catalog_NG_dHashes", dHashes);
-			if (okImages.length > MAX_OK_IMAGES) {
-				okImages.splice(MAX_OK_IMAGES);
-			}
-			setIndivValue("OK_images_indiv", okImages);
-		} else if (USE_NG_IMAGES) {
-			var $catImg = $("#cattable td a img");
-			$catImg.each(function() {
-				var imgSrc = this.src.match(/(\d+)s\.jpg$/);
-				if (imgSrc) {
-					var imgNumber = parseInt(imgSrc[1], 10);
-					if (okImages.indexOf(imgNumber) == -1) {
-						okImages.unshift(imgNumber);
+				setIndivValue("OK_images_indiv", okImages);
+			} else {
+				var $catImg = $("#cattable td a img");
+				$catImg.each(function() {
+					var imgSrc = this.src.match(/(\d+)s\.jpg$/);
+					if (imgSrc) {
+						var imgNumber = parseInt(imgSrc[1], 10);
+						if (okImages.indexOf(imgNumber) == -1) {
+							okImages.unshift(imgNumber);
+						}
 					}
+				});
+				if (okImages.length > MAX_OK_IMAGES) {
+					okImages.splice(MAX_OK_IMAGES);
 				}
-			});
-			if (okImages.length > MAX_OK_IMAGES) {
-				okImages.splice(MAX_OK_IMAGES);
+				setIndivValue("OK_images_indiv", okImages);
 			}
-			setIndivValue("OK_images_indiv", okImages);
 		}
 		//console.log("futaba_catalog_NG - okImages.length: " + okImages.length);
 		console.log("futaba_catalog_NG - Parsing@" + serverFullPath + ": " + ((new Date()).getTime() - Start) + "msec");	// eslint-disable-line no-console
@@ -1624,8 +1718,10 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 				if (threadNumber) {
 					addNgNumber(threadNumber);
 				}
-				$(this).addClass("GM_fcn_ng_numbers");
-				$(this).css("display", "none");
+				if (isNgEnable) {
+					$(this).addClass("GM_fcn_ng_numbers");
+					$(this).css("display", "none");
+				}
 				$(this).removeClass("KOSHIAN_del");
 			});
 			hideNgThreads();
