@@ -34,12 +34,17 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 	var USE_DHASH = false;					// 近似画像NGを使用する
 	var DISTANCE_THRESHOLD = 3;				// 近似画像判定閾値(デフォルト：3)
 	var ENABLE_DHASH_TEST = false;			// 近似画像NGのテストモードを有効にする
+	var CHECK_NG_LIST = true;				// NGリストが正常かチェックする
 
 	var serverName = document.domain.match(/^[^.]+/);
 	var pathName = location.pathname.match(/[^/]+/);
 	var serverFullPath = serverName + "_" + pathName;
 	var selectIndex = -1;
-	var imageList, commentList, dateList, dHashList, images, ngDate, okImages, dHashes;
+	var imageList = GM_getValue("_futaba_catalog_NG_images", []);
+	var commentList = GM_getValue("_futaba_catalog_NG_comment", []);
+	var dateList = GM_getValue("_futaba_catalog_NG_date", []);
+	var dHashList = GM_getValue("_futaba_catalog_NG_dHashes", []);
+	var images, ngDate, okImages, dHashes;
 	var item_md5_text = "　md5";
 	var item_comment_text = "　コメント";
 	var item_date_text = "　最終検出日";
@@ -47,11 +52,13 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 	var isNgEnable = true;
 
 	// dHashリスト初期化
-	dHashList = GM_getValue("_futaba_catalog_NG_dHashes", []);
-	imageList = GM_getValue("_futaba_catalog_NG_images", []);
 	if (dHashList.length == 0 && imageList.length > 0) {
 		dHashList = new Array(imageList.length).fill(null);
 		GM_setValue("_futaba_catalog_NG_dHashes", dHashList);
+	}
+
+	if (CHECK_NG_LIST && USE_NG_IMAGES && !isNgListNormal()) {
+		alert("NGリストが壊れています");
 	}
 
 	if (HIDE_CATALOG_BEFORE_LOAD) {
@@ -60,7 +67,19 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 		$(init);
 	}
 
-	function init(){
+	function isNgListNormal() {
+		var imageNum = imageList.length;
+		var commentNum = commentList.length;
+		var dateNum = dateList.length;
+		var dHashNum = dHashList.length;
+		//console.log("futaba catalog NG - imageNum: " + imageNum);
+		//console.log("futaba catalog NG - commentNum: " + commentNum);
+		//console.log("futaba catalog NG - dateNum: " + dateNum);
+		//console.log("futaba catalog NG - dHashNum: " + dHashNum);
+		return (imageNum == commentNum) && (imageNum == dateNum) && (imageNum == dHashNum);
+	}
+
+	function init() {
 		clearNgNumber();
 		//console.log("futaba_catalog_NG - commmon: " +
 		//	GM_getValue("_futaba_catalog_NG_words", ""));
@@ -759,23 +778,27 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 							type: "button",
 							val: "更新",
 							click: function() {
-								GM_setValue("_futaba_catalog_NG_images", imageList);
-								GM_setValue("_futaba_catalog_NG_comment", commentList);
-								GM_setValue("_futaba_catalog_NG_date", dateList);
-								GM_setValue("_futaba_catalog_NG_dHashes", dHashList);
-								$(".GM_fcn_ng_list_row").css("background-color", "#ffffff");
-								$("#GM_fcn_md5").val("");
-								$("#GM_fcn_comment").val("");
-								$("#GM_fcn_ng_list_content").scrollTop(0);
-								$("#GM_fcn_catalog_space").remove();
-								$("html, body").css("overflow", "");
-								selectIndex = -1;
-								$ngListContainer.fadeOut(100);
-								$(".GM_fcn_ng_images").css("display", "");
-								$(".GM_fcn_ng_images").removeClass("GM_fcn_ng_images");
-								$(".GM_fcn_ng_dhash_td").removeClass("GM_fcn_ng_dhash_td");
-								$(".GM_fcn_ng_dhash_img").removeClass("GM_fcn_ng_dhash_img");
-								hideNgThreads();
+								if (!CHECK_NG_LIST || isNgListNormal()) {
+									GM_setValue("_futaba_catalog_NG_images", imageList);
+									GM_setValue("_futaba_catalog_NG_comment", commentList);
+									GM_setValue("_futaba_catalog_NG_date", dateList);
+									GM_setValue("_futaba_catalog_NG_dHashes", dHashList);
+									$(".GM_fcn_ng_list_row").css("background-color", "#ffffff");
+									$("#GM_fcn_md5").val("");
+									$("#GM_fcn_comment").val("");
+									$("#GM_fcn_ng_list_content").scrollTop(0);
+									$("#GM_fcn_catalog_space").remove();
+									$("html, body").css("overflow", "");
+									selectIndex = -1;
+									$ngListContainer.fadeOut(100);
+									$(".GM_fcn_ng_images").css("display", "");
+									$(".GM_fcn_ng_images").removeClass("GM_fcn_ng_images");
+									$(".GM_fcn_ng_dhash_td").removeClass("GM_fcn_ng_dhash_td");
+									$(".GM_fcn_ng_dhash_img").removeClass("GM_fcn_ng_dhash_img");
+									hideNgThreads();
+								} else {
+									alert("NGリストが壊れています\n一度キャンセルしてからやり直してください");
+								}
 							},
 						})
 					),
