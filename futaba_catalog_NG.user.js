@@ -80,7 +80,7 @@ this.$ = this.jQuery = jQuery.noConflict(true);
 	}
 
 	function init() {
-		clearNgNumber();
+		//clearNgNumber();
 		//console.log("futaba_catalog_NG - commmon: " +
 		//	GM_getValue("_futaba_catalog_NG_words", ""));
 		//console.log("futaba_catalog_NG - indivisual: " +
